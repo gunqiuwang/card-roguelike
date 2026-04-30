@@ -24,13 +24,15 @@ export function Card({ card, onPlay, canPlay }: CardProps) {
       onClick={onPlay}
       disabled={!canPlay}
       className={`
-        relative w-28 h-40 sm:w-32 sm:h-44
+        relative min-w-[120px] min-h-[160px] sm:min-w-[128px] sm:min-h-[176px]
+        w-28 h-40 sm:w-32 sm:h-44
         bg-gradient-to-b ${typeColors[card.type]}
         rounded-xl border-2 shadow-lg
         flex flex-col items-center justify-between p-2
         transition-all duration-200
+        select-none
         ${canPlay
-          ? 'cursor-pointer hover:scale-105 hover:shadow-xl active:scale-95'
+          ? 'cursor-pointer active:scale-95 active:shadow-xl'
           : 'opacity-60 cursor-not-allowed'
         }
         text-white
@@ -39,17 +41,18 @@ export function Card({ card, onPlay, canPlay }: CardProps) {
     >
       {/* Cost */}
       <div className="
-        absolute -top-2 -left-2 w-8 h-8
+        absolute -top-3 -left-3 w-10 h-10 sm:w-8 sm:h-8
         bg-yellow-500 rounded-full border-2 border-yellow-300
         flex items-center justify-center
         text-lg font-bold text-yellow-900
         shadow-md
+        z-10
       ">
         {card.cost}
       </div>
 
       {/* Card Type Icon */}
-      <div className="text-3xl mt-2">
+      <div className="text-3xl sm:text-4xl mt-3">
         {typeIcons[card.type]}
       </div>
 
