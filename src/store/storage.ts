@@ -1,9 +1,16 @@
-import { GameState } from '../types';
+import { GameState, School } from '../types';
 
 const STORAGE_KEY = 'card-roguelike-save';
 
 export interface SavedGame {
-  state: Partial<GameState>;
+  state: {
+    player: GameState['player'];
+    enemy: GameState['enemy'];
+    phase: GameState['phase'];
+    isPlayerTurn: GameState['isPlayerTurn'];
+    turn: GameState['turn'];
+    preferredSchool?: School;
+  };
   savedAt: number;
 }
 
@@ -16,6 +23,7 @@ export function saveGame(state: GameState): void {
         phase: state.phase,
         isPlayerTurn: state.isPlayerTurn,
         turn: state.turn,
+        preferredSchool: state.preferredSchool,
       },
       savedAt: Date.now(),
     };

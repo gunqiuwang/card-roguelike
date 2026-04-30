@@ -3,6 +3,7 @@ import { saveGame, loadGame, clearSave } from '../store/storage';
 
 export function SaveIndicator() {
   const phase = useGameStore(state => state.phase);
+  const dispatch = useGameStore(state => state.dispatch);
 
   const handleSave = () => {
     const state = useGameStore.getState();
@@ -12,9 +13,18 @@ export function SaveIndicator() {
 
   const handleLoad = () => {
     const saved = loadGame();
-    if (saved) {
-      // For now just show the save info
-      alert(`找到存档: ${new Date(saved.savedAt).toLocaleString()}\n回合: ${saved.state.turn}`);
+    if (saved && saved.state.player && saved.state.enemy) {
+      dispatch({
+        type: 'LOAD_GAME',
+        payload: {
+          player: saved.state.player,
+          enemy: saved.state.enemy,
+          turn: saved.state.turn ?? 1,
+          isPlayerTurn: saved.state.isPlayerTurn ?? true,
+          phase: saved.state.phase ?? 'battle',
+        },
+      });
+      alert('存档已读取!');
     } else {
       alert('没有找到存档');
     }

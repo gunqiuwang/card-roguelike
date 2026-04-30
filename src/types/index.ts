@@ -87,6 +87,7 @@ export interface GameState {
   isPlayerTurn: boolean;
   turn: number;
   rewardOptions: Card[];
+  preferredSchool?: School;
 }
 
 export type GameAction =
@@ -95,5 +96,6 @@ export type GameAction =
   | { type: 'END_TURN' }
   | { type: 'START_TURN' }
   | { type: 'SELECT_REWARD'; payload: Card }
-  | { type: 'RESET_GAME' }
+  | { type: 'RESET_GAME'; payload?: { preferredSchool?: string } }
+  | { type: 'LOAD_GAME'; payload: { player: PlayerState; enemy: Enemy; turn: number; isPlayerTurn: boolean; phase: GamePhase } }
   | { type: 'SET_INTENT' };

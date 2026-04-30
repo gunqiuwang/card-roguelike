@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山海符箓 - 山海经神怪卡牌</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif SC', 'Georgia', serif;
+      overflow: hidden;
+    }
+
+    .cover {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #F5EDE0 0%, #E8DFD0 30%, #DDD3C2 70%, #F5EDE0 100%);
+      overflow: hidden;
+    }
+
+    /* 宣纸纹理 */
+    .paper-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.06;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* 山水云雾背景 */
+    .mountains {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 45%;
+      pointer-events: none;
+    }
+
+    .mountain-layer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .mountain-back {
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 100%, rgba(139, 115, 85, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 75% 100%, rgba(139, 115, 85, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 90% 60% at 50% 100%, rgba(196, 72, 62, 0.08) 0%, transparent 40%);
+    }
+
+    .mountain-mid {
+      background:
+        radial-gradient(ellipse 70% 45% at 30% 100%, rgba(74, 74, 65, 0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 70% 100%, rgba(74, 74, 65, 0.12) 0%, transparent 45%);
+    }
+
+    .cloud {
+      position: absolute;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .cloud-1 { width: 300px; height: 80px; top: 15%; left: -5%; animation-delay: 0s; }
+    .cloud-2 { width: 250px; height: 60px; top: 25%; right: -10%; animation-delay: -3s; opacity: 0.6; }
+    .cloud-3 { width: 200px; height: 50px; top: 35%; left: 10%; animation-delay: -5s; opacity: 0.4; }
+
+    @keyframes float {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(20px) translateY(-10px); }
+    }
+
+    /* 主内容卡片 */
+    .main-card {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(180deg, rgba(253, 248, 240, 0.97) 0%, rgba(240, 232, 218, 0.97) 100%);
+      border: 5px solid #8B7355;
+      border-radius: 24px;
+      padding: 50px 70px;
+      text-align: center;
+      box-shadow:
+        0 20px 60px rgba(45, 41, 38, 0.25),
+        0 0 100px rgba(139, 115, 85, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.8);
+      animation: cardAppear 1.2s ease-out;
+    }
+
+    @keyframes cardAppear {
+      0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 印章 */
+    .seal {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      animation: sealStamp 0.8s ease-out 0.5s both;
+      filter: drop-shadow(0 3px 6px rgba(196, 72, 62, 0.35));
+    }
+
+    @keyframes sealStamp {
+      0% { opacity: 0; transform: scale(1.5) rotate(-10deg); }
+      60% { transform: scale(0.9) rotate(3deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    /* 小标签 */
+    .tagline {
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      color: #9A9488;
+      margin-bottom: 12px;
+      animation: fadeIn 0.8s ease-out 0.7s both;
+    }
+
+    /* 主标题 */
+    .title {
+      position: relative;
+      animation: titleAppear 1s ease-out 0.3s both;
+    }
+
+    .title-main {
+      font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+      font-size: 5.5rem;
+      font-weight: 900;
+      background: linear-gradient(180deg, #C4483E 0%, #8B3029 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      line-height: 1.1;
+      letter-spacing: 0.1em;
+    }
+
+    .title-en {
+      font-size: 1rem;
+      letter-spacing: 0.5em;
+      color: #7A746D;
+      margin-top: 10px;
+      font-weight: 400;
+    }
+
+    @keyframes titleAppear {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* 装饰线 */
+    .divider {
+      width: 180px;
+      height: 2px;
+      margin: 25px auto;
+      background: linear-gradient(90deg, transparent, #8B7355, transparent);
+      animation: fadeIn 0.8s ease-out 0.9s both;
+    }
+
+    /* 副标题 */
+    .subtitle {
+      font-size: 1rem;
+      color: #4A4541;
+      line-height: 1.8;
+      animation: fadeIn 0.8s ease-out 1s both;
+    }
+
+    .subtitle-en {
+      font-size: 0.75rem;
+      color: #7A746D;
+      margin-top: 8px;
+    }
+
+    /* 派系图标 */
+    .factions {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-top: 30px;
+      animation: fadeIn 0.8s ease-out 1.1s both;
+    }
+
+    .faction {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .faction-icon {
+      font-size: 2.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .faction:hover .faction-icon {
+      transform: scale(1.15);
+    }
+
+    .faction-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .faction-desc {
+      font-size: 0.65rem;
+      color: #9A9488;
+    }
+
+    .faction-attack { color: #8B3029; }
+    .faction-defense { color: #2D4A5C; }
+    .faction-heal { color: #4A5C2D; }
+
+    /* 装饰角纹 */
+    .corner-decoration {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border: 3px solid #8B7355;
+      opacity: 0.4;
+    }
+
+    .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; border-radius: 10px 0 0 0; }
+    .corner-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; border-radius: 0 10px 0 0; }
+    .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; border-radius: 0 0 0 10px; }
+    .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; border-radius: 0 0 10px 0; }
+
+    /* 底部信息 */
+    .footer {
+      position: absolute;
+      bottom: 30px;
+      text-align: center;
+      animation: fadeIn 1s ease-out 1.3s both;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: #9A9488;
+      letter-spacing: 0.15em;
+    }
+
+    /* 符箓装饰 */
+    .talisman-pattern {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0.12;
+      color: #8B7355;
+    }
+
+    .tp-1 { top: 15%; left: 8%; transform: rotate(-15deg); }
+    .tp-2 { top: 20%; right: 10%; transform: rotate(20deg); }
+    .tp-3 { bottom: 25%; left: 5%; transform: rotate(10deg); }
+    .tp-4 { bottom: 20%; right: 8%; transform: rotate(-8deg); }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+      .main-card {
+        padding: 35px 30px;
+        margin: 20px;
+        border-width: 3px;
+      }
+      .title-main { font-size: 3.5rem; }
+      .seal { font-size: 2.5rem; }
+      .factions { gap: 30px; }
+      .faction-icon { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <!-- 宣纸纹理 -->
+    <div class="paper-texture"></div>
+
+    <!-- 云雾 -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <!-- 山水背景 -->
+    <div class="mountains">
+      <div class="mountain-layer mountain-back"></div>
+      <div class="mountain-layer mountain-mid"></div>
+    </div>
+
+    <!-- 符箓装饰文字 -->
+    <div class="talisman-pattern tp-1">☯</div>
+    <div class="talisman-pattern tp-2">炁</div>
+    <div class="talisman-pattern tp-3">符</div>
+    <div class="talisman-pattern tp-4">咒</div>
+
+    <!-- 主卡片 -->
+    <div class="main-card">
+      <!-- 装饰角 -->
+      <div class="corner-decoration corner-tl"></div>
+      <div class="corner-decoration corner-tr"></div>
+      <div class="corner-decoration corner-bl"></div>
+      <div class="corner-decoration corner-br"></div>
+
+      <!-- 印章 -->
+      <div class="seal">🏯</div>
+
+      <!-- 标签 -->
+      <div class="tagline">神怪卡牌 · 山海经世界观</div>
+
+      <!-- 标题 -->
+      <div class="title">
+        <div class="title-main">山海符箓</div>
+        <div class="title-en">SHAN HAI TALISMAN</div>
+      </div>
+
+      <!-- 分割线 -->
+      <div class="divider"></div>
+
+      <!-- 副标题 -->
+      <div class="subtitle">
+        斩杀妖魔 · 御灵护体 · 符术疗心
+        <div class="subtitle-en">Slay Demons · Summon Spirits · Heal with Talismans</div>
+      </div>
+
+      <!-- 派系 -->
+      <div class="factions">
+        <div class="faction">
+          <span class="faction-icon">⚔️</span>
+          <span class="faction-name faction-attack">斩妖</span>
+          <span class="faction-desc">Attack</span>
+        </div>
+        <div class="faction">
+          <span class="faction-icon">🛡️</span>
+          <span class="faction-name faction-defense">御灵</span>
+          <span class="faction-desc">Defense</span>
+        </div>
+        <div class="faction">
+          <span class="faction-icon">☯️</span>
+          <span class="faction-name faction-heal">符术</span>
+          <span class="faction-desc">Heal</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部信息 -->
+    <div class="footer">
+      <div class="footer-text">卡牌Roguelike · 山海经神怪世界观</div>
+    </div>
+  </div>
+</body>
+</html>

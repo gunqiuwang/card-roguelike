@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Card, Enemy, GameState, GameAction, PlayerState } from '../types';
-import { STARTER_DECK, REWARD_CARDS } from '../data/cards';
+import { STARTER_DECK, REWARD_CARDS, School } from '../data/cards';
 import { getNextIntent, getRandomEnemyByDifficulty, updateBossCharge, getBossUltimateDamage } from '../data/enemies';
 import { useAnimationStore } from './animationStore';
 
@@ -13,8 +13,61 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled;
 };
 
-const createInitialPlayerState = (): PlayerState => {
-  const shuffledDeck = shuffleArray([...STARTER_DECK]);
+const createSchoolDeck = (school: School): Card[] => {
+  const baseDeck = [...STARTER_DECK];
+  const zhanshu = baseDeck.filter(c => c.school === '斩妖');
+  const hufu = baseDeck.filter(c => c.school === '御灵');
+
+  switch (school) {
+    case '斩妖':
+      // 斩妖派：6斩符 + 2护符（偏攻击）
+      return [
+        ...zhanshu, ...zhanshu.slice(0, 2), // 6斩符
+        ...hufu.slice(0, 2), // 2护符
+      ];
+    case '御灵':
+      // 御灵派：2斩符 + 6护符（偏防御）
+      return [
+        ...zhanshu.slice(0, 2), // 2斩符
+        ...hufu, ...hufu.slice(0, 2), // 6护符
+      ];
+    case '符术':
+      // 符术派：3斩符 + 3护符 + 2符术（偏连锁）
+      return [
+        ...zhanshu.slice(0, 3), // 3斩符
+        ...hufu.slice(0, 3), // 3护符
+        // 2张符术初始牌
+        {
+          id: 'fushu-starter-1',
+          name: '灵引',
+          type: 'skill',
+          cost: 0,
+          description: '引导灵气，抽1张牌',
+          value: 0,
+          rarity: 'starter',
+          school: '符术',
+          drawCards: 1,
+        },
+        {
+          id: 'fushu-starter-2',
+          name: '归元',
+          type: 'skill',
+          cost: 0,
+          description: '回归元点，获得1点灵气',
+          value: 0,
+          rarity: 'starter',
+          school: '符术',
+          gainEnergy: 1,
+        },
+      ];
+    default:
+      return baseDeck;
+  }
+};
+
+const createInitialPlayerState = (school?: School): PlayerState => {
+  const deck = school ? createSchoolDeck(school) : [...STARTER_DECK];
+  const shuffledDeck = shuffleArray(deck);
   const hand = shuffledDeck.slice(0, 5);
   const drawPile = shuffledDeck.slice(5);
   return {
@@ -71,6 +124,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isPlayerTurn: false,
   turn: 0,
   rewardOptions: [],
+  preferredSchool: undefined,
 
   dispatch: (action: GameAction) => {
     const state = get();
@@ -355,13 +409,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
 
       case 'RESET_GAME': {
+        const preferredSchool = (action.payload?.preferredSchool as School | undefined) || get().preferredSchool;
         set({
-          player: createInitialPlayerState(),
+          player: createInitialPlayerState(preferredSchool),
           enemy: getRandomEnemy(),
           phase: 'battle',
           isPlayerTurn: true,
           turn: 1,
           rewardOptions: [],
+          preferredSchool,
+        });
+        break;
+      }
+
+      case 'LOAD_GAME': {
+        set({
+          player: action.payload.player,
+          enemy: action.payload.enemy,
+          turn: action.payload.turn,
+          isPlayerTurn: action.payload.isPlayerTurn,
+          phase: action.payload.phase,
+          rewardOptions: [],
+          preferredSchool: action.payload.player.deck.length > 8 ? undefined : get().preferredSchool,
         });
         break;
       }
