@@ -1,73 +1,117 @@
-# Balance Report - RC-2
+# BALANCE_REPORT.md - 平衡性审查（第五轮）
 
-## Player Stats
-- Starting HP: 50
-- Max Energy: 3 per turn
-- Starting Deck: 4x Strike (8 damage), 4x Defend (5 block)
+## 审查日期
+2026-04-30
 
-## Card Analysis (RC-2 Updated)
+## 数值分析
 
-### Starter Cards
-| Card | Cost | Value | DPE | Rating |
-|------|------|-------|-----|--------|
-| Strike | 1 | 8 damage | 8.0 | ✅ Balanced |
-| Defend | 1 | 5 block | 5.0 | ✅ Balanced |
+### 玩家输出能力
 
-### Reward Cards
-| Card | Cost | Value | Notes | DPE | Rating |
-|------|------|-------|-------|-----|--------|
-| Heal | 2 | 5 HP | Low healing | 2.5 | ⚠️ Weak |
-| Strong Heal | 3 | 10 HP | Best heal | 3.3 | ✅ Balanced |
-| Fireball | 2 | 12 damage | 6.0 | ✅ Strong |
-| Heavy Strike | 2 | 15 damage | 7.5 | ✅ Strong |
-| Double Hit | 1 | 4×2=8 damage | 8.0 | ✅ Strong |
-| Iron Wall | 2 | 12 block | 6.0 | ✅ Strong |
-| Counter | 1 | 5 block + 6 counter | - | ✅ Strong |
+#### 斩妖派伤害计算
+```
+第1张斩妖: 8 伤害
+第2张斩妖: 8 + 3 = 11 伤害
+第3张斩妖: 8 + 6 = 14 伤害
+第4张斩妖: 8 + 9 = 17 伤害
+```
+- **4 张斩妖 total**: 50 伤害（2 回合）
+- **可击杀**: 普通怪(40HP)、精英怪(55HP)、Boss(100HP 需要 2 次 combo)
 
-## Enemy Analysis
+#### 御灵派反击计算
+- 护盾累计 ≥ 12 触发
+- 起始护符: 5 点/张
+- 需要 3 张护符才能触发
+- 反击伤害: 12 × 50% = 6 伤害
+- **问题**: 3 回合准备，反击 6 伤害，远不如斩妖
 
-### Normal Enemies
-| Enemy | HP | Attack | Turns to Kill | Difficulty |
-|-------|-----|--------|---------------|------------|
-| 哥布林 | 30 | 6 | 4 hits | Easy |
-| 骷髅战士 | 40 | 8 | 5 hits | Medium |
-| 暗影 | 25 | 10 | 3 hits | Medium-High |
-| 狼人 | 35 | 7 | 4-5 hits | Medium |
+#### 符术派共鸣计算
+- 出 3 张符术牌触发
+- 效果: 抽 1 + 灵气 1
+- **问题**: 共鸣效果不如直接攻击
 
-### Elite Enemies
-| Enemy | HP | Attack | Turns to Kill | Difficulty |
-|-------|-----|--------|---------------|------------|
-| 精英骷髅 | 60 | 10 | 6 hits | Hard |
-| 暗影刺客 | 45 | 14 | 3-4 hits | Very Hard |
+### 敌人威胁能力
 
-### Boss
-| Enemy | HP | Attack | Turns to Kill | Difficulty |
-|-------|-----|--------|---------------|------------|
-| 巨石魔像 | 100 | 12 | 8-10 hits | Boss |
+#### 普通怪
+- HP: 25-40
+- 攻击: 5-9
+- **威胁**: 低（玩家有护盾可以抵挡）
 
-## Win Rate Estimation (Theoretical)
-- Normal enemies: ~75% (with basic block strategy)
-- Elite enemies: ~45% (need better cards)
-- Boss: ~25% (requires strong deck)
+#### 精英怪
+- HP: 50-60
+- 攻击: 10-12
+- **威胁**: 中（需要一定护盾）
 
-## Balance Issues
+#### Boss
+- HP: 95-110
+- 攻击: 12-15
+- **大妖神通**: 24-30 伤害
+- **威胁**: 高（需要打断或护盾）
 
-### Problems Identified
-1. ~~Strike too weak~~ - FIXED in RC-2 (6 → 8 damage)
-2. Heal is underwhelming - 2 energy for 5 HP is poor value
-3. No sustain cards in starter deck
+### 平衡问题总结
 
-### Suggested Improvements (Future)
-- Consider adding 1 starter heal card
-- Reduce enemy damage scaling
-- Add more low-cost card variety
+| 问题 | 严重度 | 原因 |
+|------|--------|------|
+| 斩妖过强 | ⚠️ 中 | combo 伤害递增，无人能挡 |
+| 御灵过弱 | ⚠️ 中 | 门槛高(12)，反击低(50%) |
+| 符术弱 | ⚠️ 低 | 共鸣效果不如直接攻击 |
+| Boss 蓄力周期长 | ⚠️ 低 | 3 回合可能来不及触发 |
 
-## Infinite Loops Check
-- ✅ No infinite draw possible (deck reshuffles correctly)
-- ✅ No infinite block possible
-- ✅ No infinite energy possible
-- ✅ No invincible state possible
-- ✅ No endless combat possible
+### 平衡优化建议
 
-## RC-2 Balance Summary
-Game is **playable and balanced** for a demo. Strikes are now viable. Block mechanic works as intended. Difficulty is appropriate for casual play.
+#### 1. 御灵护体回响：门槛 12 → 10，反击 50% → 60%
+```
+调整后:
+- 2 张护符(5+5=10)即可触发
+- 反击 = 10 × 60% = 6 伤害
+- 更早触发，更有价值
+```
+
+#### 2. 符术共鸣：灵气 +1 → +2
+```
+调整后:
+- 共鸣效果: 抽1 + 灵气2
+- 提升共鸣吸引力
+```
+
+#### 3. Boss 蓄力周期：3 回合 → 2 回合
+```
+调整后:
+- 更短周期，更多次大招
+- 压迫感更强
+```
+
+### 平衡计算验证
+
+#### 御灵流调整后
+```
+起始: 3 能量，3 护符
+回合1: 出2护符(5+5=10护盾)，蓄力10
+回合2: 出1护符(5护盾)，蓄力15，触发反击=15×60%=9
+预估: 3回合总反击=9+累积=15+
+```
+
+#### 斩妖流
+```
+回合1: 出2斩妖(8+11=19伤害)
+回合2: 出2斩妖(14+17=31伤害)
+预估: 2回合总伤害=50
+```
+
+#### 对比
+- 御灵: 3回合准备，15+反击
+- 斩妖: 2回合击杀，不需要反击
+- **结论**: 斩妖仍然是击杀型，御灵是拖延型，可以接受
+
+## 平衡总结
+- 斩妖派定位: 快速击杀
+- 御灵派定位: 拖延消耗
+- 符术派定位: 续航润滑
+- 三派定位不同，可以共存
+- 建议微调御灵门槛和符术共鸣效果
+
+## 无限循环检查
+- ✅ 斩妖 combo 有上限（手牌数限制）
+- ✅ 御灵回响每回合一次
+- ✅ 符术共鸣每回合一次
+- ✅ Boss 蓄力每 2 回合一次
+- ✅ 抽牌有 deck reshuffle 机制

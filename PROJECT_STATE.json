@@ -1,34 +1,38 @@
 # Project State
 
 ## Next Iteration
-20
+21
 
 ## Current Phase
-Phase 5: Polish & Optimization - Iteration 19 completed
+Phase 5: Polish & Optimization - Iteration 20 completed
 
 ## Last Updated
 2026-04-30
 
 ## Summary
-Core game complete with 19 iterations. Latest: Boss战蓄力阶段机制
+Core game complete with 20 iterations. Latest: 战斗节奏优化与平衡调整
+
+## Balance Adjustments (Iteration 20)
+- **Boss蓄力周期**: 3回合 → 2回合
+- **御灵护体回响门槛**: 12 → 10
+- **御灵护体反击伤害**: 50% → 60%
+- **符术共鸣灵气**: +1 → +2
 
 ## Completed Features (Iteration 19)
 - **Boss蓄力阶段机制**
-  - Boss每3回合进入蓄力状态
+  - Boss每2回合进入蓄力状态
   - 蓄力后释放"大妖神通"（伤害×2）
   - 玩家单回合≥25伤害可打断
-  - 打断成功显示"打断神通"金色特效
-  - 蓄力时敌人区域暗红脉冲动画
 
 ## Completed Features (Iteration 18)
 - **符术派符链共鸣**
   - 累计出 3 张符术牌，触发共鸣
-  - 效果：抽 1 张牌，获得 1 点灵气
+  - 效果：抽 1 张牌，获得 2 点灵气
 
 ## Completed Features (Iteration 17)
 - **御灵派护体回响**
-  - 累计护盾值 ≥ 12 时，回合结束触发反击
-  - 反击伤害 = 护盾值 × 50%
+  - 累计护盾值 ≥ 10 时，回合结束触发反击
+  - 反击伤害 = 护盾值 × 60%
 
 ## Completed Features (Iteration 16)
 - **斩妖派爆发爽点 - 斩击狂热**
@@ -39,12 +43,12 @@ Core game complete with 19 iterations. Latest: Boss战蓄力阶段机制
 | 派系 | 核心机制 | 触发条件 | 效果 |
 |------|----------|----------|------|
 | 斩妖派 | 斩击狂热 | 连续出斩妖攻击牌 | 伤害 +3N |
-| 御灵派 | 护体回响 | 护盾累计 ≥ 12 | 反击 50% |
-| 符术派 | 符链共鸣 | 出 3 张符术牌 | 抽1+灵气1 |
-| Boss | 蓄力神通 | 每3回合蓄力 | 大招伤害×2，可打断 |
+| 御灵派 | 护体回响 | 护盾累计 ≥ 10 | 反击 60% |
+| 符术派 | 符链共鸣 | 出 3 张符术牌 | 抽1+灵气2 |
+| Boss | 蓄力神通 | 每2回合蓄力 | 大招伤害×2，可打断 |
 
 ## Boss战设计
-- 蓄力周期：3回合蓄力 → 1回合蓄势 → 释放大妖神通
+- 蓄力周期：2回合蓄力 → 1回合蓄势 → 释放大妖神通
 - 打断条件：单回合 ≥ 25 伤害
 - 大招伤害：普通攻击 × 2
 
@@ -57,6 +61,5 @@ Core game complete with 19 iterations. Latest: Boss战蓄力阶段机制
 
 ## Next Priority
 1. 精英敌人类型（需多次攻击）
-2. 整体节奏体验优化
-3. 长线内容开发（新卡牌、新敌人）
-4. 存档/进度系统完善
+2. 长线内容开发（新卡牌、新敌人）
+3. 存档/进度系统完善
