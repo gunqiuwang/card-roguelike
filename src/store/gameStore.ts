@@ -101,11 +101,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
         switch (card.type) {
           case 'attack':
             if (newEnemy) {
-              newEnemy.hp = Math.max(0, newEnemy.hp - card.value);
+              const hits = card.multiHit || 1;
+              const totalDamage = card.value * hits;
+              newEnemy.hp = Math.max(0, newEnemy.hp - totalDamage);
             }
             break;
           case 'defense':
             newPlayer.block += card.value;
+            // Store counter damage for end of turn
+            if (card.counterDamage) {
+              newPlayer = { ...newPlayer, pendingCounterDamage: card.counterDamage };
+            }
             break;
           case 'heal':
             newPlayer.hp = Math.min(newPlayer.maxHp, newPlayer.hp + card.value);

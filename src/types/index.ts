@@ -1,4 +1,5 @@
 export type CardType = 'attack' | 'defense' | 'heal';
+export type CardRarity = 'starter' | 'common' | 'rare';
 
 export interface Card {
   id: string;
@@ -7,6 +8,9 @@ export interface Card {
   cost: number;
   description: string;
   value: number; // damage, block, or heal amount
+  rarity: CardRarity;
+  multiHit?: number; // for double-hit type attacks
+  counterDamage?: number; // for counter attacks
 }
 
 export interface PlayerState {
@@ -20,6 +24,7 @@ export interface PlayerState {
   discardPile: Card[];
   drawPile: Card[];
   hand: Card[];
+  pendingCounterDamage?: number;
 }
 
 export type EnemyIntent = 'attack' | 'charge';
