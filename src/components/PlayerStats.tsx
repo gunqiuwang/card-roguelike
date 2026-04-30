@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 
 export function PlayerStats() {
@@ -8,14 +9,14 @@ export function PlayerStats() {
 
   const hpPercent = (player.hp / player.maxHp) * 100;
 
-  const handleEndTurn = () => {
+  const handleEndTurn = useCallback(() => {
     if (isPlayerTurn) {
       dispatch({ type: 'END_TURN' });
       setTimeout(() => {
         dispatch({ type: 'START_TURN' });
       }, 100);
     }
-  };
+  }, [isPlayerTurn, dispatch]);
 
   return (
     <div className="

@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useAnimationStore } from '../store/animationStore';
 import { Card as CardType } from '../types';
@@ -12,19 +13,14 @@ export function Card({ card, index, canPlay }: CardProps) {
   const cardPlayIndex = useAnimationStore(state => state.cardPlayIndex);
   const triggerCardPlay = useAnimationStore(state => state.triggerCardPlay);
   const dispatch = useGameStore(state => state.dispatch);
-  const player = useGameStore(state => state.player);
-  const isPlayerTurn = useGameStore(state => state.isPlayerTurn);
-  const phase = useGameStore(state => state.phase);
 
-  const canPlayCard = isPlayerTurn && phase === 'battle' && player.energy >= card.cost;
-
-  const handlePlay = () => {
-    if (!canPlayCard) return;
+  const handlePlay = useCallback(() => {
+    if (!canPlay) return;
     triggerCardPlay(index);
     setTimeout(() => {
       dispatch({ type: 'PLAY_CARD', payload: { card, cardIndex: index } });
     }, 200);
-  };
+  }, [canPlay, card, index, dispatch, triggerCardPlay]);
 
   const typeColors = {
     attack: 'from-red-600 to-red-800 border-red-700',
@@ -53,7 +49,7 @@ export function Card({ card, index, canPlay }: CardProps) {
         transition-all duration-200
         select-none
         ${isPlaying ? 'card-play-animation' : ''}
-        ${canPlayCard
+        ${canPlay
           ? 'cursor-pointer active:scale-95 active:shadow-xl'
           : 'opacity-60 cursor-not-allowed'
         }

@@ -16,6 +16,11 @@
 - [x] Iteration 9: 卡牌奖励UI
 
 ## Phase 4: 游戏系统扩展 (Iteration 10-12)
-- [ ] Iteration 10: 战斗状态持久化
-- [ ] Iteration 11: 音效与震动反馈
-- [ ] Iteration 12: 成就系统基础
+- [x] Iteration 10: 战斗状态持久化
+- [x] Iteration 11: 音效与震动反馈
+- [x] Iteration 12: 成就系统基础
+
+## Phase 5: Polish & Optimization (Iteration 13-15)
+- [ ] Iteration 13: 性能优化
+- [ ] Iteration 14: 错误边界与容错
+- [ ] Iteration 15: 最终测试与修复
