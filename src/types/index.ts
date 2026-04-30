@@ -28,6 +28,7 @@ export interface PlayerState {
 }
 
 export type EnemyIntent = 'attack' | 'charge';
+export type EnemyType = 'normal' | 'elite' | 'boss';
 
 export interface Enemy {
   id: string;
@@ -36,6 +37,7 @@ export interface Enemy {
   maxHp: number;
   attack: number;
   intent: EnemyIntent;
+  type: EnemyType;
 }
 
 export type GamePhase = 'battle' | 'victory' | 'defeat' | 'reward';

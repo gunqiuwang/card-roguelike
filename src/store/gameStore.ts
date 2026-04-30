@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { Card, Enemy, GameState, GameAction, PlayerState } from '../types';
 import { STARTER_DECK, REWARD_CARDS } from '../data/cards';
-import { createEnemy, getNextIntent } from '../data/enemies';
-import { ENEMIES } from '../data/enemies';
+import { getNextIntent, getRandomEnemyByDifficulty } from '../data/enemies';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   const shuffled = [...array];
@@ -58,8 +57,7 @@ const getRandomRewardCards = (): Card[] => {
 };
 
 const getRandomEnemy = (): Enemy => {
-  const enemyData = ENEMIES[Math.floor(Math.random() * ENEMIES.length)];
-  return createEnemy(enemyData.name, enemyData.hp, enemyData.attack);
+  return getRandomEnemyByDifficulty(1);
 };
 
 interface GameStore extends GameState {
