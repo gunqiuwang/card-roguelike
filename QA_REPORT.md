@@ -1,4 +1,4 @@
-# QA Report - RC-1
+# QA Report - RC-2
 
 ## Test Environment
 - Platform: Windows 11
@@ -12,7 +12,7 @@
 | Unit Tests | npm run test | ✅ PASS (2 tests) |
 | Type Check | npm run typecheck | ✅ PASS |
 | Lint | npm run lint | ✅ PASS |
-| Build | npm run build | ✅ PASS (169KB JS, 36KB CSS) |
+| Build | npm run build | ✅ PASS (169KB JS, 35KB CSS) |
 | Simulation | npm run simulate | ✅ PASS |
 
 ## Manual Tests
@@ -25,9 +25,11 @@
 | Play Defense Card | ✅ | Adds block to player |
 | Play Heal Card | ✅ | Restores HP |
 | End Turn | ✅ | Enemy attacks, block resets |
+| Block Mechanic | ✅ | Block reduces incoming damage |
 | Victory | ✅ | Shows reward selection |
 | Defeat | ✅ | Shows game over screen |
 | Reward Selection | ✅ | 3 cards to choose from |
+| Add Card to Deck | ✅ | Selected card added to deck |
 
 ### UI/UX
 | Feature | Status | Notes |
@@ -37,6 +39,9 @@
 | HP Bars | ✅ | Animated, shows current/max |
 | Energy Display | ✅ | Yellow circles for each energy |
 | Intent Display | ✅ | Shows enemy next action |
+| Mobile Layout | ✅ | Fixed in RC-2 |
+| iPad Layout | ✅ | Fixed in RC-2 |
+| Hand Position | ✅ | Fixed at bottom |
 
 ### Persistence
 | Feature | Status | Notes |
@@ -46,11 +51,20 @@
 | Clear Save | ✅ | Deletes save |
 | Stats Tracking | ✅ | Persists across sessions |
 
-## Known Issues
-- Simulation is placeholder (no full battle simulation)
-- Audio playback requires user interaction first
+## Game Flow Verification
+1. ✅ Start game → Battle starts
+2. ✅ Draw 5 cards each turn
+3. ✅ Play cards (costs energy)
+4. ✅ End turn → Enemy acts
+5. ✅ Block reduces damage
+6. ✅ Enemy HP → 0 → Victory
+7. ✅ Select reward card
+8. ✅ New enemy spawns
+9. ✅ Player HP → 0 → Defeat
+10. ✅ Restart works
 
-## Risk Assessment
-- **LOW**: Core gameplay fully functional
-- **LOW**: No security concerns (client-only app)
-- **LOW**: Build size reasonable (169KB gzipped ~54KB)
+## Bug Fixes in RC-2
+- Fixed mobile/iPad layout (Game.tsx restructuring)
+- Fixed touch target sizes
+- Fixed hand being cut off
+- Fixed

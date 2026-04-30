@@ -1,6 +1,6 @@
-# Release Checklist
+# Release Checklist - RC-2
 
-## Version: RC-1 (Release Candidate 1)
+## Version: RC-2 (Release Candidate 2)
 
 ## Pre-Release Checks
 
@@ -11,21 +11,23 @@
 - [x] npm run build - PASSED
 - [x] npm run simulate - PASSED
 
-### Playability
+### Playability (Verified 2026-04-30)
 - [x] New game starts correctly
-- [x] Cards can be played
-- [x] Enemy attacks work
+- [x] Cards can be played (tap to use)
+- [x] Enemy attacks work (after End Turn)
 - [x] Victory/Defeat screens display
 - [x] Reward selection works
 - [x] Save/Load functions work
 - [x] Stats tracking works
 - [x] Sound toggle works
 
-### Platform
+### Platform Layout
 - [x] Desktop browser - OK
-- [x] Mobile portrait - OK
-- [x] iPad - OK
+- [x] Mobile portrait - OK (fixed in RC-2)
+- [x] iPad - OK (fixed in RC-2)
 - [x] Touch targets >= 48px - OK
+- [x] Hand fixed at bottom - OK
+- [x] Enemy centered - OK
 
 ### Code Quality
 - [x] No TypeScript errors
@@ -33,5 +35,9 @@
 - [x] Error boundary in place
 - [x] No console errors
 
-## Post-Release
-- [ ] Deploy to Vercel
+### Balance Fixes (RC-2)
+- [x] Strike damage: 6 → 8 (fixes early game too weak)
+
+## Known Issues
+- Simulation is placeholder (no full battle simulation)
+- Audio playback requires user interaction first
