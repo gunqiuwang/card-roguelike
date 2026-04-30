@@ -10,37 +10,68 @@ import { StatsDisplay } from './StatsDisplay';
 
 export function Game() {
   return (
-    <div className="
-      min-h-screen h-full
-      bg-gradient-to-b from-[#1A1A2E] to-[#0F0F1A]
-      flex flex-col
-      items-center
-      pt-16 pb-32
-      px-2
-      overflow-hidden
-    ">
-      {/* Battle Area - Top */}
-      <div className="w-full max-w-md">
+    <div
+      className="
+        min-h-screen h-full
+        flex flex-col
+        items-center
+        pt-14 pb-36
+        px-2
+        overflow-hidden
+      "
+      style={{
+        background: 'linear-gradient(180deg, #1A1128 0%, #251A38 30%, #1A1128 70%, #0D0915 100%)',
+      }}
+    >
+      {/* Background decoration - Castle stone pattern */}
+      <div
+        className="fixed inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 50px,
+            rgba(212, 134, 61, 0.5) 50px,
+            rgba(212, 134, 61, 0.5) 51px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 50px,
+            rgba(212, 134, 61, 0.5) 50px,
+            rgba(212, 134, 61, 0.5) 51px
+          )`,
+        }}
+      />
+
+      {/* Battle Area - Top with turn indicator */}
+      <div className="w-full max-w-md relative z-10">
         <BattleArea />
         <SoundToggle />
       </div>
 
-      {/* Enemy Area - Middle */}
-      <div className="flex-1 flex items-center justify-center py-2">
+      {/* Enemy Area - Middle with stage feel */}
+      <div
+        className="flex-1 flex items-center justify-center py-4 relative z-10"
+        style={{
+          // Subtle spotlight effect
+          background: 'radial-gradient(ellipse at center, rgba(155, 45, 90, 0.1) 0%, transparent 60%)',
+        }}
+      >
         <Enemy />
       </div>
 
-      {/* Save/Stats - Right side floating */}
+      {/* Save/Stats - Floating UI elements */}
       <SaveIndicator />
       <StatsDisplay />
 
-      {/* Player Stats - Above Hand */}
-      <div className="w-full max-w-md px-2">
+      {/* Player Stats - Game HUD */}
+      <div className="w-full max-w-md px-2 relative z-10">
         <PlayerStats />
       </div>
 
-      {/* Hand - Bottom Fixed */}
-      <div className="fixed bottom-0 left-0 right-0">
+      {/* Hand - Bottom with card table feel */}
+      <div className="fixed bottom-0 left-0 right-0 z-20">
         <Hand />
       </div>
 

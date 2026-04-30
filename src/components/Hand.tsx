@@ -13,21 +13,63 @@ export function Hand() {
   if (phase !== 'battle') return null;
 
   return (
-    <div className="
-      w-full
-      bg-gradient-to-t from-black/95 via-black/80 to-transparent
-      pb-4 pt-4
-    ">
-      {/* Card Count Info */}
-      <div className="flex justify-center gap-4 mb-2 text-xs text-white/60">
-        <span>🎴 {player.drawPile.length}</span>
-        <span>🗑️ {player.discardPile.length}</span>
+    <div
+      className="
+        w-full
+        bg-gradient-to-t
+        from-[#1A1128] via-[#251A38] to-transparent
+        pb-4 pt-3
+        border-t border-[#3D2A55]
+      "
+      style={{ boxShadow: '0 -10px 30px rgba(26, 17, 40, 0.8)' }}
+    >
+      {/* Deck/Discard Info - Fantasy style */}
+      <div className="flex justify-center gap-6 mb-3">
+        <div
+          className="flex items-center gap-2 px-3 py-1 rounded-full"
+          style={{ background: 'rgba(45, 31, 66, 0.8)', border: '1px solid #3D2A55' }}
+        >
+          <span className="text-lg">🎴</span>
+          <span className="text-sm font-medium text-[#A89B8C]">
+            {player.drawPile.length}
+          </span>
+          <span className="text-xs text-[#8B7355]">抽牌堆</span>
+        </div>
+
+        <div
+          className="flex items-center gap-2 px-3 py-1 rounded-full"
+          style={{ background: 'rgba(45, 31, 66, 0.8)', border: '1px solid #3D2A55' }}
+        >
+          <span className="text-lg">🗑️</span>
+          <span className="text-sm font-medium text-[#A89B8C]">
+            {player.discardPile.length}
+          </span>
+          <span className="text-xs text-[#8B7355]">弃牌堆</span>
+        </div>
       </div>
 
-      {/* Cards - Scrollable on small screens */}
-      <div className="flex justify-start gap-2 px-2 overflow-x-auto pb-2 snap-x snap-mandatory">
+      {/* Cards - Fantasy card table feel */}
+      <div
+        className="
+          flex justify-center
+          gap-2 px-2
+          overflow-x-auto
+          pb-3
+          snap-x snap-mandatory
+        "
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(212, 134, 61, 0.3) transparent',
+        }}
+      >
         {player.hand.map((card, index) => (
-          <div key={card.id} className="snap-center shrink-0">
+          <div
+            key={card.id}
+            className="snap-center shrink-0"
+            style={{
+              animationDelay: `${index * 50}ms`,
+            }}
+          >
             <Card
               card={card}
               index={index}
@@ -36,6 +78,16 @@ export function Hand() {
           </div>
         ))}
       </div>
+
+      {/* Empty hand message */}
+      {player.hand.length === 0 && (
+        <div
+          className="text-center py-4 text-sm text-[#8B7355]"
+          style={{ fontFamily: 'Georgia, serif' }}
+        >
+          抽牌堆中没有卡牌...
+        </div>
+      )}
     </div>
   );
 }

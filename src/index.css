@@ -1,13 +1,51 @@
 @import "tailwindcss";
 
 :root {
+  /* Q版暗黑童话 - 城堡魔法主题色板 */
   --color-primary: #D4863D;
-  --color-secondary: #2F5D3A;
-  --color-danger: #C45C4A;
-  --color-bg: #1A1A2E;
-  --color-surface: #16213E;
-  --color-card: #0F3460;
+  --color-primary-light: #E9A84D;
+  --color-primary-dark: #A66A2E;
+
+  /* 背景 - 深紫黑色系 */
+  --color-bg: #1A1128;
+  --color-bg-light: #251A38;
+  --color-bg-dark: #0D0915;
+
+  /* 表面层 */
+  --color-surface: #2D1F42;
+  --color-surface-light: #3D2A55;
+  --color-surface-dark: #1E142E;
+
+  /* 卡牌 - 羊皮纸色 */
+  --color-card-bg: #F5E6D3;
+  --color-card-border: #8B7355;
+
+  /* 强调色 - 酒红 */
+  --color-accent: #9B2D5A;
+  --color-accent-light: #C4456E;
+  --color-accent-dark: #6B1E3D;
+
+  /* 金色 */
   --color-gold: #E9B872;
+
+  /* 稀有度 */
+  --color-rarity-starter: #8B7355;
+  --color-rarity-common: #4A7C9B;
+  --color-rarity-rare: #9B4DCA;
+
+  /* 卡牌类型 */
+  --color-type-attack: #C44536;
+  --color-type-defense: #4A7C9B;
+  --color-type-heal: #4A9B5C;
+
+  /* UI元素 */
+  --color-energy: #F5D76E;
+  --color-health: #E74C3C;
+  --color-block: #5C9CEC;
+
+  /* 敌人意图 */
+  --color-intent-attack: #E74C3C;
+  --color-intent-charge: #9B59B6;
 }
 
 * {
@@ -20,7 +58,7 @@
 html, body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background-color: var(--color-bg);
-  color: #ffffff;
+  color: var(--color-card-bg);
   overflow-x: hidden;
   touch-action: manipulation;
 }
@@ -30,7 +68,6 @@ html, body {
   min-height: 100dvh;
 }
 
-/* Prevent pull-to-refresh on mobile */
 body {
   overscroll-behavior: none;
 }
@@ -46,11 +83,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(212, 134, 61, 0.3);
   border-radius: 2px;
 }
 
-/* Button reset */
 button {
   border: none;
   background: none;
@@ -64,77 +100,145 @@ button {
   -webkit-user-select: none;
 }
 
-/* Card play animation */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Card Play Animation - Scale up and fade */
 @keyframes cardPlay {
-  0% { transform: scale(1) translateY(0); opacity: 1; }
-  50% { transform: scale(0.8) translateY(-30px); opacity: 0.8; }
-  100% { transform: scale(0.8) translateY(-80px); opacity: 0; }
+  0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+  30% { transform: scale(1.1) translateY(-20px) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(0.6) translateY(-100px) rotate(5deg); opacity: 0; }
 }
 
 .card-play-animation {
-  animation: cardPlay 0.4s ease-out forwards;
+  animation: cardPlay 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Card draw animation */
+/* Card Draw Animation - Slide in from deck */
 @keyframes cardDraw {
-  0% { transform: translateX(100px) rotate(10deg); opacity: 0; }
-  100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  0% { transform: translateX(150px) rotate(15deg) scale(0.8); opacity: 0; }
+  60% { transform: translateX(-10px) rotate(-3deg) scale(1.05); opacity: 1; }
+  100% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
 }
 
 .card-draw-animation {
-  animation: cardDraw 0.3s ease-out;
+  animation: cardDraw 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Fade in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
-/* Shake animation for damage */
+/* Shake animation for damage - Dark Fantasy style */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  15% { transform: translateX(-6px) rotate(-1deg); }
+  30% { transform: translateX(6px) rotate(1deg); }
+  45% { transform: translateX(-4px) rotate(-0.5deg); }
+  60% { transform: translateX(4px) rotate(0.5deg); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(2px); }
 }
 
 .animate-shake {
-  animation: shake 0.4s ease-out;
+  animation: shake 0.5s ease-out;
 }
 
 /* Pulse animation for highlights */
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 134, 61, 0.4); }
+  50% { transform: scale(1.03); box-shadow: 0 0 20px 5px rgba(212, 134, 61, 0.2); }
 }
 
 .animate-pulse-once {
-  animation: pulse 0.3s ease-out;
+  animation: pulse 0.4s ease-out;
 }
 
-/* Float animation for floating text */
+/* Floating text animation - Damage/Heal numbers */
 @keyframes floatUp {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-60px); opacity: 0; }
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+  40% { transform: translateY(-25px) scale(1); opacity: 1; }
+  100% { transform: translateY(-70px) scale(0.8); opacity: 0; }
 }
 
 .animate-float-up {
-  animation: floatUp 0.8s ease-out forwards;
+  animation: floatUp 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* Enemy defeat animation */
 @keyframes enemyDefeat {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(0); opacity: 0; }
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  30% { transform: scale(1.1) rotate(-5deg); opacity: 1; }
+  100% { transform: scale(0) rotate(15deg); opacity: 0; }
 }
 
 .animate-enemy-defeat {
-  animation: enemyDefeat 0.5s ease-out forwards;
+  animation: enemyDefeat 0.6s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+/* Heal glow animation */
+@keyframes healGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(74, 155, 92, 0.5); }
+  50% { box-shadow: 0 0 25px 10px rgba(74, 155, 92, 0.8); }
+}
+
+.animate-heal-glow {
+  animation: healGlow 0.6s ease-out;
+}
+
+/* Block flash animation */
+@keyframes blockFlash {
+  0% { background-color: rgba(92, 156, 236, 0.3); }
+  50% { background-color: rgba(92, 156, 236, 0.6); }
+  100% { background-color: rgba(92, 156, 236, 0); }
+}
+
+.animate-block-flash {
+  animation: blockFlash 0.4s ease-out;
+}
+
+/* Card hover glow */
+@keyframes cardGlow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 4px 20px rgba(212, 134, 61, 0.5), 0 0 30px rgba(212, 134, 61, 0.2); }
+}
+
+/* Button press effect */
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.animate-button-press {
+  animation: buttonPress 0.15s ease-out;
+}
+
+/* Energy use flash */
+@keyframes energyUse {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.3); filter: brightness(1.5); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.animate-energy-use {
+  animation: energyUse 0.3s ease-out;
+}
+
+/* Turn indicator pulse */
+@keyframes turnPulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.animate-turn-pulse {
+  animation: turnPulse 1.5s ease-in-out infinite;
 }
