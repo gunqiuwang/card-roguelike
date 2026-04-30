@@ -513,3 +513,70 @@ button {
 .animate-fuchain-pop {
   animation: fuchainPop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
+
+/* Boss蓄力脉冲动画 */
+@keyframes bossChargePulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 20px rgba(196, 72, 62, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 40px rgba(196, 72, 62, 0.6);
+  }
+}
+
+/* Boss打断神通动画 */
+@keyframes bossInterrupt {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -60%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animate-boss-interrupt {
+  animation: bossInterrupt 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Boss大妖神通动画 */
+@keyframes bossUltimate {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+    text-shadow: 0 0 30px #8B3029, 0 0 60px rgba(196, 72, 62, 0.9);
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -70%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.animate-boss-ultimate {
+  animation: bossUltimate 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

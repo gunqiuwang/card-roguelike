@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Card, Enemy, GameState, GameAction, PlayerState } from '../types';
 import { STARTER_DECK, REWARD_CARDS } from '../data/cards';
-import { getNextIntent, getRandomEnemyByDifficulty } from '../data/enemies';
+import { getNextIntent, getRandomEnemyByDifficulty, updateBossCharge, getBossUltimateDamage } from '../data/enemies';
 import { useAnimationStore } from './animationStore';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
@@ -145,6 +145,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
               }
               newEnemy.hp = Math.max(0, newEnemy.hp - damage);
 
+              // 累计本回合伤害（用于Boss打断检测）
+              newPlayer.damageDealtThisTurn = (newPlayer.damageDealtThisTurn || 0) + damage;
+
               // 触发敌人受击动画
               useAnimationStore.getState().triggerEnemyShake();
 
@@ -238,11 +241,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
         // 敌人行动
         if (newEnemy) {
           let incomingDamage = newEnemy.attack;
+
+          // Boss蓄力检测
+          if (newEnemy.type === 'boss' && newEnemy.isCharging) {
+            // 检查是否被打断（玩家本回合造成 >= 25 伤害）
+            const totalDamageThisTurn = newPlayer.damageDealtThisTurn || 0;
+            if (totalDamageThisTurn >= 25) {
+              // 打断成功
+              useAnimationStore.getState().triggerBossInterrupt();
+              newEnemy.isCharging = false;
+              incomingDamage = 0; // 大招被取消
+            } else {
+              // 未打断，释放大妖神通
+              incomingDamage = getBossUltimateDamage(newEnemy.attack);
+              useAnimationStore.getState().triggerBossUltimate();
+            }
+          }
+
           if (newPlayer.damageReduction) {
             incomingDamage = Math.max(1, incomingDamage - newPlayer.damageReduction);
           }
 
-          if (newEnemy.intent === 'attack') {
+          if (incomingDamage > 0) {
             const damage = Math.max(0, incomingDamage - newPlayer.block);
             newPlayer.hp = Math.max(0, newPlayer.hp - damage);
 
@@ -253,6 +273,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
           }
 
           newEnemy.attackReduction = 0;
+          // 更新Boss蓄力状态
+          newEnemy = updateBossCharge(newEnemy);
           newEnemy.intent = getNextIntent(newEnemy);
         }
 
@@ -301,6 +323,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           zhanyaoCombo: 0, // 重置斩妖连击
           shieldEcho: 0, // 重置护体回响
           fuchainCount: 0, // 重置符链计数
+          damageDealtThisTurn: 0, // 重置本回合伤害
         };
 
         // 抽5张牌

@@ -196,18 +196,88 @@ function FuchainFlash() {
   );
 }
 
+// Boss打断特效组件
+function BossInterruptFlash() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="animate-boss-interrupt"
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        fontSize: '1.8rem',
+        fontWeight: 'bold',
+        color: '#E5C04D',
+        textShadow: '0 0 20px #C9A227, 0 0 40px rgba(201, 162, 39, 0.8)',
+        pointerEvents: 'none',
+        zIndex: 105,
+        fontFamily: 'Georgia, serif',
+      }}
+    >
+      ⚡ 打断神通
+    </div>
+  );
+}
+
+// Boss大妖神通特效组件
+function BossUltimateFlash() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="animate-boss-ultimate"
+      style={{
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        color: '#C4483E',
+        textShadow: '0 0 20px #8B3029, 0 0 40px rgba(196, 72, 62, 0.8)',
+        pointerEvents: 'none',
+        zIndex: 105,
+        fontFamily: 'Georgia, serif',
+      }}
+    >
+      💀 大妖神通！
+    </div>
+  );
+}
+
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
   const enemyShake = useAnimationStore(state => state.enemyShake);
   const zhanyaoCombo = useAnimationStore(state => state.zhanyaoCombo);
   const shieldEcho = useAnimationStore(state => state.shieldEcho);
   const fuchain = useAnimationStore(state => state.fuchain);
+  const bossInterrupt = useAnimationStore(state => state.bossInterrupt);
+  const bossUltimate = useAnimationStore(state => state.bossUltimate);
   const [displayEnemy, setDisplayEnemy] = useState(enemy);
   const [floatingDamages, setFloatingDamages] = useState<FloatingDamageProps[]>([]);
   const [showBlockFlash, setShowBlockFlash] = useState(false);
   const [showZhanyaoFlash, setShowZhanyaoFlash] = useState(0);
   const [showShieldEchoFlash, setShowShieldEchoFlash] = useState(0);
   const [showFuchainFlash, setShowFuchainFlash] = useState(false);
+  const [showBossInterrupt, setShowBossInterrupt] = useState(false);
+  const [showBossUltimate, setShowBossUltimate] = useState(false);
 
   // 斩妖连击特效触发
   useEffect(() => {
@@ -229,6 +299,20 @@ export function Enemy() {
       setShowFuchainFlash(true);
     }
   }, [fuchain]);
+
+  // Boss打断特效触发
+  useEffect(() => {
+    if (bossInterrupt) {
+      setShowBossInterrupt(true);
+    }
+  }, [bossInterrupt]);
+
+  // Boss大妖神通特效触发
+  useEffect(() => {
+    if (bossUltimate) {
+      setShowBossUltimate(true);
+    }
+  }, [bossUltimate]);
 
   // 当敌人HP变化时显示伤害数字
   useEffect(() => {
@@ -269,6 +353,8 @@ export function Enemy() {
     }
   };
 
+  // Boss蓄力状态的intent
+  const isBossCharging = enemy.type === 'boss' && enemy.isCharging;
   const intentInfo = getIntentIcon(enemy.intent);
   const hpPercent = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
   const sprite = ENEMY_SPRITES[enemy.name] || '👹';
@@ -277,7 +363,11 @@ export function Enemy() {
   return (
     <div
       className={`flex flex-col items-center gap-3 ${enemyShake ? 'animate-enemy-hit' : ''}`}
-      style={{ filter: 'drop-shadow(0 4px 8px rgba(45, 41, 38, 0.2))' }}
+      style={{
+        filter: isBossCharging
+          ? 'drop-shadow(0 4px 8px rgba(45, 41, 38, 0.2)) brightness(0.9)'
+          : 'drop-shadow(0 4px 8px rgba(45, 41, 38, 0.2))',
+      }}
     >
       {/* 精怪名称牌 */}
       <div
@@ -338,6 +428,12 @@ export function Enemy() {
         {/* 符链共鸣特效 */}
         {showFuchainFlash && <FuchainFlash />}
 
+        {/* Boss打断特效 */}
+        {showBossInterrupt && <BossInterruptFlash />}
+
+        {/* Boss大妖神通特效 */}
+        {showBossUltimate && <BossUltimateFlash />}
+
         <div style={{ filter: 'drop-shadow(0 2px 4px rgba(45,41,38,0.3))' }}>
           {sprite}
         </div>
@@ -394,22 +490,35 @@ export function Enemy() {
       <div
         className="flex items-center gap-3 px-5 py-2.5 rounded-xl"
         style={{
-          background: `linear-gradient(135deg, ${intentInfo.bg} 0%, rgba(245, 237, 224, 0.95) 100%)`,
-          border: `2px solid ${intentInfo.color}`,
-          boxShadow: `0 4px 15px rgba(0,0,0,0.1), 0 0 20px ${intentInfo.color}30`,
+          background: isBossCharging
+            ? 'linear-gradient(135deg, rgba(196, 72, 62, 0.3) 0%, rgba(245, 237, 224, 0.95) 100%)'
+            : `linear-gradient(135deg, ${intentInfo.bg} 0%, rgba(245, 237, 224, 0.95) 100%)`,
+          border: `2px solid ${isBossCharging ? '#C4483E' : intentInfo.color}`,
+          boxShadow: `0 4px 15px rgba(0,0,0,0.1), 0 0 20px ${isBossCharging ? 'rgba(196, 72, 62, 0.5)' : intentInfo.color + '30'}`,
+          animation: isBossCharging ? 'bossChargePulse 1s ease-in-out infinite' : 'none',
         }}
       >
-        <span className="text-3xl">{intentInfo.icon}</span>
+        <span className="text-3xl">{isBossCharging ? '⚡' : intentInfo.icon}</span>
         <div className="flex flex-col">
           <span
             className="font-bold text-sm"
-            style={{ color: intentInfo.color, fontFamily: 'Georgia, serif' }}
+            style={{ color: isBossCharging ? '#C4483E' : intentInfo.color, fontFamily: 'Georgia, serif' }}
           >
-            {intentInfo.label}
+            {isBossCharging ? '神通蓄势' : intentInfo.label}
           </span>
-          {enemy.intent === 'attack' && (
+          {enemy.intent === 'attack' && !isBossCharging && (
             <span className="text-xs" style={{ color: '#7A746D' }}>
               伤害: {enemy.attack}
+            </span>
+          )}
+          {isBossCharging && enemy.willUseUltimate && (
+            <span className="text-xs font-bold" style={{ color: '#C4483E' }}>
+              大妖神通！
+            </span>
+          )}
+          {!isBossCharging && enemy.type === 'boss' && enemy.chargeTurnsLeft !== undefined && enemy.chargeTurnsLeft > 0 && (
+            <span className="text-xs" style={{ color: '#7A746D' }}>
+              蓄势: {enemy.chargeTurnsLeft}回合
             </span>
           )}
         </div>

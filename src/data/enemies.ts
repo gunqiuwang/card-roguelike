@@ -14,7 +14,7 @@ export function createEnemy(
   attack: number,
   type: EnemyType = 'normal'
 ): Enemy {
-  return {
+  const baseEnemy = {
     id: `enemy-${Date.now()}-${Math.random()}`,
     name,
     hp,
@@ -23,11 +23,63 @@ export function createEnemy(
     intent: getRandomIntent(),
     type,
   };
+
+  // Boss enemies have charging mechanism
+  if (type === 'boss') {
+    return {
+      ...baseEnemy,
+      isCharging: false,
+      chargeTurnsLeft: 3, // First charge after 3 turns
+      willUseUltimate: false,
+    };
+  }
+
+  return baseEnemy;
 }
 
-export function getNextIntent(_enemy: Enemy): EnemyIntent {
+export function getNextIntent(enemy: Enemy): EnemyIntent {
+  // Boss has special charge cycle
+  if (enemy.type === 'boss') {
+    if (enemy.isCharging) {
+      return 'attack'; // After charging, attack
+    }
+    if (enemy.chargeTurnsLeft !== undefined && enemy.chargeTurnsLeft <= 0) {
+      return 'charge'; // Time to charge
+    }
+  }
   // Simple AI: 70% attack, 30% charge
   return Math.random() < 0.7 ? 'attack' : 'charge';
+}
+
+// Boss 每3回合进行一次蓄力循环
+export function updateBossCharge(enemy: Enemy): Enemy {
+  if (enemy.type !== 'boss') return enemy;
+
+  const newEnemy = { ...enemy };
+
+  // 如果正在蓄力，下一回合释放大招
+  if (newEnemy.isCharging) {
+    newEnemy.isCharging = false;
+    newEnemy.willUseUltimate = true;
+    newEnemy.chargeTurnsLeft = 3; // 重置计数
+    return newEnemy;
+  }
+
+  // 如果蓄力计数已到，进入蓄力
+  if (newEnemy.chargeTurnsLeft !== undefined) {
+    newEnemy.chargeTurnsLeft -= 1;
+    if (newEnemy.chargeTurnsLeft <= 0) {
+      newEnemy.isCharging = true;
+      newEnemy.intent = 'charge';
+    }
+  }
+
+  return newEnemy;
+}
+
+// 计算Boss大招伤害
+export function getBossUltimateDamage(baseAttack: number): number {
+  return baseAttack * 2; // 大招伤害翻倍
 }
 
 export interface EnemyData {

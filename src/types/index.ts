@@ -56,6 +56,8 @@ export interface PlayerState {
   shieldEcho?: number; // 护体回响值，本回合累计护盾值
   // 符术派状态
   fuchainCount?: number; // 符链计数，本回合累计符术牌数（-1表示已触发）
+  // 本回合造成伤害（用于Boss打断检测）
+  damageDealtThisTurn?: number;
 }
 
 export type EnemyIntent = 'attack' | 'charge';
@@ -70,6 +72,10 @@ export interface Enemy {
   intent: EnemyIntent;
   type: EnemyType;
   attackReduction?: number;
+  // Boss蓄力机制
+  isCharging?: boolean; // 是否正在蓄力
+  chargeTurnsLeft?: number; // 蓄力剩余回合
+  willUseUltimate?: boolean; // 下次攻击是否大妖神通
 }
 
 export type GamePhase = 'idle' | 'battle' | 'victory' | 'defeat' | 'reward';
