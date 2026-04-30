@@ -1,8 +1,10 @@
 import { useGameStore } from '../store/gameStore';
+import { useAnimationStore } from '../store/animationStore';
 import { EnemyIntent } from '../types';
 
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
+  const enemyShake = useAnimationStore(state => state.enemyShake);
 
   if (!enemy) return null;
 
@@ -19,7 +21,7 @@ export function Enemy() {
   const hpPercent = (enemy.hp / enemy.maxHp) * 100;
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className={`flex flex-col items-center gap-3 ${enemyShake ? 'animate-shake' : ''}`}>
       {/* Enemy Name */}
       <div className="text-lg font-bold text-white">
         {enemy.name}
@@ -32,6 +34,7 @@ export function Enemy() {
         rounded-2xl border-4 border-gray-600
         flex items-center justify-center
         text-6xl shadow-lg
+        transition-transform duration-200
       ">
         👹
       </div>

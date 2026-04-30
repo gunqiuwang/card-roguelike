@@ -4,16 +4,10 @@ import { Card } from './Card';
 export function Hand() {
   const player = useGameStore(state => state.player);
   const isPlayerTurn = useGameStore(state => state.isPlayerTurn);
-  const dispatch = useGameStore(state => state.dispatch);
   const phase = useGameStore(state => state.phase);
 
   const canPlayCard = (cardCost: number) => {
     return isPlayerTurn && phase === 'battle' && player.energy >= cardCost;
-  };
-
-  const handlePlayCard = (cardIndex: number) => {
-    const card = player.hand[cardIndex];
-    dispatch({ type: 'PLAY_CARD', payload: { card, cardIndex } });
   };
 
   if (phase !== 'battle') return null;
@@ -34,10 +28,10 @@ export function Hand() {
       {/* Cards - Scrollable on small screens */}
       <div className="flex justify-start sm:justify-center gap-3 px-4 overflow-x-auto pb-2 snap-x snap-mandatory">
         {player.hand.map((card, index) => (
-          <div key={card.id} className="snap-center shrink-0">
+          <div key={card.id} className="snap-center shrink-0 card-draw-animation">
             <Card
               card={card}
-              onPlay={() => handlePlayCard(index)}
+              index={index}
               canPlay={canPlayCard(card.cost)}
             />
           </div>

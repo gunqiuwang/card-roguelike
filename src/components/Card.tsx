@@ -1,12 +1,31 @@
+import { useGameStore } from '../store/gameStore';
+import { useAnimationStore } from '../store/animationStore';
 import { Card as CardType } from '../types';
 
 interface CardProps {
   card: CardType;
-  onPlay: () => void;
+  index: number;
   canPlay: boolean;
 }
 
-export function Card({ card, onPlay, canPlay }: CardProps) {
+export function Card({ card, index, canPlay }: CardProps) {
+  const cardPlayIndex = useAnimationStore(state => state.cardPlayIndex);
+  const triggerCardPlay = useAnimationStore(state => state.triggerCardPlay);
+  const dispatch = useGameStore(state => state.dispatch);
+  const player = useGameStore(state => state.player);
+  const isPlayerTurn = useGameStore(state => state.isPlayerTurn);
+  const phase = useGameStore(state => state.phase);
+
+  const canPlayCard = isPlayerTurn && phase === 'battle' && player.energy >= card.cost;
+
+  const handlePlay = () => {
+    if (!canPlayCard) return;
+    triggerCardPlay(index);
+    setTimeout(() => {
+      dispatch({ type: 'PLAY_CARD', payload: { card, cardIndex: index } });
+    }, 200);
+  };
+
   const typeColors = {
     attack: 'from-red-600 to-red-800 border-red-700',
     defense: 'from-blue-600 to-blue-800 border-blue-700',
@@ -19,9 +38,11 @@ export function Card({ card, onPlay, canPlay }: CardProps) {
     heal: '💚',
   };
 
+  const isPlaying = cardPlayIndex === index;
+
   return (
     <button
-      onClick={onPlay}
+      onClick={handlePlay}
       disabled={!canPlay}
       className={`
         relative min-w-[120px] min-h-[160px] sm:min-w-[128px] sm:min-h-[176px]
@@ -31,7 +52,8 @@ export function Card({ card, onPlay, canPlay }: CardProps) {
         flex flex-col items-center justify-between p-2
         transition-all duration-200
         select-none
-        ${canPlay
+        ${isPlaying ? 'card-play-animation' : ''}
+        ${canPlayCard
           ? 'cursor-pointer active:scale-95 active:shadow-xl'
           : 'opacity-60 cursor-not-allowed'
         }
