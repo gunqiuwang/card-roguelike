@@ -304,11 +304,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
               // 打断成功
               useAnimationStore.getState().triggerBossInterrupt();
               newEnemy.isCharging = false;
+              newEnemy.willUseUltimate = false; // 清除大招标记
               incomingDamage = 0; // 大招被取消
             } else {
               // 未打断，释放大妖神通
               incomingDamage = getBossUltimateDamage(newEnemy.attack);
               useAnimationStore.getState().triggerBossUltimate();
+              newEnemy.willUseUltimate = false; // 大招已释放，清除标记
             }
           }
 
