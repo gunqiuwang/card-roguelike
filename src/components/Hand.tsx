@@ -102,7 +102,7 @@ export function Hand() {
         )}
 
         {/* 御灵护体回响提示 */}
-        {player.shieldEcho && player.shieldEcho > 0 && (
+        {player.shieldEcho !== undefined && player.shieldEcho > 0 && (
           <div
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
             style={{
@@ -119,6 +119,35 @@ export function Hand() {
             {player.shieldEcho >= 12 && (
               <span style={{ color: '#E5C04D', fontWeight: 600 }}>▶</span>
             )}
+          </div>
+        )}
+
+        {/* 符术符链提示 */}
+        {player.fuchainCount !== undefined && player.fuchainCount >= 0 && player.fuchainCount < 3 && (
+          <div
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
+            style={{
+              background: 'rgba(74, 90, 45, 0.25)',
+              border: '1px solid #4A5C2D',
+            }}
+          >
+            <span>☯️</span>
+            <span style={{ color: '#4A5C2D', fontWeight: 600 }}>符链</span>
+            <span style={{ color: '#4A5C2D' }}>{player.fuchainCount}/3</span>
+          </div>
+        )}
+
+        {/* 符链共鸣提示（已触发） */}
+        {player.fuchainCount === -1 && (
+          <div
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs animate-fuchain-glow"
+            style={{
+              background: 'rgba(74, 90, 45, 0.4)',
+              border: '1px solid #4A5C2D',
+            }}
+          >
+            <span>✨</span>
+            <span style={{ color: '#E5C04D', fontWeight: 600 }}>共鸣</span>
           </div>
         )}
       </div>

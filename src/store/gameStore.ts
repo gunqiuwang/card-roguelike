@@ -189,6 +189,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
             break;
         }
 
+        // 符术派符链机制：累计符术牌，触发共鸣
+        if (card.school === '符术') {
+          const currentCount = newPlayer.fuchainCount ?? 0;
+          if (currentCount >= 0) {
+            newPlayer.fuchainCount = currentCount + 1;
+            if (newPlayer.fuchainCount >= 3) {
+              // 触发符链共鸣
+              newPlayer = drawCards(newPlayer, 1);
+              newPlayer.energy += 1;
+              newPlayer.fuchainCount = -1; // 防止重复触发
+              // 触发动画
+              useAnimationStore.getState().triggerFuchain();
+            }
+          }
+        }
+
         // 检查胜利
         if (newEnemy && newEnemy.hp <= 0) {
           set({
@@ -284,6 +300,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           pendingCostReduction: 0,
           zhanyaoCombo: 0, // 重置斩妖连击
           shieldEcho: 0, // 重置护体回响
+          fuchainCount: 0, // 重置符链计数
         };
 
         // 抽5张牌

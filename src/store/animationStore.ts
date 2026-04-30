@@ -6,6 +6,7 @@ interface AnimationState {
   cardPlayIndex: number | null;
   zhanyaoCombo: number; // 斩妖连击数，触发特效用
   shieldEcho: number; // 护体回响反击伤害值
+  fuchain: boolean; // 符链共鸣触发
 }
 
 interface AnimationStore extends AnimationState {
@@ -15,6 +16,7 @@ interface AnimationStore extends AnimationState {
   clearCardPlay: () => void;
   triggerZhanyaoCombo: (combo: number) => void;
   triggerShieldEcho: (damage: number) => void;
+  triggerFuchain: () => void;
 }
 
 export const useAnimationStore = create<AnimationStore>((set) => ({
@@ -23,6 +25,7 @@ export const useAnimationStore = create<AnimationStore>((set) => ({
   cardPlayIndex: null,
   zhanyaoCombo: 0,
   shieldEcho: 0,
+  fuchain: false,
 
   triggerEnemyShake: () => {
     set({ enemyShake: true });
@@ -51,5 +54,10 @@ export const useAnimationStore = create<AnimationStore>((set) => ({
   triggerShieldEcho: (damage: number) => {
     set({ shieldEcho: damage });
     setTimeout(() => set({ shieldEcho: 0 }), 800);
+  },
+
+  triggerFuchain: () => {
+    set({ fuchain: true });
+    setTimeout(() => set({ fuchain: false }), 600);
   },
 }));

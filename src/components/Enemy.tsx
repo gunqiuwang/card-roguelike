@@ -163,16 +163,51 @@ function ShieldEchoFlash({ damage }: { damage: number }) {
   );
 }
 
+// 符链共鸣特效组件
+function FuchainFlash() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="animate-fuchain-pop"
+      style={{
+        position: 'absolute',
+        top: '5%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        color: '#E5C04D',
+        textShadow: '0 0 15px #4A5C2D, 0 0 30px rgba(74, 90, 45, 0.8)',
+        pointerEvents: 'none',
+        zIndex: 104,
+        fontFamily: 'Georgia, serif',
+      }}
+    >
+      ✨ 符链共鸣：抽1 + 灵气1
+    </div>
+  );
+}
+
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
   const enemyShake = useAnimationStore(state => state.enemyShake);
   const zhanyaoCombo = useAnimationStore(state => state.zhanyaoCombo);
   const shieldEcho = useAnimationStore(state => state.shieldEcho);
+  const fuchain = useAnimationStore(state => state.fuchain);
   const [displayEnemy, setDisplayEnemy] = useState(enemy);
   const [floatingDamages, setFloatingDamages] = useState<FloatingDamageProps[]>([]);
   const [showBlockFlash, setShowBlockFlash] = useState(false);
   const [showZhanyaoFlash, setShowZhanyaoFlash] = useState(0);
   const [showShieldEchoFlash, setShowShieldEchoFlash] = useState(0);
+  const [showFuchainFlash, setShowFuchainFlash] = useState(false);
 
   // 斩妖连击特效触发
   useEffect(() => {
@@ -187,6 +222,13 @@ export function Enemy() {
       setShowShieldEchoFlash(shieldEcho);
     }
   }, [shieldEcho]);
+
+  // 符链共鸣特效触发
+  useEffect(() => {
+    if (fuchain) {
+      setShowFuchainFlash(true);
+    }
+  }, [fuchain]);
 
   // 当敌人HP变化时显示伤害数字
   useEffect(() => {
@@ -292,6 +334,9 @@ export function Enemy() {
 
         {/* 御灵护体回响反击特效 */}
         {showShieldEchoFlash > 0 && <ShieldEchoFlash damage={showShieldEchoFlash} />}
+
+        {/* 符链共鸣特效 */}
+        {showFuchainFlash && <FuchainFlash />}
 
         <div style={{ filter: 'drop-shadow(0 2px 4px rgba(45,41,38,0.3))' }}>
           {sprite}
