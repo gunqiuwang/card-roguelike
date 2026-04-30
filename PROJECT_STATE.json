@@ -1,13 +1,39 @@
 # Project State
 
 ## Next Iteration
-16
+17
 
 ## Current Phase
-Phase 5: Polish & Optimization (已完成)
+Phase 5: Polish & Optimization - Iteration 16 completed
 
 ## Last Updated
 2026-04-30
 
 ## Summary
-Core game complete with 15 iterations. Ready for extended testing.
+Core game complete with 16 iterations. Latest: 斩妖派爆发爽点强化 (斩击狂热机制)
+
+## Completed Features (Iteration 16)
+- **斩妖派爆发爽点 - 斩击狂热**
+  - 连续出斩妖攻击牌，伤害每层+3
+  - combo ≥ 2 时触发斩妖特效动画
+  - 手牌区状态条显示当前层数和累计伤害加成
+
+## Current Mechanics
+| 派系 | 核心机制 |
+|------|----------|
+| 斩妖派 | 斩击狂热：comboCount × 3 伤害加成 |
+| 御灵派 | 防守反击：护盾+反击伤害+生命偷取 |
+| 符术派 | 抽牌连击：降费+连锁抽牌+回灵气 |
+
+## Build Status
+- JS: 192.92 KB
+- CSS: 32.65 KB
+- Tests: PASS
+- Typecheck: PASS
+- Lint: PASS
+
+## Next Priority
+1. 斩妖派终结技 (combo≥4 解锁额外效果)
+2. 御灵派防守反击爽点强化
+3. 精英/Boss 战节奏优化
+4. MiniMax 生图功能集成
