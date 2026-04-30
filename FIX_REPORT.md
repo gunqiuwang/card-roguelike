@@ -1,22 +1,31 @@
-# FIX_REPORT.md - Bug Bash Round 2
+# FIX_REPORT.md - Bug Bash Round 3
 
 ## 修复日期
 2026-05-01
 
 ## 修复的问题
 
-### 1. Boss `willUseUltimate` 标志未重置 [优先级: 中]
-- **问题**: updateBossCharge 设置 `willUseUltimate = true` 后，在 END_TURN 触发大招但未清除标志
-- **影响**: 多次蓄力循环后标志累积，可能导致UI显示异常
-- **文件**: src/store/gameStore.ts (END_TURN case 中的 Boss 蓄力检测)
-- **修复**: 在触发 bossInterrupt 或 bossUltimate 后，清除 willUseUltimate 标志
+### 1. SELECT_REWARD 后立即进入战斗 [优先级: 低]
+- **问题**: SELECT_REWARD 后立即进入战斗，胜利动画被跳过
+- **文件**: src/store/gameStore.ts (SELECT_REWARD case)
+- **修复**: 添加 100ms setTimeout 延迟，让胜利动画有机会显示
 
 ## 验证结果
 - npm run test: ✅ PASS
 - npm run typecheck: ✅ PASS
 - npm run lint: ✅ PASS
-- npm run build: ✅ PASS (200.62 KB JS, 34.55 KB CSS)
-- npm run simulate: ✅ PASS (斩符 造成伤害，enemyHp: 32)
+- npm run build: ✅ PASS (200.64 KB JS, 34.55 KB CSS)
+- npm run simulate: ✅ PASS
 
-## 遗留问题
-- 奖励选卡后直接进入战斗无延迟（优先级低，暂未修复）
+## Bug Bash 总结
+
+### Round 1 修复
+- 存档读取功能未实现 → 添加 LOAD_GAME action
+- 门派信息不传递 → GameState 添加 preferredSchool
+- Simulation 占位符 → 实现真实游戏逻辑测试
+
+### Round 2 修复
+- Boss willUseUltimate 未重置 → END_TURN 中清除标志
+
+### Round 3 修复
+- SELECT_REWARD 无延迟 → 添加 100ms setTimeout

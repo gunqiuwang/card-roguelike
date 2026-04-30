@@ -399,14 +399,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const newPlayer = createInitialPlayerState();
         newPlayer.deck = newDeck;
 
-        set({
-          player: newPlayer,
-          enemy: newEnemy,
-          phase: 'battle',
-          isPlayerTurn: true,
-          turn: 1,
-          rewardOptions: [],
-        });
+        // Delay for victory animation before entering next battle
+        setTimeout(() => {
+          set({
+            player: newPlayer,
+            enemy: newEnemy,
+            phase: 'battle',
+            isPlayerTurn: true,
+            turn: 1,
+            rewardOptions: [],
+          });
+        }, 100);
         break;
       }
 

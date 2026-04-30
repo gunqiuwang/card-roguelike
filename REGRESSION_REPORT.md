@@ -1,4 +1,4 @@
-# REGRESSION_REPORT.md - Bug Bash Round 1
+# REGRESSION_REPORT.md - Bug Bash Round 3
 
 ## 审查日期
 2026-05-01
@@ -9,20 +9,18 @@
 - ✅ npm run test: 2 passed
 - ✅ npm run typecheck: no errors
 - ✅ npm run lint: no errors
-- ✅ npm run build: 200.57 KB JS, 34.55 KB CSS
+- ✅ npm run build: 200.64 KB JS, 34.55 KB CSS
+- ✅ npm run simulate: no errors
 
-### Simulation 验证
-- ✅ Simulation runs actual game logic
-- ✅ No errors reported
-- ✅ Card played successfully (斩符)
-- ✅ Enemy HP responds to damage
+## Bug Bash 总结
 
-## 修复确认
-| 问题 | 状态 |
-|------|------|
-| 存档读取功能未实现 | ✅ 已修复 |
-| 门派信息不传递 | ✅ 已修复 |
-| Simulation 占位符 | ✅ 已修复 |
+| Round | 修复内容 | 状态 |
+|-------|----------|------|
+| Round 1 | 存档读取功能 | ✅ |
+| Round 1 | 门派信息传递 | ✅ |
+| Round 1 | Simulation Runner | ✅ |
+| Round 2 | Boss willUseUltimate 重置 | ✅ |
+| Round 3 | SELECT_REWARD 延迟 | ✅ |
 
 ## 结论
-**Round 1 通过** - 无回归问题
+**Bug Bash 完成** - 所有测试通过，无回归问题
