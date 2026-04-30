@@ -6,6 +6,7 @@ import { RewardSelection } from './RewardSelection';
 import { BattleArea } from './BattleArea';
 import { SaveIndicator } from './SaveIndicator';
 import { SoundToggle } from './SoundToggle';
+import { StatsDisplay } from './StatsDisplay';
 
 export function Game() {
   return (
@@ -22,6 +23,7 @@ export function Game() {
       <SoundToggle />
       <Enemy />
       <SaveIndicator />
+      <StatsDisplay />
       <Hand />
       <PlayerStats />
       <GameOver />
