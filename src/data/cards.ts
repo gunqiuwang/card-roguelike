@@ -3,10 +3,10 @@ import { Card } from '../types';
 export type CardRarity = 'starter' | 'common' | 'rare';
 
 export const STARTER_DECK: Card[] = [
-  { id: 'strike-1', name: '打击', type: 'attack', cost: 1, description: '造成6点伤害', value: 6, rarity: 'starter' },
-  { id: 'strike-2', name: '打击', type: 'attack', cost: 1, description: '造成6点伤害', value: 6, rarity: 'starter' },
-  { id: 'strike-3', name: '打击', type: 'attack', cost: 1, description: '造成6点伤害', value: 6, rarity: 'starter' },
-  { id: 'strike-4', name: '打击', type: 'attack', cost: 1, description: '造成6点伤害', value: 6, rarity: 'starter' },
+  { id: 'strike-1', name: '打击', type: 'attack', cost: 1, description: '造成8点伤害', value: 8, rarity: 'starter' },
+  { id: 'strike-2', name: '打击', type: 'attack', cost: 1, description: '造成8点伤害', value: 8, rarity: 'starter' },
+  { id: 'strike-3', name: '打击', type: 'attack', cost: 1, description: '造成8点伤害', value: 8, rarity: 'starter' },
+  { id: 'strike-4', name: '打击', type: 'attack', cost: 1, description: '造成8点伤害', value: 8, rarity: 'starter' },
   { id: 'defend-1', name: '格挡', type: 'defense', cost: 1, description: '获得5点格挡', value: 5, rarity: 'starter' },
   { id: 'defend-2', name: '格挡', type: 'defense', cost: 1, description: '获得5点格挡', value: 5, rarity: 'starter' },
   { id: 'defend-3', name: '格挡', type: 'defense', cost: 1, description: '获得5点格挡', value: 5, rarity: 'starter' },
