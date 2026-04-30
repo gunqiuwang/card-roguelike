@@ -1,56 +1,35 @@
 # Project State
 
 ## Next Iteration
-21
+RC-1 (Release Candidate 1)
 
 ## Current Phase
-Phase 5: Polish & Optimization - Iteration 20 completed
+RC Testing - Phase 6: Release Candidate Verification
 
 ## Last Updated
 2026-04-30
 
 ## Summary
-Core game complete with 20 iterations. Latest: 战斗节奏优化与平衡调整
+Game ready for RC testing. Core mechanics complete, balance adjusted, mobile optimized.
 
-## Balance Adjustments (Iteration 20)
-- **Boss蓄力周期**: 3回合 → 2回合
-- **御灵护体回响门槛**: 12 → 10
-- **御灵护体反击伤害**: 50% → 60%
-- **符术共鸣灵气**: +1 → +2
+## RC Status
+- **QA Status**: ✅ PASS
+- **Mobile Status**: ✅ PASS
+- **Player Experience**: ⚠️ NEEDS REAL PLAYER TESTING
 
-## Completed Features (Iteration 19)
-- **Boss蓄力阶段机制**
-  - Boss每2回合进入蓄力状态
-  - 蓄力后释放"大妖神通"（伤害×2）
-  - 玩家单回合≥25伤害可打断
+## Balance Adjustments
+- Boss蓄力周期: 3回合 → 2回合
+- 御灵护体回响门槛: 12 → 10
+- 御灵护体反击伤害: 50% → 60%
+- 符术共鸣灵气: +1 → +2
 
-## Completed Features (Iteration 18)
-- **符术派符链共鸣**
-  - 累计出 3 张符术牌，触发共鸣
-  - 效果：抽 1 张牌，获得 2 点灵气
-
-## Completed Features (Iteration 17)
-- **御灵派护体回响**
-  - 累计护盾值 ≥ 10 时，回合结束触发反击
-  - 反击伤害 = 护盾值 × 60%
-
-## Completed Features (Iteration 16)
-- **斩妖派爆发爽点 - 斩击狂热**
-  - 连续出斩妖攻击牌，伤害每层+3
-  - combo ≥ 2 时触发斩妖特效动画
-
-## Current Mechanics - 三派 + Boss战
+## Current Mechanics
 | 派系 | 核心机制 | 触发条件 | 效果 |
 |------|----------|----------|------|
 | 斩妖派 | 斩击狂热 | 连续出斩妖攻击牌 | 伤害 +3N |
 | 御灵派 | 护体回响 | 护盾累计 ≥ 10 | 反击 60% |
 | 符术派 | 符链共鸣 | 出 3 张符术牌 | 抽1+灵气2 |
 | Boss | 蓄力神通 | 每2回合蓄力 | 大招伤害×2，可打断 |
-
-## Boss战设计
-- 蓄力周期：2回合蓄力 → 1回合蓄势 → 释放大妖神通
-- 打断条件：单回合 ≥ 25 伤害
-- 大招伤害：普通攻击 × 2
 
 ## Build Status
 - JS: 198.71 KB
@@ -59,7 +38,16 @@ Core game complete with 20 iterations. Latest: 战斗节奏优化与平衡调整
 - Typecheck: PASS
 - Lint: PASS
 
-## Next Priority
-1. 精英敌人类型（需多次攻击）
-2. 长线内容开发（新卡牌、新敌人）
-3. 存档/进度系统完善
+## QA Reports
+- RC_QA_REPORT.md: Core functionality verified
+- MOBILE_QA_REPORT.md: Mobile adaptation verified
+- PLAYER_EXPERIENCE_REPORT.md: Balance analysis complete
+
+## Known Limitations
+1. No persistent save (refresh resets game)
+2.数值balance需真人测试验证
+
+## Next Steps
+1. 内测：让玩家测试并收集反馈
+2. 根据反馈调整数值
+3. 添加存档系统（可选）
