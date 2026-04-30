@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Card, Enemy, GameState, GameAction, PlayerState } from '../types';
 import { STARTER_DECK, REWARD_CARDS } from '../data/cards';
 import { getNextIntent, getRandomEnemyByDifficulty } from '../data/enemies';
+import { useAnimationStore } from './animationStore';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   const shuffled = [...array];
@@ -117,6 +118,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
           case 'attack':
             if (newEnemy) {
               let damage = card.value;
+
+              // 斩妖派斩击狂热：连续出斩妖攻击牌，伤害递增
+              if (card.comboBonus && card.school === '斩妖') {
+                const comboCount = newPlayer.zhanyaoCombo || 0;
+                const bonusDamage = comboCount * 3; // 每连击+3伤害
+                damage += bonusDamage;
+                // 触发斩妖狂热特效
+                useAnimationStore.getState().triggerZhanyaoCombo(comboCount + 1);
+              }
+              // 更新斩妖连击计数
+              if (card.comboBonus) {
+                newPlayer.zhanyaoCombo = (newPlayer.zhanyaoCombo || 0) + 1;
+              }
+
               if (card.multiHit) {
                 damage = card.value * card.multiHit;
               }
@@ -129,6 +144,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 damage -= blockedDamage;
               }
               newEnemy.hp = Math.max(0, newEnemy.hp - damage);
+
+              // 触发敌人受击动画
+              useAnimationStore.getState().triggerEnemyShake();
 
               if (card.debuffDamage) {
                 newEnemy.attackReduction = (newEnemy.attackReduction || 0) + card.debuffDamage;
@@ -250,6 +268,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           lifesteal: 0,
           cardsPlayedThisTurn: 0,
           pendingCostReduction: 0,
+          zhanyaoCombo: 0, // 重置斩妖连击
         };
 
         // 抽5张牌

@@ -412,3 +412,34 @@ button {
 .animate-chain-trail {
   animation: chainTrail 0.4s ease-out forwards;
 }
+
+/* 斩妖狂热动画 - 斩击爆发特效 */
+@keyframes zhanyaoRage {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px rgba(139, 48, 41, 0.5));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(139, 48, 41, 0.9));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(139, 48, 41, 0.6));
+  }
+}
+
+.animate-zhanyao-rage {
+  animation: zhanyaoRage 0.5s ease-out;
+}
+
+/* 斩击特效 - 屏幕边缘火光 */
+@keyframes slashFlash {
+  0% { opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.animate-slash-flash {
+  animation: slashFlash 0.3s ease-out;
+}

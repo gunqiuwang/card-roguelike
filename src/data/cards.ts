@@ -88,6 +88,7 @@ export const STARTER_DECK: Card[] = [
 ];
 
 // 斩妖派卡牌 - 高攻击，低消耗
+// 核心机制: 斩击狂热 - 连续出斩妖攻击牌，伤害递增
 export const ZHANYAO_CARDS: Card[] = [
   {
     id: 'juemen-zhang',
@@ -98,6 +99,7 @@ export const ZHANYAO_CARDS: Card[] = [
     value: 12,
     rarity: 'common',
     school: '斩妖',
+    comboBonus: true, // 斩击狂热加成
   },
   {
     id: 'lei-zhang',
@@ -108,6 +110,7 @@ export const ZHANYAO_CARDS: Card[] = [
     value: 12,
     rarity: 'common',
     school: '斩妖',
+    comboBonus: true,
   },
   {
     id: 'po-tian-zhang',
@@ -118,6 +121,7 @@ export const ZHANYAO_CARDS: Card[] = [
     value: 18,
     rarity: 'rare',
     school: '斩妖',
+    comboBonus: true,
   },
   {
     id: 'shuangjian',
@@ -129,6 +133,7 @@ export const ZHANYAO_CARDS: Card[] = [
     rarity: 'rare',
     school: '斩妖',
     multiHit: 2,
+    comboBonus: true,
   },
   {
     id: 'xulian-zhang',
@@ -140,6 +145,7 @@ export const ZHANYAO_CARDS: Card[] = [
     rarity: 'common',
     school: '斩妖',
     ignoreBlock: true,
+    comboBonus: true,
   },
 ];
 

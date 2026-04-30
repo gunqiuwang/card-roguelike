@@ -44,9 +44,10 @@ export function Card({ card, index, canPlay, isHovered }: CardProps) {
   const handlePlay = useCallback(() => {
     if (!canPlay) return;
     triggerCardPlay(index);
+    // 延迟dispatch，让动画先播放
     setTimeout(() => {
       dispatch({ type: 'PLAY_CARD', payload: { card, cardIndex: index } });
-    }, 200);
+    }, 280);
   }, [canPlay, card, index, dispatch, triggerCardPlay]);
 
   const schoolStyle = SCHOOL_COLORS[card.school] || SCHOOL_COLORS['斩妖'];

@@ -52,7 +52,7 @@ function FloatingDamage({ value, type }: FloatingDamageProps) {
         fontSize: '2rem',
         fontWeight: 'bold',
         color: type === 'damage' ? '#C4483E' : '#4A7C9B',
-        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+        textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(196, 72, 62, 0.5)',
         pointerEvents: 'none',
         zIndex: 100,
       }}
@@ -62,11 +62,89 @@ function FloatingDamage({ value, type }: FloatingDamageProps) {
   );
 }
 
+// 护盾阻挡提示组件
+function BlockFlash() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="animate-block-flash"
+      style={{
+        position: 'absolute',
+        top: '20%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        color: '#5C8A4A',
+        textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+        pointerEvents: 'none',
+        zIndex: 101,
+      }}
+    >
+      🛡️ 挡住
+    </div>
+  );
+}
+
+// 斩妖连击特效组件
+function ZhanyaoComboFlash({ combo }: { combo: number }) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible || combo < 2) return null;
+
+  const intensity = Math.min(combo - 1, 5); // 最高5级特效
+  const colors = ['#8B3029', '#A83229', '#C4483E', '#D66B5A', '#E08868'];
+
+  return (
+    <div
+      className="animate-zhanyao-rage"
+      style={{
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: `${1.2 + intensity * 0.15}rem`,
+        fontWeight: 'bold',
+        color: colors[intensity - 1] || colors[4],
+        textShadow: `0 0 ${10 + intensity * 5}px ${colors[intensity - 1] || colors[4]}80`,
+        pointerEvents: 'none',
+        zIndex: 102,
+        fontFamily: 'Georgia, serif',
+      }}
+    >
+      ⚔️ 斩 {combo}
+    </div>
+  );
+}
+
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
   const enemyShake = useAnimationStore(state => state.enemyShake);
+  const zhanyaoCombo = useAnimationStore(state => state.zhanyaoCombo);
   const [displayEnemy, setDisplayEnemy] = useState(enemy);
   const [floatingDamages, setFloatingDamages] = useState<FloatingDamageProps[]>([]);
+  const [showBlockFlash, setShowBlockFlash] = useState(false);
+  const [showZhanyaoFlash, setShowZhanyaoFlash] = useState(0);
+
+  // 斩妖连击特效触发
+  useEffect(() => {
+    if (zhanyaoCombo > 0) {
+      setShowZhanyaoFlash(zhanyaoCombo);
+    }
+  }, [zhanyaoCombo]);
 
   // 当敌人HP变化时显示伤害数字
   useEffect(() => {
@@ -77,6 +155,20 @@ export function Enemy() {
         setTimeout(() => {
           setFloatingDamages(prev => prev.slice(1));
         }, 800);
+      }
+    }
+    setDisplayEnemy(enemy);
+  }, [enemy?.hp]);
+
+  // 监听敌人被阻挡（通过displayEnemy.block变化）
+  useEffect(() => {
+    if (displayEnemy && enemy && enemy.hp < displayEnemy.hp) {
+      // 有伤害但敌人血量没怎么掉，说明被挡住了
+      const damage = displayEnemy.hp - enemy.hp;
+      if (damage > 0 && enemy.hp >= displayEnemy.hp - 5) {
+        // 说明有格挡
+        setShowBlockFlash(true);
+        setTimeout(() => setShowBlockFlash(false), 600);
       }
     }
     setDisplayEnemy(enemy);
@@ -149,6 +241,12 @@ export function Enemy() {
         {floatingDamages.map(d => (
           <FloatingDamage key={d.key} value={d.value} type={d.type} />
         ))}
+
+        {/* 护盾阻挡提示 */}
+        {showBlockFlash && <BlockFlash />}
+
+        {/* 斩妖连击特效 */}
+        {showZhanyaoFlash >= 2 && <ZhanyaoComboFlash combo={showZhanyaoFlash} />}
 
         <div style={{ filter: 'drop-shadow(0 2px 4px rgba(45,41,38,0.3))' }}>
           {sprite}

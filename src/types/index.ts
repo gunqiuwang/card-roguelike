@@ -27,6 +27,9 @@ export interface Card {
   gainEnergy?: number; // 获得灵气
   reduceCost?: number; // 本回合下一张牌费用减少
   chainDraw?: number; // 本回合每出一张牌则抽牌
+
+  // 斩妖派机制
+  comboBonus?: boolean; // 斩击狂热加成，连续出斩妖攻击牌时伤害递增
 }
 
 export interface PlayerState {
@@ -47,6 +50,8 @@ export interface PlayerState {
   pendingEnergyGain?: number; // 下回合开始时获得灵气
   pendingCostReduction?: number; // 本回合下一张牌费用减少
   cardsPlayedThisTurn?: number; // 本回合已出牌数
+  // 斩妖派状态
+  zhanyaoCombo?: number; // 斩妖连击计数，连续出斩妖攻击牌时递增
 }
 
 export type EnemyIntent = 'attack' | 'charge';

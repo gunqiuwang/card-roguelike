@@ -44,6 +44,14 @@ export function Game() {
           background: 'radial-gradient(ellipse at center, rgba(196, 72, 62, 0.05) 0%, transparent 60%)',
         }}
       >
+        {/* 敌人光圈 */}
+        <div
+          className="absolute w-48 h-48 rounded-full animate-pulse-once"
+          style={{
+            background: 'radial-gradient(circle, rgba(201, 162, 39, 0.15) 0%, transparent 70%)',
+            transform: 'translateY(20px)',
+          }}
+        />
         <Enemy />
       </div>
 

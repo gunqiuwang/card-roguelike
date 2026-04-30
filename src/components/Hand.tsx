@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useAnimationStore } from '../store/animationStore';
 import { Card } from './Card';
 
 export function Hand() {
@@ -8,6 +9,8 @@ export function Hand() {
   const phase = useGameStore(state => state.phase);
   const pendingCostReduction = useGameStore(state => state.player.pendingCostReduction);
   const cardsPlayedThisTurn = useGameStore(state => state.player.cardsPlayedThisTurn);
+  const zhanyaoCombo = useGameStore(state => state.player.zhanyaoCombo);
+  const comboLevel = useAnimationStore(state => state.zhanyaoCombo);
 
   const canPlayCard = (cardCost: number) => {
     return isPlayerTurn && phase === 'battle' && player.energy >= cardCost;
@@ -78,6 +81,23 @@ export function Hand() {
           >
             <span>🔥</span>
             <span style={{ color: '#4A5C2D', fontWeight: 600 }}>x{cardsPlayedThisTurn}</span>
+          </div>
+        )}
+
+        {/* 斩妖连击提示 */}
+        {zhanyaoCombo && zhanyaoCombo > 0 && (
+          <div
+            className={comboLevel > 0 ? 'animate-zhanyao-rage' : ''}
+            style={{
+              background: 'rgba(139, 48, 41, 0.3)',
+              border: '1px solid #8B3029',
+            }}
+          >
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs">
+              <span>⚔️</span>
+              <span style={{ color: '#8B3029', fontWeight: 600 }}>斩+{zhanyaoCombo}</span>
+              <span style={{ color: '#8B3029' }}>+{(zhanyaoCombo - 1) * 3}伤</span>
+            </div>
           </div>
         )}
       </div>
