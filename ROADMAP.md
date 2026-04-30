@@ -11,4 +11,11 @@
 - [x] Iteration 6: 视觉反馈优化
 
 ## Phase 3: 游戏内容扩展 (Iteration 7-9)
-- [ ] Iteration 7: 新增卡牌类型（攻击、防御
+- [x] Iteration 7: 新增卡牌类型
+- [x] Iteration 8: 敌人变体与难度
+- [x] Iteration 9: 卡牌奖励UI
+
+## Phase 4: 游戏系统扩展 (Iteration 10-12)
+- [ ] Iteration 10: 战斗状态持久化
+- [ ] Iteration 11: 音效与震动反馈
+- [ ] Iteration 12: 成就系统基础

@@ -4,9 +4,9 @@ import { PlayerStats } from './PlayerStats';
 import { GameOver } from './GameOver';
 import { RewardSelection } from './RewardSelection';
 import { BattleArea } from './BattleArea';
+import { SaveIndicator } from './SaveIndicator';
 
 export function Game() {
-
   return (
     <div className="
       min-h-screen
@@ -19,6 +19,7 @@ export function Game() {
     ">
       <BattleArea />
       <Enemy />
+      <SaveIndicator />
       <Hand />
       <PlayerStats />
       <GameOver />
