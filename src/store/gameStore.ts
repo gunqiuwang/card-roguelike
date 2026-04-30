@@ -67,9 +67,9 @@ interface GameStore extends GameState {
 export const useGameStore = create<GameStore>((set, get) => ({
   player: createInitialPlayerState(),
   enemy: getRandomEnemy(),
-  phase: 'battle',
-  isPlayerTurn: true,
-  turn: 1,
+  phase: 'idle',
+  isPlayerTurn: false,
+  turn: 0,
   rewardOptions: [],
 
   dispatch: (action: GameAction) => {

@@ -40,7 +40,7 @@ export interface Enemy {
   type: EnemyType;
 }
 
-export type GamePhase = 'battle' | 'victory' | 'defeat' | 'reward';
+export type GamePhase = 'idle' | 'battle' | 'victory' | 'defeat' | 'reward';
 
 export interface GameState {
   player: PlayerState;
