@@ -5,6 +5,7 @@ import { GameOver } from './GameOver';
 import { RewardSelection } from './RewardSelection';
 import { BattleArea } from './BattleArea';
 import { SaveIndicator } from './SaveIndicator';
+import { SoundToggle } from './SoundToggle';
 
 export function Game() {
   return (
@@ -18,6 +19,7 @@ export function Game() {
       px-4
     ">
       <BattleArea />
+      <SoundToggle />
       <Enemy />
       <SaveIndicator />
       <Hand />
