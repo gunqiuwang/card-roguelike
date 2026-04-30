@@ -1,17 +1,86 @@
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useAnimationStore } from '../store/animationStore';
 import { EnemyIntent } from '../types';
 
-// 精怪边框颜色
 const ENEMY_BORDER_COLORS: Record<string, { border: string; glow: string }> = {
   normal: { border: '#8B7355', glow: 'rgba(139, 115, 85, 0.3)' },
   elite: { border: '#C9A227', glow: 'rgba(201, 162, 39, 0.5)' },
   boss: { border: '#C4483E', glow: 'rgba(196, 72, 62, 0.5)' },
 };
 
+// 精怪emoji图腾
+const ENEMY_SPRITES: Record<string, string> = {
+  '九尾狐': '🦊',
+  '化蛇': '🐍',
+  '穷奇': '🐯',
+  '姑获鸟': '🐦‍⬛',
+  '何罗鱼': '🐟',
+  '鄂名鱼': '🦈',
+  '混沌': '👻',
+  '梼杌': '🐺',
+  '凿齿': '🦴',
+  '烛九阴': '🐉',
+  '相柳': '🐍',
+  '饕餮': '🦑',
+};
+
+interface FloatingDamageProps {
+  value: number;
+  type: 'damage' | 'heal';
+  key: string;
+}
+
+function FloatingDamage({ value, type }: FloatingDamageProps) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className={type === 'damage' ? 'animate-damage-pop' : 'animate-heal-pop'}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        color: type === 'damage' ? '#C4483E' : '#4A7C9B',
+        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+        pointerEvents: 'none',
+        zIndex: 100,
+      }}
+    >
+      {type === 'damage' ? `-${value}` : `+${value}`}
+    </div>
+  );
+}
+
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
   const enemyShake = useAnimationStore(state => state.enemyShake);
+  const [displayEnemy, setDisplayEnemy] = useState(enemy);
+  const [floatingDamages, setFloatingDamages] = useState<FloatingDamageProps[]>([]);
+
+  // 当敌人HP变化时显示伤害数字
+  useEffect(() => {
+    if (enemy && displayEnemy && enemy.hp !== displayEnemy.hp) {
+      const damage = displayEnemy.hp - enemy.hp;
+      if (damage > 0) {
+        setFloatingDamages(prev => [...prev, { value: damage, type: 'damage', key: Date.now().toString() }]);
+        setTimeout(() => {
+          setFloatingDamages(prev => prev.slice(1));
+        }, 800);
+      }
+    }
+    setDisplayEnemy(enemy);
+  }, [enemy?.hp]);
 
   if (!enemy) return null;
 
@@ -26,11 +95,12 @@ export function Enemy() {
 
   const intentInfo = getIntentIcon(enemy.intent);
   const hpPercent = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
+  const sprite = ENEMY_SPRITES[enemy.name] || '👹';
   const borderStyle = ENEMY_BORDER_COLORS[enemy.type] || ENEMY_BORDER_COLORS.normal;
 
   return (
     <div
-      className={`flex flex-col items-center gap-4 ${enemyShake ? 'animate-shake' : ''}`}
+      className={`flex flex-col items-center gap-3 ${enemyShake ? 'animate-enemy-hit' : ''}`}
       style={{ filter: 'drop-shadow(0 4px 8px rgba(45, 41, 38, 0.2))' }}
     >
       {/* 精怪名称牌 */}
@@ -43,7 +113,7 @@ export function Enemy() {
         }}
       >
         <div
-          className="text-lg font-bold"
+          className="text-base sm:text-lg font-bold"
           style={{
             color: '#2D2926',
             fontFamily: 'Georgia, serif',
@@ -66,43 +136,29 @@ export function Enemy() {
         )}
       </div>
 
-      {/* 精怪画像 - 卷轴框 */}
+      {/* 精怪画像 - 带伤害显示 */}
       <div
-        className="
-          w-36 h-36 sm:w-40 sm:h-40
-          rounded-xl
-          flex items-center justify-center
-          text-7xl sm:text-8xl
-          transition-all duration-300
-        "
+        className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-xl flex items-center justify-center text-6xl sm:text-7xl transition-all duration-300"
         style={{
           background: 'linear-gradient(180deg, #FDF8F0 0%, #E8DFD0 100%)',
           border: `4px solid ${borderStyle.border}`,
           boxShadow: `0 4px 20px rgba(0,0,0,0.15), 0 0 30px ${borderStyle.glow}`,
         }}
       >
+        {/* 浮动伤害数字 */}
+        {floatingDamages.map(d => (
+          <FloatingDamage key={d.key} value={d.value} type={d.type} />
+        ))}
+
         <div style={{ filter: 'drop-shadow(0 2px 4px rgba(45,41,38,0.3))' }}>
-          {/* 使用emoji作为精怪图腾 */}
-          {enemy.name === '九尾狐' && '🦊'}
-          {enemy.name === '化蛇' && '🐍'}
-          {enemy.name === '穷奇' && '🐯'}
-          {enemy.name === '姑获鸟' && '🐦‍⬛'}
-          {enemy.name === '何罗鱼' && '🐟'}
-          {enemy.name === '鄂名鱼' && '🦈'}
-          {enemy.name === '混沌' && '👻'}
-          {enemy.name === '梼杌' && '🐺'}
-          {enemy.name === '凿齿' && '🦴'}
-          {enemy.name === '烛九阴' && '🐉'}
-          {enemy.name === '相柳' && '🐍'}
-          {enemy.name === '饕餮' && '🦑'}
-          {!['九尾狐','化蛇','穷奇','姑获鸟','何罗鱼','鄂名鱼','混沌','梼杌','凿齿','烛九阴','相柳','饕餮'].includes(enemy.name) && '👹'}
+          {sprite}
         </div>
       </div>
 
       {/* 精怪血条 */}
-      <div className="w-48 sm:w-52">
+      <div className="w-44 sm:w-48">
         <div
-          className="flex justify-between text-xs mb-2 px-1"
+          className="flex justify-between text-xs mb-1.5 px-1"
           style={{ color: '#7A746D' }}
         >
           <span className="font-bold" style={{ color: '#C45C4A' }}>妖气</span>
@@ -112,7 +168,7 @@ export function Enemy() {
         </div>
 
         <div
-          className="h-6 rounded-xl overflow-hidden relative"
+          className="h-5 sm:h-6 rounded-xl overflow-hidden relative"
           style={{
             background: 'linear-gradient(180deg, #D4C4A8 0%, #B8A88C 100%)',
             border: '2px solid #8B7355',
@@ -120,7 +176,7 @@ export function Enemy() {
           }}
         >
           <div
-            className="h-full transition-all duration-500 ease-out relative"
+            className="h-full transition-all duration-300 ease-out relative"
             style={{
               width: `${hpPercent}%`,
               background: hpPercent > 50
@@ -139,23 +195,23 @@ export function Enemy() {
           {hpPercent <= 50 && hpPercent > 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-xs font-bold" style={{ color: '#FDF8F0', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-                {enemy.hp} / {enemy.maxHp}
+                {enemy.hp}
               </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* 意图显示 - 符咒风格 */}
+      {/* 意图显示 */}
       <div
-        className="flex items-center gap-3 px-6 py-3 rounded-xl"
+        className="flex items-center gap-3 px-5 py-2.5 rounded-xl"
         style={{
           background: `linear-gradient(135deg, ${intentInfo.bg} 0%, rgba(245, 237, 224, 0.95) 100%)`,
           border: `2px solid ${intentInfo.color}`,
           boxShadow: `0 4px 15px rgba(0,0,0,0.1), 0 0 20px ${intentInfo.color}30`,
         }}
       >
-        <span className="text-4xl">{intentInfo.icon}</span>
+        <span className="text-3xl">{intentInfo.icon}</span>
         <div className="flex flex-col">
           <span
             className="font-bold text-sm"

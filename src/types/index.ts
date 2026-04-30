@@ -1,4 +1,4 @@
-export type CardType = 'attack' | 'defense' | 'heal';
+export type CardType = 'attack' | 'defense' | 'heal' | 'skill';
 export type CardRarity = 'starter' | 'common' | 'rare';
 export type School = '斩妖' | '御灵' | '符术';
 
@@ -22,6 +22,11 @@ export interface Card {
   drawCards?: number; // cards to draw
   damageReduction?: number; // reduce incoming damage
   debuffDamage?: number; // reduce enemy attack
+
+  // 符术派新增机制
+  gainEnergy?: number; // 获得灵气
+  reduceCost?: number; // 本回合下一张牌费用减少
+  chainDraw?: number; // 本回合每出一张牌则抽牌
 }
 
 export interface PlayerState {
@@ -36,8 +41,12 @@ export interface PlayerState {
   drawPile: Card[];
   hand: Card[];
   pendingCounterDamage?: number;
-  damageReduction?: number; // 回合内受到伤害减少
-  lifesteal?: number; // 回合内伤害转化治疗
+  damageReduction?: number;
+  lifesteal?: number;
+  // 符术派状态
+  pendingEnergyGain?: number; // 下回合开始时获得灵气
+  pendingCostReduction?: number; // 本回合下一张牌费用减少
+  cardsPlayedThisTurn?: number; // 本回合已出牌数
 }
 
 export type EnemyIntent = 'attack' | 'charge';
@@ -51,7 +60,7 @@ export interface Enemy {
   attack: number;
   intent: EnemyIntent;
   type: EnemyType;
-  attackReduction?: number; // 攻击力降低（毒/debuff）
+  attackReduction?: number;
 }
 
 export type GamePhase = 'idle' | 'battle' | 'victory' | 'defeat' | 'reward';

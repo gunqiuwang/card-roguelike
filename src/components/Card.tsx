@@ -7,6 +7,7 @@ interface CardProps {
   card: CardType;
   index: number;
   canPlay: boolean;
+  isHovered?: boolean;
 }
 
 // 流派边框颜色
@@ -35,7 +36,7 @@ const RARITY_BORDERS: Record<string, string> = {
   rare: '#9B4DCA',
 };
 
-export function Card({ card, index, canPlay }: CardProps) {
+export function Card({ card, index, canPlay, isHovered }: CardProps) {
   const cardPlayIndex = useAnimationStore(state => state.cardPlayIndex);
   const triggerCardPlay = useAnimationStore(state => state.triggerCardPlay);
   const dispatch = useGameStore(state => state.dispatch);
@@ -57,31 +58,35 @@ export function Card({ card, index, canPlay }: CardProps) {
       disabled={!canPlay}
       className={`
         relative
-        w-28 h-40 sm:w-32 sm:h-44 md:w-36 md:h-48
-        min-w-[112px] min-h-[160px]
+        w-24 h-36 sm:w-28 sm:h-40 md:w-32 md:h-44
+        min-w-[96px] min-h-[144px]
         rounded-lg
-        transition-all duration-200
         select-none
-        ${isPlaying ? 'card-play-animation' : ''}
-        ${canPlay ? 'cursor-pointer active:scale-95' : 'opacity-50 cursor-not-allowed'}
+        transition-all duration-200
+        ${isPlaying ? 'card-fly-animation' : ''}
+        ${canPlay ? 'cursor-pointer' : 'cursor-not-allowed'}
       `}
       style={{
         background: `linear-gradient(180deg, ${schoolStyle.gradient})`,
         border: `3px solid ${schoolStyle.border}`,
         boxShadow: canPlay
-          ? '0 4px 12px rgba(45, 41, 38, 0.15), inset 0 1px 0 rgba(255,255,255,0.5)'
+          ? isHovered
+            ? '0 12px 30px rgba(45, 41, 38, 0.35), 0 0 25px rgba(196, 72, 62, 0.25)'
+            : '0 4px 12px rgba(45, 41, 38, 0.15), inset 0 1px 0 rgba(255,255,255,0.5)'
           : '0 2px 8px rgba(45, 41, 38, 0.1)',
         touchAction: 'manipulation',
+        transform: isHovered ? 'translateY(-16px) scale(1.06)' : 'translateY(0) scale(1)',
+        zIndex: isHovered ? 100 : 10,
       }}
     >
-      {/* 费用印章 - 右上角圆形印章 */}
+      {/* 费用印章 */}
       <div
         className="
           absolute -top-3 -right-3
-          w-9 h-9 sm:w-8 sm:h-8
+          w-8 h-8 sm:w-7 sm:h-7
           rounded-full
           flex items-center justify-center
-          text-base sm:text-sm font-bold
+          text-sm sm:text-xs font-bold
         "
         style={{
           background: 'linear-gradient(135deg, #C4483E 0%, #8B3029 100%)',
@@ -93,7 +98,7 @@ export function Card({ card, index, canPlay }: CardProps) {
         {card.cost}
       </div>
 
-      {/* 流派徽章 - 左上角 */}
+      {/* 流派徽章 */}
       <div
         className="
           absolute top-1 left-1
@@ -110,33 +115,32 @@ export function Card({ card, index, canPlay }: CardProps) {
         {card.school}
       </div>
 
-      {/* 稀有度标记 - 右下角墨点 */}
+      {/* 稀有度标记 */}
       <div
-        className="absolute bottom-1 right-1 w-3 h-3 rounded-full"
+        className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full"
         style={{ background: RARITY_BORDERS[card.rarity] || RARITY_BORDERS.starter }}
       />
 
-      {/* 卡牌图腾区域 - 符咒风格 */}
+      {/* 卡牌图腾区域 */}
       <div
         className="
           mx-2 mt-5 sm:mt-6
           w-[calc(100%-1rem)] aspect-square
           rounded-lg
           flex items-center justify-center
-          text-4xl sm:text-5xl
+          text-3xl sm:text-4xl
         "
         style={{
           background: schoolStyle.border + '15',
           border: `2px dashed ${schoolStyle.border}40`,
         }}
       >
-        {/* 流派图标 */}
         <span style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.2))' }}>
           {schoolStyle.icon}
         </span>
       </div>
 
-      {/* 卡牌名称 - 墨书风格 */}
+      {/* 卡牌名称 */}
       <div
         className="
           mx-1 mt-1 sm:mt-2
@@ -152,7 +156,7 @@ export function Card({ card, index, canPlay }: CardProps) {
         {card.name}
       </div>
 
-      {/* 卡牌描述 - 墨色小字 */}
+      {/* 卡牌描述 */}
       <div
         className="
           mx-1 mb-1 sm:mb-2
@@ -166,20 +170,15 @@ export function Card({ card, index, canPlay }: CardProps) {
         {card.description}
       </div>
 
-      {/* 类型标签 - 底部 */}
+      {/* 类型标签 */}
       <div
-        className="
-          absolute bottom-0 left-0 right-0
-          py-0.5
-          text-center text-[8px]
-          rounded-b
-        "
+        className="absolute bottom-0 left-0 right-0 py-0.5 text-center text-[8px] rounded-b"
         style={{
-          background: card.type === 'attack' ? '#8B3029' : card.type === 'defense' ? '#2D4A5C' : '#4A5C2D',
+          background: card.type === 'attack' ? '#8B3029' : card.type === 'defense' ? '#2D4A5C' : card.type === 'skill' ? '#4A5C2D' : '#4A7C9B',
           color: '#FDF8F0',
         }}
       >
-        {card.type === 'attack' ? '斩' : card.type === 'defense' ? '护' : '愈'}
+        {card.type === 'attack' ? '斩' : card.type === 'defense' ? '护' : card.type === 'skill' ? '术' : '愈'}
       </div>
     </button>
   );

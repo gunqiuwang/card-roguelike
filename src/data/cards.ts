@@ -1,11 +1,6 @@
 import { Card, CardRarity } from '../types';
 
-// 流派定义
 export type School = '斩妖' | '御灵' | '符术';
-
-// 斩妖派：近战斩击，高伤害
-// 御灵派：召唤御灵，防守反击
-// 符术派：符咒治病，灵活多变
 
 export const STARTER_DECK: Card[] = [
   // 初始斩符 x4
@@ -216,10 +211,83 @@ export const YULING_CARDS: Card[] = [
   },
 ];
 
-// 符术派卡牌 - 治疗，辅助
+// 符术派卡牌 - 抽牌连击流
+// 核心机制: 抽牌、回灵气、降低费用、连锁出牌
 export const FUSHU_CARDS: Card[] = [
+  // 抽牌引擎
   {
-    id: 'zhiyu',
+    id: 'ling-yin',
+    name: '灵引',
+    type: 'skill',
+    cost: 0,
+    description: '引导灵气，抽1张牌',
+    value: 0,
+    rarity: 'common',
+    school: '符术',
+    drawCards: 1,
+  },
+  {
+    id: 'shuang-yin',
+    name: '双引',
+    type: 'skill',
+    cost: 1,
+    description: '双重引导，抽2张牌',
+    value: 0,
+    rarity: 'common',
+    school: '符术',
+    drawCards: 2,
+  },
+  // 回灵气
+  {
+    id: 'gui-yuan',
+    name: '归元',
+    type: 'skill',
+    cost: 0,
+    description: '回归元点，获得1点灵气',
+    value: 0,
+    rarity: 'common',
+    school: '符术',
+    gainEnergy: 1,
+  },
+  // 降费连击
+  {
+    id: 'lian-fu',
+    name: '连符',
+    type: 'skill',
+    cost: 1,
+    description: '符箓连锁，本回合下一张牌费用-1',
+    value: 0,
+    rarity: 'common',
+    school: '符术',
+    reduceCost: 1,
+  },
+  // 攻击+抽牌
+  {
+    id: 'yin-lei-fu',
+    name: '引雷符',
+    type: 'attack',
+    cost: 1,
+    description: '引雷入符，造成5点伤害并抽1张牌',
+    value: 5,
+    rarity: 'common',
+    school: '符术',
+    drawCards: 1,
+  },
+  // 终极连锁
+  {
+    id: 'wu-jin-fu',
+    name: '无尽符',
+    type: 'skill',
+    cost: 3,
+    description: '符无穷，本回合每出一张牌，抽1张',
+    value: 0,
+    rarity: 'rare',
+    school: '符术',
+    chainDraw: 1,
+  },
+  // 保留少量治疗 (2张)
+  {
+    id: 'zhi-yu',
     name: '治愈符',
     type: 'heal',
     cost: 2,
@@ -229,8 +297,8 @@ export const FUSHU_CARDS: Card[] = [
     school: '符术',
   },
   {
-    id: 'qiangzhi-yu',
-    name: '强治愈符',
+    id: 'qiàng-zhi-yu',
+    name: '强愈符',
     type: 'heal',
     cost: 3,
     description: '灵力催动，治疗12点生命',
@@ -238,58 +306,12 @@ export const FUSHU_CARDS: Card[] = [
     rarity: 'rare',
     school: '符术',
   },
-  {
-    id: 'huanyuan-fu',
-    name: '还原符',
-    type: 'heal',
-    cost: 2,
-    description: '回复生命值，并额外治疗5点',
-    value: 5,
-    rarity: 'common',
-    school: '符术',
-  },
-  {
-    id: 'tupo-fu',
-    name: '突破符',
-    type: 'heal',
-    cost: 1,
-    description: '激发潜能，治疗4点并抽1张牌',
-    value: 4,
-    rarity: 'common',
-    school: '符术',
-    drawCards: 1,
-  },
-  {
-    id: 'jieshu-fu',
-    name: '结界符',
-    type: 'defense',
-    cost: 2,
-    description: '布下结界，所有伤害-3',
-    value: 8,
-    rarity: 'rare',
-    school: '符术',
-    damageReduction: 3,
-  },
-  {
-    id: 'poisonshui',
-    name: '毒水符',
-    type: 'attack',
-    cost: 2,
-    description: '毒符蚀骨，造成10点伤害并使敌人下回合伤害-3',
-    value: 10,
-    rarity: 'common',
-    school: '符术',
-    debuffDamage: 3,
-  },
 ];
 
 // 奖励卡池 - 三派混合
 export const REWARD_CARDS: Card[] = [
-  // 斩妖派
   ...ZHANYAO_CARDS,
-  // 御灵派
   ...YULING_CARDS,
-  // 符术派
   ...FUSHU_CARDS,
 ];
 
@@ -298,12 +320,10 @@ export const ALL_CARDS: Card[] = [
   ...REWARD_CARDS,
 ];
 
-// 获取某流派的卡牌
 export const getCardsBySchool = (school: School): Card[] => {
   return ALL_CARDS.filter(card => card.school === school);
 };
 
-// 获取某稀有度的卡牌
 export const getCardsByRarity = (rarity: CardRarity): Card[] => {
   return ALL_CARDS.filter(card => card.rarity === rarity);
 };
