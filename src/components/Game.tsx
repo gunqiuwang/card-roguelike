@@ -6,6 +6,7 @@ import { RewardSelection } from './RewardSelection';
 import { BattleArea } from './BattleArea';
 
 export function Game() {
+
   return (
     <div className="
       min-h-screen
