@@ -191,7 +191,7 @@ function FuchainFlash() {
         fontFamily: 'Georgia, serif',
       }}
     >
-      ✨ 符链共鸣：抽1 + 灵气1
+      ✨ 符链共鸣：抽1 + 灵气2
     </div>
   );
 }

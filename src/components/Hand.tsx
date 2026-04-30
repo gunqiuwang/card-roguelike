@@ -106,17 +106,17 @@ export function Hand() {
           <div
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
             style={{
-              background: player.shieldEcho >= 12
+              background: player.shieldEcho >= 10
                 ? 'rgba(45, 74, 92, 0.4)'
                 : 'rgba(45, 74, 92, 0.25)',
               border: '1px solid #2D4A5C',
-              animation: player.shieldEcho >= 12 ? 'shieldEchoReady 1s ease-in-out infinite' : 'none',
+              animation: player.shieldEcho >= 10 ? 'shieldEchoReady 1s ease-in-out infinite' : 'none',
             }}
           >
             <span>🔮</span>
             <span style={{ color: '#2D4A5C', fontWeight: 600 }}>灵壁</span>
             <span style={{ color: '#2D4A5C' }}>{player.shieldEcho}</span>
-            {player.shieldEcho >= 12 && (
+            {player.shieldEcho >= 10 && (
               <span style={{ color: '#E5C04D', fontWeight: 600 }}>▶</span>
             )}
           </div>

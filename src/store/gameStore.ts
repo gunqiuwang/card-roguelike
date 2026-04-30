@@ -200,7 +200,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             if (newPlayer.fuchainCount >= 3) {
               // 触发符链共鸣
               newPlayer = drawCards(newPlayer, 1);
-              newPlayer.energy += 1;
+              newPlayer.energy += 2; // 提升共鸣灵气收益
               newPlayer.fuchainCount = -1; // 防止重复触发
               // 触发动画
               useAnimationStore.getState().triggerFuchain();
@@ -284,9 +284,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
           newPlayer.pendingEnergyGain = 0;
         }
 
-        // 御灵派护体回响反击：回响值≥12时，回合结束触发反击
-        if (newPlayer.shieldEcho && newPlayer.shieldEcho >= 12 && newEnemy) {
-          const echoDamage = Math.floor(newPlayer.shieldEcho * 0.5);
+        // 御灵派护体回响反击：回响值≥10时，回合结束触发反击
+        if (newPlayer.shieldEcho && newPlayer.shieldEcho >= 10 && newEnemy) {
+          const echoDamage = Math.floor(newPlayer.shieldEcho * 0.6);
           newEnemy.hp = Math.max(0, newEnemy.hp - echoDamage);
           // 触发护体回响动画
           useAnimationStore.getState().triggerShieldEcho(echoDamage);

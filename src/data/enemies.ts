@@ -29,7 +29,7 @@ export function createEnemy(
     return {
       ...baseEnemy,
       isCharging: false,
-      chargeTurnsLeft: 3, // First charge after 3 turns
+      chargeTurnsLeft: 2, // First charge after 2 turns
       willUseUltimate: false,
     };
   }
