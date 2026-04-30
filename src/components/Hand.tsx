@@ -36,6 +36,7 @@ export function Hand() {
       style={{
         background: 'linear-gradient(to top, rgba(232, 223, 208, 0.98), rgba(245, 237, 224, 0.9) 70%, transparent)',
         borderTop: '2px solid #D4C4A8',
+        paddingBottom: 'max(3.5rem, env(safe-area-inset-bottom))',
       }}
     >
       {/* 状态提示条 */}

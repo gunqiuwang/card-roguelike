@@ -53,7 +53,7 @@ export function Game() {
       <StatsDisplay />
 
       {/* 玩家状态 - 给足够空间不遮挡 */}
-      <div className="w-full max-w-md px-2 relative z-10 pb-52">
+      <div className="w-full max-w-md px-2 relative z-10 flex-shrink-0 mb-60">
         <PlayerStats />
       </div>
 
