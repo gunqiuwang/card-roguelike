@@ -160,6 +160,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
           case 'defense':
             newPlayer.block += card.value;
+            // 御灵派护体回响：累计护盾值
+            if (card.school === '御灵') {
+              newPlayer.shieldEcho = (newPlayer.shieldEcho || 0) + card.value;
+            }
             if (card.counterDamage) {
               newPlayer.pendingCounterDamage = card.counterDamage;
             }
@@ -242,6 +246,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
           newPlayer.pendingEnergyGain = 0;
         }
 
+        // 御灵派护体回响反击：回响值≥12时，回合结束触发反击
+        if (newPlayer.shieldEcho && newPlayer.shieldEcho >= 12 && newEnemy) {
+          const echoDamage = Math.floor(newPlayer.shieldEcho * 0.5);
+          newEnemy.hp = Math.max(0, newEnemy.hp - echoDamage);
+          // 触发护体回响动画
+          useAnimationStore.getState().triggerShieldEcho(echoDamage);
+        }
+        // 清零护体回响
+        newPlayer.shieldEcho = 0;
+
         if (newPlayer.hp <= 0) {
           set({
             player: newPlayer,
@@ -269,6 +283,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           cardsPlayedThisTurn: 0,
           pendingCostReduction: 0,
           zhanyaoCombo: 0, // 重置斩妖连击
+          shieldEcho: 0, // 重置护体回响
         };
 
         // 抽5张牌

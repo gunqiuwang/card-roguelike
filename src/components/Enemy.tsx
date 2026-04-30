@@ -130,14 +130,49 @@ function ZhanyaoComboFlash({ combo }: { combo: number }) {
   );
 }
 
+// 御灵护体回响反击特效组件
+function ShieldEchoFlash({ damage }: { damage: number }) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible || damage <= 0) return null;
+
+  return (
+    <div
+      className="animate-shield-echo"
+      style={{
+        position: 'absolute',
+        top: '30%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        color: '#E5C04D',
+        textShadow: '0 0 15px #2D4A5C, 0 0 30px rgba(45, 74, 92, 0.8)',
+        pointerEvents: 'none',
+        zIndex: 103,
+        fontFamily: 'Georgia, serif',
+      }}
+    >
+      ⚡ 回响反击 +{damage}
+    </div>
+  );
+}
+
 export function Enemy() {
   const enemy = useGameStore(state => state.enemy);
   const enemyShake = useAnimationStore(state => state.enemyShake);
   const zhanyaoCombo = useAnimationStore(state => state.zhanyaoCombo);
+  const shieldEcho = useAnimationStore(state => state.shieldEcho);
   const [displayEnemy, setDisplayEnemy] = useState(enemy);
   const [floatingDamages, setFloatingDamages] = useState<FloatingDamageProps[]>([]);
   const [showBlockFlash, setShowBlockFlash] = useState(false);
   const [showZhanyaoFlash, setShowZhanyaoFlash] = useState(0);
+  const [showShieldEchoFlash, setShowShieldEchoFlash] = useState(0);
 
   // 斩妖连击特效触发
   useEffect(() => {
@@ -145,6 +180,13 @@ export function Enemy() {
       setShowZhanyaoFlash(zhanyaoCombo);
     }
   }, [zhanyaoCombo]);
+
+  // 御灵护体回响特效触发
+  useEffect(() => {
+    if (shieldEcho > 0) {
+      setShowShieldEchoFlash(shieldEcho);
+    }
+  }, [shieldEcho]);
 
   // 当敌人HP变化时显示伤害数字
   useEffect(() => {
@@ -247,6 +289,9 @@ export function Enemy() {
 
         {/* 斩妖连击特效 */}
         {showZhanyaoFlash >= 2 && <ZhanyaoComboFlash combo={showZhanyaoFlash} />}
+
+        {/* 御灵护体回响反击特效 */}
+        {showShieldEchoFlash > 0 && <ShieldEchoFlash damage={showShieldEchoFlash} />}
 
         <div style={{ filter: 'drop-shadow(0 2px 4px rgba(45,41,38,0.3))' }}>
           {sprite}

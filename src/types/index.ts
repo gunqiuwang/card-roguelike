@@ -52,6 +52,8 @@ export interface PlayerState {
   cardsPlayedThisTurn?: number; // 本回合已出牌数
   // 斩妖派状态
   zhanyaoCombo?: number; // 斩妖连击计数，连续出斩妖攻击牌时递增
+  // 御灵派状态
+  shieldEcho?: number; // 护体回响值，本回合累计护盾值
 }
 
 export type EnemyIntent = 'attack' | 'charge';
