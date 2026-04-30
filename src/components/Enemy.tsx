@@ -507,8 +507,13 @@ export function Enemy() {
             {isBossCharging ? '神通蓄势' : intentInfo.label}
           </span>
           {enemy.intent === 'attack' && !isBossCharging && (
+            <span className="text-xs" style={{ color: '#8B3029' }}>
+              下回合造成 {enemy.attack} 伤害
+            </span>
+          )}
+          {enemy.intent === 'charge' && !isBossCharging && enemy.type !== 'boss' && (
             <span className="text-xs" style={{ color: '#7A746D' }}>
-              伤害: {enemy.attack}
+              下回合蓄力
             </span>
           )}
           {isBossCharging && enemy.willUseUltimate && (

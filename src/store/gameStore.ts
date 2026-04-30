@@ -140,6 +140,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const { card, cardIndex } = action.payload;
         if (!state.isPlayerTurn) return;
 
+        // 每回合限制最多打3张牌
+        if ((state.player.cardsPlayedThisTurn || 0) >= 3) return;
+
         let newPlayer: PlayerState = { ...state.player };
         let newEnemy = state.enemy ? { ...state.enemy } : null;
 

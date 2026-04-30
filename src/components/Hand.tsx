@@ -13,8 +13,18 @@ export function Hand() {
   const comboLevel = useAnimationStore(state => state.zhanyaoCombo);
 
   const canPlayCard = (cardCost: number) => {
-    return isPlayerTurn && phase === 'battle' && player.energy >= cardCost;
+    if (!isPlayerTurn || phase !== 'battle') return false;
+    if ((cardsPlayedThisTurn || 0) >= 3) return false; // 每回合最多3张
+    return player.energy >= cardCost;
   };
+
+  // 计算手牌中各流派数量
+  const handSchools = { '斩妖': 0, '御灵': 0, '符术': 0 };
+  player.hand.forEach(card => {
+    if (card.school in handSchools) {
+      handSchools[card.school as keyof typeof handSchools]++;
+    }
+  });
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -69,6 +79,34 @@ export function Hand() {
             <span style={{ color: '#4A5C2D', fontWeight: 600 }}>费用-1</span>
           </div>
         )}
+
+        {/* 剩余出牌次数 */}
+        <div
+          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
+          style={{
+            background: 'rgba(139, 48, 41, 0.2)',
+            border: '1px solid #8B3029',
+          }}
+        >
+          <span>✋</span>
+          <span style={{ color: '#8B3029', fontWeight: 600 }}>
+            {3 - (cardsPlayedThisTurn || 0)}/{3}
+          </span>
+        </div>
+
+        {/* 流派倾向提示 */}
+        <div
+          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
+          style={{
+            background: 'rgba(45, 41, 38, 0.1)',
+            border: '1px solid #8B7355',
+          }}
+        >
+          <span style={{ color: '#7A746D' }}>派:</span>
+          <span style={{ color: '#8B3029', fontWeight: 600 }}>斩{handSchools['斩妖']}</span>
+          <span style={{ color: '#2D4A5C', fontWeight: 600 }}>灵{handSchools['御灵']}</span>
+          <span style={{ color: '#4A5C2D', fontWeight: 600 }}>符{handSchools['符术']}</span>
+        </div>
 
         {/* 连锁提示 */}
         {cardsPlayedThisTurn && cardsPlayedThisTurn > 1 && (
