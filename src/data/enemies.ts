@@ -36,19 +36,110 @@ export interface EnemyData {
   attack: number;
   type: EnemyType;
   description: string;
+  sprite: string; // Emoji representation
 }
 
+// 山海经精怪图鉴
 export const ENEMIES: EnemyData[] = [
-  // Normal enemies
-  { name: '哥布林', hp: 30, attack: 6, type: 'normal', description: '普通敌人' },
-  { name: '骷髅战士', hp: 40, attack: 8, type: 'normal', description: '高防敌人' },
-  { name: '暗影', hp: 25, attack: 10, type: 'normal', description: '高攻脆皮' },
-  { name: '狼人', hp: 35, attack: 7, type: 'normal', description: '平衡型' },
-  // Elite enemies
-  { name: '精英骷髅', hp: 60, attack: 10, type: 'elite', description: '精英敌人' },
-  { name: '暗影刺客', hp: 45, attack: 14, type: 'elite', description: '高攻精英' },
-  // Boss
-  { name: '巨石魔像', hp: 100, attack: 12, type: 'boss', description: 'BOSS' },
+  // 普通精怪
+  {
+    name: '九尾狐',
+    hp: 28,
+    attack: 7,
+    type: 'normal',
+    description: '九尾灵狐，狡黠多变',
+    sprite: '🦊',
+  },
+  {
+    name: '化蛇',
+    hp: 35,
+    attack: 6,
+    type: 'normal',
+    description: '蛇身鸟翼，能喷毒雾',
+    sprite: '🐍',
+  },
+  {
+    name: '穷奇',
+    hp: 30,
+    attack: 9,
+    type: 'normal',
+    description: '虎背生翼，食人为乐',
+    sprite: '🐯',
+  },
+  {
+    name: '姑获鸟',
+    hp: 25,
+    attack: 8,
+    type: 'normal',
+    description: '鬼鸟夜行，掠人婴孩',
+    sprite: '🐦',
+  },
+  {
+    name: '何罗鱼',
+    hp: 40,
+    attack: 5,
+    type: 'normal',
+    description: '一首十身，声音如吠',
+    sprite: '🐟',
+  },
+  {
+    name: '鄂名鱼',
+    hp: 32,
+    attack: 7,
+    type: 'normal',
+    description: '赤目赤足，鸣声如鸲',
+    sprite: '🦈',
+  },
+  // 精英精怪
+  {
+    name: '混沌',
+    hp: 55,
+    attack: 11,
+    type: 'elite',
+    description: '无形无相，吞噬万物',
+    sprite: '👻',
+  },
+  {
+    name: '梼杌',
+    hp: 60,
+    attack: 10,
+    type: 'elite',
+    description: '状如老虎，食人首目',
+    sprite: '🐺',
+  },
+  {
+    name: '凿齿',
+    hp: 50,
+    attack: 12,
+    type: 'elite',
+    description: '獠牙外露，铠甲坚厚',
+    sprite: '🦴',
+  },
+  // BOSS级神怪
+  {
+    name: '烛九阴',
+    hp: 100,
+    attack: 14,
+    type: 'boss',
+    description: '人面蛇身，睁眼为昼',
+    sprite: '🐉',
+  },
+  {
+    name: '相柳',
+    hp: 110,
+    attack: 12,
+    type: 'boss',
+    description: '九首人面，毒涎漫地',
+    sprite: '🐍',
+  },
+  {
+    name: '饕餮',
+    hp: 95,
+    attack: 15,
+    type: 'boss',
+    description: '羊身人面，贪得无厌',
+    sprite: '🦑',
+  },
 ];
 
 export const getRandomEnemyByDifficulty = (difficulty: number = 1): Enemy => {

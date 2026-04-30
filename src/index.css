@@ -1,51 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  /* Q版暗黑童话 - 城堡魔法主题色板 */
-  --color-primary: #D4863D;
-  --color-primary-light: #E9A84D;
-  --color-primary-dark: #A66A2E;
+  /* 国风神怪主题色板 - 宣纸+墨+朱砂 */
+  --color-primary: #C4483E;       /* 朱砂红 */
+  --color-primary-light: #E06B5A;
+  --color-primary-dark: #8B3029;
 
-  /* 背景 - 深紫黑色系 */
-  --color-bg: #1A1128;
-  --color-bg-light: #251A38;
-  --color-bg-dark: #0D0915;
+  /* 背景 - 淡宣纸色 */
+  --color-bg: #F5EDE0;
+  --color-bg-light: #FAF6EE;
+  --color-bg-dark: #E8DFD0;
 
-  /* 表面层 */
-  --color-surface: #2D1F42;
-  --color-surface-light: #3D2A55;
-  --color-surface-dark: #1E142E;
+  /* 表面层 - 牛皮纸色 */
+  --color-surface: #D4C4A8;
+  --color-surface-light: #E5D9C3;
+  --color-surface-dark: #B8A88C;
 
-  /* 卡牌 - 羊皮纸色 */
-  --color-card-bg: #F5E6D3;
+  /* 卡牌 - 素描纸色 */
+  --color-card-bg: #FDF8F0;
   --color-card-border: #8B7355;
 
-  /* 强调色 - 酒红 */
-  --color-accent: #9B2D5A;
-  --color-accent-light: #C4456E;
-  --color-accent-dark: #6B1E3D;
+  /* 墨色 */
+  --color-ink: #2D2926;
+  --color-ink-light: #4A4541;
+  --color-ink-muted: #7A746D;
 
-  /* 金色 */
-  --color-gold: #E9B872;
+  /* 朱砂/印章色 */
+  --color-seal: #C4483E;
+  --color-seal-light: #D66B5A;
+
+  /* 金色（用于神力） */
+  --color-gold: #C9A227;
+  --color-gold-light: #E5C04D;
+
+  /* 能量色 */
+  --color-energy: #4A7C9B;
+  --color-health: #C45C4A;
+  --color-block: #5C8A4A;
+
+  /* 流派色 */
+  --color-school-zhanyao: #8B3029;
+  --color-school-yuling: #2D4A5C;
+  --color-school-fushu: #4A5C2D;
 
   /* 稀有度 */
   --color-rarity-starter: #8B7355;
   --color-rarity-common: #4A7C9B;
   --color-rarity-rare: #9B4DCA;
-
-  /* 卡牌类型 */
-  --color-type-attack: #C44536;
-  --color-type-defense: #4A7C9B;
-  --color-type-heal: #4A9B5C;
-
-  /* UI元素 */
-  --color-energy: #F5D76E;
-  --color-health: #E74C3C;
-  --color-block: #5C9CEC;
-
-  /* 敌人意图 */
-  --color-intent-attack: #E74C3C;
-  --color-intent-charge: #9B59B6;
 }
 
 * {
@@ -56,9 +57,9 @@
 }
 
 html, body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Georgia', 'Times New Roman', 'Noto Serif SC', serif;
   background-color: var(--color-bg);
-  color: var(--color-card-bg);
+  color: var(--color-ink);
   overflow-x: hidden;
   touch-action: manipulation;
 }
@@ -83,7 +84,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 134, 61, 0.3);
+  background: rgba(45, 41, 38, 0.2);
   border-radius: 2px;
 }
 
@@ -101,10 +102,10 @@ button {
 }
 
 /* ============================================
-   ANIMATIONS
+   ANIMATIONS - 水墨风格
    ============================================ */
 
-/* Card Play Animation - Scale up and fade */
+/* Card Play Animation - 符咒飞出 */
 @keyframes cardPlay {
   0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
   30% { transform: scale(1.1) translateY(-20px) rotate(-2deg); opacity: 1; }
@@ -115,7 +116,7 @@ button {
   animation: cardPlay 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Card Draw Animation - Slide in from deck */
+/* Card Draw Animation - 从牌堆抽出 */
 @keyframes cardDraw {
   0% { transform: translateX(150px) rotate(15deg) scale(0.8); opacity: 0; }
   60% { transform: translateX(-10px) rotate(-3deg) scale(1.05); opacity: 1; }
@@ -126,7 +127,7 @@ button {
   animation: cardDraw 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Fade in animation */
+/* Fade in animation - 墨迹晕染 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
@@ -136,7 +137,7 @@ button {
   animation: fadeIn 0.4s ease-out;
 }
 
-/* Shake animation for damage - Dark Fantasy style */
+/* Shake animation - 受到冲击 */
 @keyframes shake {
   0%, 100% { transform: translateX(0) rotate(0deg); }
   15% { transform: translateX(-6px) rotate(-1deg); }
@@ -151,17 +152,17 @@ button {
   animation: shake 0.5s ease-out;
 }
 
-/* Pulse animation for highlights */
+/* Pulse animation - 灵力涌动 */
 @keyframes pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 134, 61, 0.4); }
-  50% { transform: scale(1.03); box-shadow: 0 0 20px 5px rgba(212, 134, 61, 0.2); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(196, 72, 62, 0.3); }
+  50% { transform: scale(1.03); box-shadow: 0 0 20px 5px rgba(196, 72, 62, 0.2); }
 }
 
 .animate-pulse-once {
   animation: pulse 0.4s ease-out;
 }
 
-/* Floating text animation - Damage/Heal numbers */
+/* Floating text animation - 伤害数字飘散 */
 @keyframes floatUp {
   0% { transform: translateY(0) scale(0.5); opacity: 0; }
   20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
@@ -173,7 +174,7 @@ button {
   animation: floatUp 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* Enemy defeat animation */
+/* Enemy defeat animation - 消散 */
 @keyframes enemyDefeat {
   0% { transform: scale(1) rotate(0deg); opacity: 1; }
   30% { transform: scale(1.1) rotate(-5deg); opacity: 1; }
@@ -184,31 +185,25 @@ button {
   animation: enemyDefeat 0.6s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
 }
 
-/* Heal glow animation */
+/* Heal glow animation - 治愈灵光 */
 @keyframes healGlow {
-  0%, 100% { box-shadow: 0 0 5px rgba(74, 155, 92, 0.5); }
-  50% { box-shadow: 0 0 25px 10px rgba(74, 155, 92, 0.8); }
+  0%, 100% { box-shadow: 0 0 5px rgba(74, 138, 74, 0.5); }
+  50% { box-shadow: 0 0 25px 10px rgba(74, 138, 74, 0.8); }
 }
 
 .animate-heal-glow {
   animation: healGlow 0.6s ease-out;
 }
 
-/* Block flash animation */
+/* Block flash animation - 护盾闪烁 */
 @keyframes blockFlash {
-  0% { background-color: rgba(92, 156, 236, 0.3); }
-  50% { background-color: rgba(92, 156, 236, 0.6); }
-  100% { background-color: rgba(92, 156, 236, 0); }
+  0% { background-color: rgba(92, 138, 74, 0.3); }
+  50% { background-color: rgba(92, 138, 74, 0.6); }
+  100% { background-color: rgba(92, 138, 74, 0); }
 }
 
 .animate-block-flash {
   animation: blockFlash 0.4s ease-out;
-}
-
-/* Card hover glow */
-@keyframes cardGlow {
-  0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-  50% { box-shadow: 0 4px 20px rgba(212, 134, 61, 0.5), 0 0 30px rgba(212, 134, 61, 0.2); }
 }
 
 /* Button press effect */
@@ -222,17 +217,6 @@ button {
   animation: buttonPress 0.15s ease-out;
 }
 
-/* Energy use flash */
-@keyframes energyUse {
-  0% { transform: scale(1); filter: brightness(1); }
-  50% { transform: scale(1.3); filter: brightness(1.5); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-
-.animate-energy-use {
-  animation: energyUse 0.3s ease-out;
-}
-
 /* Turn indicator pulse */
 @keyframes turnPulse {
   0%, 100% { opacity: 0.9; transform: scale(1); }
@@ -241,4 +225,50 @@ button {
 
 .animate-turn-pulse {
   animation: turnPulse 1.5s ease-in-out infinite;
+}
+
+/* Floating particles for title screen */
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.7; }
+}
+
+.animate-float-particle {
+  animation: floatParticle 3s ease-in-out infinite;
+}
+
+/* Seal stamp animation */
+@keyframes sealStamp {
+  0% { transform: scale(1.5) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(0.9) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.animate-seal-stamp {
+  animation: sealStamp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Ink spread effect for backgrounds */
+@keyframes inkSpread {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-ink-spread {
+  animation: inkSpread 0.6s ease-out;
+}
+
+/* School badge shimmer - 流派光泽 */
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.3) 50%,
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
 }

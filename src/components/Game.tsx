@@ -20,62 +20,48 @@ export function Game() {
         overflow-hidden
       "
       style={{
-        background: 'linear-gradient(180deg, #1A1128 0%, #251A38 30%, #1A1128 70%, #0D0915 100%)',
+        background: 'linear-gradient(180deg, #F5EDE0 0%, #E8DFD0 50%, #F5EDE0 100%)',
       }}
     >
-      {/* Background decoration - Castle stone pattern */}
+      {/* 宣纸纹理背景 */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.03]"
         style={{
-          backgroundImage: `repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 50px,
-            rgba(212, 134, 61, 0.5) 50px,
-            rgba(212, 134, 61, 0.5) 51px
-          ),
-          repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 50px,
-            rgba(212, 134, 61, 0.5) 50px,
-            rgba(212, 134, 61, 0.5) 51px
-          )`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
       />
 
-      {/* Battle Area - Top with turn indicator */}
+      {/* 战斗区域 */}
       <div className="w-full max-w-md relative z-10">
         <BattleArea />
         <SoundToggle />
       </div>
 
-      {/* Enemy Area - Middle with stage feel */}
+      {/* 敌人区域 */}
       <div
         className="flex-1 flex items-center justify-center py-4 relative z-10"
         style={{
-          // Subtle spotlight effect
-          background: 'radial-gradient(ellipse at center, rgba(155, 45, 90, 0.1) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse at center, rgba(196, 72, 62, 0.05) 0%, transparent 60%)',
         }}
       >
         <Enemy />
       </div>
 
-      {/* Save/Stats - Floating UI elements */}
+      {/* 存档/统计 */}
       <SaveIndicator />
       <StatsDisplay />
 
-      {/* Player Stats - Game HUD */}
+      {/* 玩家状态 */}
       <div className="w-full max-w-md px-2 relative z-10">
         <PlayerStats />
       </div>
 
-      {/* Hand - Bottom with card table feel */}
+      {/* 手牌区域 */}
       <div className="fixed bottom-0 left-0 right-0 z-20">
         <Hand />
       </div>
 
-      {/* Overlays */}
+      {/* 覆盖层 */}
       <GameOver />
       <RewardSelection />
     </div>

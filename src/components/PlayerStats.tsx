@@ -21,132 +21,113 @@ export function PlayerStats() {
   return (
     <div
       className="w-full px-2 py-3"
-      style={{ background: 'linear-gradient(180deg, rgba(45, 31, 66, 0.9) 0%, rgba(26, 17, 40, 0.8) 100%)' }}
+      style={{
+        background: 'linear-gradient(180deg, rgba(232, 223, 208, 0.95) 0%, rgba(245, 237, 224, 0.9) 100%)',
+        borderTop: '2px solid #D4C4A8',
+      }}
     >
-      {/* Top Bar - Game HUD style */}
+      {/* 顶部状态条 - 卷轴风格 */}
       <div
-        className="flex justify-between items-center px-4 py-2 rounded-xl"
+        className="flex justify-between items-center px-4 py-2 rounded-lg"
         style={{
-          background: 'rgba(30, 20, 46, 0.9)',
-          border: '1px solid #3D2A55',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+          background: 'rgba(212, 196, 168, 0.6)',
+          border: '1px solid #B8A88C',
         }}
       >
-        {/* Turn Counter - Castle torch style */}
+        {/* 回合计数 */}
         <div
           className="flex items-center gap-2 px-3 py-1 rounded-full"
           style={{
-            background: 'linear-gradient(135deg, #9B2D5A 0%, #6B1E3D 100%)',
-            border: '1px solid #C4456E',
+            background: 'linear-gradient(135deg, #C4483E 0%, #8B3029 100%)',
+            border: '1px solid #8B3029',
           }}
         >
           <span className="text-sm">🔥</span>
-          <span className="text-sm font-bold text-[#F5E6D3]">回合 {turn}</span>
+          <span className="text-sm font-bold text-[#FDF8F0]">第{turn}回</span>
         </div>
 
-        {/* Energy Orbs - Magical gems */}
+        {/* 能量条 - 灵力珠 */}
         <div className="flex items-center gap-1.5">
           {Array.from({ length: player.maxEnergy }).map((_, i) => (
             <div
               key={i}
-              className={`
-                w-7 h-7 rounded-full
-                flex items-center justify-center
-                text-sm
-                transition-all duration-300
-              `}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all duration-300"
               style={{
                 background: i < player.energy
-                  ? 'linear-gradient(135deg, #F5D76E 0%, #E9A84D 50%, #D4863D 100%)'
-                  : 'linear-gradient(135deg, #2D1F42 0%, #1E142E 100%)',
-                border: `2px solid ${i < player.energy ? '#A66A2E' : '#3D2A55'}`,
-                boxShadow: i < player.energy
-                  ? '0 0 10px rgba(212, 134, 61, 0.5), inset 0 2px 4px rgba(255,255,255,0.3)'
-                  : 'inset 0 2px 4px rgba(0,0,0,0.5)',
+                  ? 'linear-gradient(135deg, #4A7C9B 0%, #2D4A5C 100%)'
+                  : 'linear-gradient(135deg, #D4C4A8 0%, #B8A88C 100%)',
+                border: `2px solid ${i < player.energy ? '#2D4A5C' : '#B8A88C'}`,
+                boxShadow: i < player.energy ? '0 0 8px rgba(74, 124, 155, 0.4)' : 'inset 0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              {i < player.energy && (
-                <span style={{ color: '#2D1F42' }}>⚡</span>
-              )}
+              {i < player.energy && <span style={{ color: '#FDF8F0' }}>☯️</span>}
             </div>
           ))}
         </div>
 
-        {/* Gold - Treasure */}
+        {/* 金币 */}
         <div
           className="flex items-center gap-1.5 px-3 py-1 rounded-full"
           style={{
-            background: 'linear-gradient(135deg, #3D2A55 0%, #2D1F42 100%)',
+            background: 'linear-gradient(135deg, #C9A227 0%, #A88B20 100%)',
             border: '1px solid #8B7355',
           }}
         >
           <span className="text-lg">💰</span>
-          <span className="text-sm font-bold text-[#E9B872]">{player.gold}</span>
+          <span className="text-sm font-bold text-[#FDF8F0]">{player.gold}</span>
         </div>
       </div>
 
-      {/* HP Bar - More game-like */}
+      {/* 生命条 - 血条风格 */}
       <div className="mt-3 px-2">
-        <div
-          className="flex justify-between items-center mb-1.5 px-2"
-        >
-          <span className="text-xs font-bold text-[#E74C3C] flex items-center gap-1">
-            ❤️ <span style={{ color: '#F5E6D3' }}>生命</span>
+        <div className="flex justify-between items-center mb-1.5 px-2">
+          <span className="text-xs font-bold text-[#C45C4A] flex items-center gap-1">
+            ❤️ <span style={{ color: '#2D2926' }}>生命</span>
           </span>
           <span
             className="text-sm font-mono font-bold"
-            style={{ color: '#F5E6D3', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+            style={{ color: '#2D2926' }}
           >
             {player.hp} / {player.maxHp}
           </span>
         </div>
 
-        {/* HP Bar - Castle health bar style */}
         <div
-          className="h-7 rounded-xl overflow-hidden relative"
+          className="h-7 rounded-lg overflow-hidden relative"
           style={{
-            background: 'linear-gradient(180deg, #1E142E 0%, #2D1F42 100%)',
-            border: '2px solid #3D2A55',
-            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
+            background: 'linear-gradient(180deg, #D4C4A8 0%, #B8A88C 100%)',
+            border: '2px solid #8B7355',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
           }}
         >
-          {/* HP Fill */}
           <div
             className="h-full transition-all duration-500 ease-out relative"
             style={{
               width: `${hpPercent}%`,
               background: hpPercent > 50
-                ? 'linear-gradient(180deg, #E74C3C 0%, #C0392B 50%, #A02A21 100%)'
+                ? 'linear-gradient(180deg, #C45C4A 0%, #8B3029 100%)'
                 : hpPercent > 25
-                ? 'linear-gradient(180deg, #E67E22 0%, #D35400 50%, #B03A00 100%)'
-                : 'linear-gradient(180deg, #E74C3C 0%, #922B21 100%)',
-              boxShadow: hpPercent > 50
-                ? 'inset 0 2px 4px rgba(255,255,255,0.2), 0 0 10px rgba(231, 76, 60, 0.3)'
-                : 'inset 0 2px 4px rgba(255,255,255,0.1)',
+                ? 'linear-gradient(180deg, #E06B5A 0%, #C4483E 100%)'
+                : 'linear-gradient(180deg, #D66B5A 0%, #8B3029 100%)',
             }}
           >
-            {/* HP shine effect */}
             <div
               className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%)',
-              }}
+              style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%)' }}
             />
           </div>
 
-          {/* Block overlay */}
+          {/* 护盾显示 */}
           {player.block > 0 && (
             <div
               className="absolute inset-0 flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(90deg, transparent 20%, rgba(92, 156, 236, 0.3) 50%, transparent 80%)',
-              }}
+              style={{ background: 'linear-gradient(90deg, transparent 20%, rgba(92, 138, 74, 0.4) 50%, transparent 80%)' }}
             >
               <span
                 className="text-sm font-bold flex items-center gap-1"
                 style={{
-                  color: '#fff',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(92, 156, 236, 0.8)',
+                  color: '#FDF8F0',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                 }}
               >
                 🛡️ {player.block}
@@ -154,16 +135,10 @@ export function PlayerStats() {
             </div>
           )}
 
-          {/* HP text (only show when low) */}
+          {/* 低血量时显示数字 */}
           {hpPercent <= 30 && hpPercent > 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span
-                className="text-xs font-bold"
-                style={{
-                  color: '#fff',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                }}
-              >
+              <span className="text-xs font-bold" style={{ color: '#FDF8F0', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
                 {player.hp} / {player.maxHp}
               </span>
             </div>
@@ -171,7 +146,7 @@ export function PlayerStats() {
         </div>
       </div>
 
-      {/* End Turn Button - Prominent Castle style */}
+      {/* 结束回合按钮 - 印章风格 */}
       <div className="flex justify-center mt-3">
         <button
           onClick={handleEndTurn}
@@ -179,7 +154,7 @@ export function PlayerStats() {
           className={`
             min-h-[52px] min-w-[180px]
             px-8 py-3
-            rounded-xl
+            rounded-lg
             font-bold text-base
             transition-all duration-200
             select-none
@@ -189,17 +164,18 @@ export function PlayerStats() {
             touchAction: 'manipulation',
             ...(isPlayerTurn
               ? {
-                  background: 'linear-gradient(135deg, #9B2D5A 0%, #6B1E3D 100%)',
-                  border: '2px solid #C4456E',
-                  color: '#F5E6D3',
-                  boxShadow: '0 4px 15px rgba(155, 45, 90, 0.4), 0 0 30px rgba(155, 45, 90, 0.2)',
+                  background: 'linear-gradient(180deg, #C4483E 0%, #8B3029 100%)',
+                  border: '3px solid #8B3029',
+                  color: '#FDF8F0',
+                  boxShadow: '0 4px 12px rgba(196, 72, 62, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  fontFamily: 'Georgia, serif',
                   textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                 }
               : {
-                  background: 'linear-gradient(135deg, #2D1F42 0%, #1E142E 100%)',
-                  border: '2px solid #3D2A55',
-                  color: '#8B7355',
-                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)',
+                  background: 'linear-gradient(180deg, #D4C4A8 0%, #B8A88C 100%)',
+                  border: '2px solid #B8A88C',
+                  color: '#7A746D',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
                 }),
           }}
         >

@@ -8,7 +8,6 @@ export function BattleArea() {
 
   return (
     <div className="mb-4 text-center">
-      {/* Turn indicator - Castle banner style */}
       <div
         className={`
           inline-block px-6 py-2 rounded-full
@@ -18,22 +17,21 @@ export function BattleArea() {
         style={{
           ...(isPlayerTurn
             ? {
-                background: 'linear-gradient(135deg, rgba(74, 155, 92, 0.3) 0%, rgba(45, 31, 66, 0.9) 100%)',
-                border: '2px solid #4A9B5C',
-                color: '#4A9B5C',
-                boxShadow: '0 0 20px rgba(74, 155, 92, 0.3)',
-                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                background: 'linear-gradient(135deg, rgba(92, 138, 74, 0.3) 0%, rgba(212, 196, 168, 0.9) 100%)',
+                border: '2px solid #5C8A4A',
+                color: '#4A5C2D',
+                boxShadow: '0 0 20px rgba(92, 138, 74, 0.3)',
               }
             : {
-                background: 'linear-gradient(135deg, rgba(155, 45, 90, 0.3) 0%, rgba(45, 31, 66, 0.9) 100%)',
-                border: '2px solid #9B2D5A',
-                color: '#C4456E',
-                boxShadow: '0 0 20px rgba(155, 45, 90, 0.3)',
-                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                background: 'linear-gradient(135deg, rgba(196, 72, 62, 0.3) 0%, rgba(212, 196, 168, 0.9) 100%)',
+                border: '2px solid #C4483E',
+                color: '#8B3029',
+                boxShadow: '0 0 20px rgba(196, 72, 62, 0.3)',
               }),
+          fontFamily: 'Georgia, serif',
         }}
       >
-        {isPlayerTurn ? '⚔️ 你的回合' : '💀 敌方回合'}
+        {isPlayerTurn ? '⚔️ 你的回合' : '💀 妖物回合'}
       </div>
     </div>
   );

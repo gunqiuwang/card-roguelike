@@ -17,38 +17,43 @@ export function Hand() {
       className="
         w-full
         bg-gradient-to-t
-        from-[#1A1128] via-[#251A38] to-transparent
+        from-[#E8DFD0] via-[#F5EDE0] to-transparent
         pb-4 pt-3
-        border-t border-[#3D2A55]
       "
-      style={{ boxShadow: '0 -10px 30px rgba(26, 17, 40, 0.8)' }}
+      style={{ borderTop: '2px solid #D4C4A8' }}
     >
-      {/* Deck/Discard Info - Fantasy style */}
+      {/* 牌堆信息 - 卷轴风格 */}
       <div className="flex justify-center gap-6 mb-3">
         <div
           className="flex items-center gap-2 px-3 py-1 rounded-full"
-          style={{ background: 'rgba(45, 31, 66, 0.8)', border: '1px solid #3D2A55' }}
+          style={{
+            background: 'rgba(212, 196, 168, 0.8)',
+            border: '1px solid #B8A88C',
+          }}
         >
-          <span className="text-lg">🎴</span>
-          <span className="text-sm font-medium text-[#A89B8C]">
+          <span className="text-lg">📜</span>
+          <span className="text-sm font-medium text-[#4A4541]">
             {player.drawPile.length}
           </span>
-          <span className="text-xs text-[#8B7355]">抽牌堆</span>
+          <span className="text-xs text-[#7A746D]">抽</span>
         </div>
 
         <div
           className="flex items-center gap-2 px-3 py-1 rounded-full"
-          style={{ background: 'rgba(45, 31, 66, 0.8)', border: '1px solid #3D2A55' }}
+          style={{
+            background: 'rgba(212, 196, 168, 0.8)',
+            border: '1px solid #B8A88C',
+          }}
         >
-          <span className="text-lg">🗑️</span>
-          <span className="text-sm font-medium text-[#A89B8C]">
+          <span className="text-lg">📋</span>
+          <span className="text-sm font-medium text-[#4A4541]">
             {player.discardPile.length}
           </span>
-          <span className="text-xs text-[#8B7355]">弃牌堆</span>
+          <span className="text-xs text-[#7A746D]">弃</span>
         </div>
       </div>
 
-      {/* Cards - Fantasy card table feel */}
+      {/* 手牌区域 */}
       <div
         className="
           flex justify-center
@@ -59,16 +64,14 @@ export function Hand() {
         "
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(212, 134, 61, 0.3) transparent',
+          scrollbarColor: 'rgba(45, 41, 38, 0.2) transparent',
         }}
       >
         {player.hand.map((card, index) => (
           <div
             key={card.id}
             className="snap-center shrink-0"
-            style={{
-              animationDelay: `${index * 50}ms`,
-            }}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <Card
               card={card}
@@ -79,13 +82,13 @@ export function Hand() {
         ))}
       </div>
 
-      {/* Empty hand message */}
+      {/* 空手牌提示 */}
       {player.hand.length === 0 && (
         <div
-          className="text-center py-4 text-sm text-[#8B7355]"
+          className="text-center py-4 text-sm text-[#7A746D]"
           style={{ fontFamily: 'Georgia, serif' }}
         >
-          抽牌堆中没有卡牌...
+          符纸耗尽...
         </div>
       )}
     </div>

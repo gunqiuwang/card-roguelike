@@ -1,5 +1,6 @@
 export type CardType = 'attack' | 'defense' | 'heal';
 export type CardRarity = 'starter' | 'common' | 'rare';
+export type School = '斩妖' | '御灵' | '符术';
 
 export interface Card {
   id: string;
@@ -9,8 +10,18 @@ export interface Card {
   description: string;
   value: number; // damage, block, or heal amount
   rarity: CardRarity;
-  multiHit?: number; // for double-hit type attacks
+  school: School;
+
+  // Optional mechanics
+  multiHit?: number; // for multi-hit attacks
+  ignoreBlock?: boolean; // for ignoring defense
   counterDamage?: number; // for counter attacks
+  healValue?: number; // additional heal
+  reflectDamage?: number; // damage reflection
+  lifesteal?: number; // percentage of damage converted to healing
+  drawCards?: number; // cards to draw
+  damageReduction?: number; // reduce incoming damage
+  debuffDamage?: number; // reduce enemy attack
 }
 
 export interface PlayerState {
@@ -25,6 +36,8 @@ export interface PlayerState {
   drawPile: Card[];
   hand: Card[];
   pendingCounterDamage?: number;
+  damageReduction?: number; // 回合内受到伤害减少
+  lifesteal?: number; // 回合内伤害转化治疗
 }
 
 export type EnemyIntent = 'attack' | 'charge';
@@ -38,6 +51,7 @@ export interface Enemy {
   attack: number;
   intent: EnemyIntent;
   type: EnemyType;
+  attackReduction?: number; // 攻击力降低（毒/debuff）
 }
 
 export type GamePhase = 'idle' | 'battle' | 'victory' | 'defeat' | 'reward';

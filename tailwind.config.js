@@ -7,51 +7,52 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary - Warm Gold (magical accent)
-        primary: '#D4863D',
-        'primary-light': '#E9A84D',
-        'primary-dark': '#A66A2E',
+        // Primary - 朱砂红
+        primary: '#C4483E',
+        'primary-light': '#E06B5A',
+        'primary-dark': '#8B3029',
 
-        // Background - Deep Purple/Black (castle dungeon)
-        bg: '#1A1128',
-        'bg-light': '#251A38',
-        'bg-dark': '#0D0915',
+        // Background - 宣纸色
+        bg: '#F5EDE0',
+        'bg-light': '#FAF6EE',
+        'bg-dark': '#E8DFD0',
 
-        // Surface - Slightly lighter for panels
-        surface: '#2D1F42',
-        'surface-light': '#3D2A55',
-        'surface-dark': '#1E142E',
+        // Surface - 牛皮纸
+        surface: '#D4C4A8',
+        'surface-light': '#E5D9C3',
+        'surface-dark': '#B8A88C',
 
-        // Card - Parchment
-        'card-bg': '#F5E6D3',
+        // Card - 素描纸
+        'card-bg': '#FDF8F0',
         'card-border': '#8B7355',
 
-        // Accent - Wine Red
-        accent: '#9B2D5A',
-        'accent-light': '#C4456E',
-        'accent-dark': '#6B1E3D',
+        // Ink - 墨色
+        ink: '#2D2926',
+        'ink-light': '#4A4541',
+        'ink-muted': '#7A746D',
+
+        // Seal - 印章朱砂
+        seal: '#C4483E',
+        'seal-light': '#D66B5A',
 
         // Gold
-        gold: '#E9B872',
+        gold: '#C9A227',
+        'gold-light': '#E5C04D',
+
+        // UI
+        energy: '#4A7C9B',
+        health: '#C45C4A',
+        block: '#5C8A4A',
+
+        // Schools
+        'school-zhanyao': '#8B3029',
+        'school-yuling': '#2D4A5C',
+        'school-fushu': '#4A5C2D',
 
         // Rarity
         'rarity-starter': '#8B7355',
         'rarity-common': '#4A7C9B',
         'rarity-rare': '#9B4DCA',
-
-        // Type colors
-        'type-attack': '#C44536',
-        'type-defense': '#4A7C9B',
-        'type-heal': '#4A9B5C',
-
-        // UI elements
-        energy: '#F5D76E',
-        health: '#E74C3C',
-        block: '#5C9CEC',
-
-        // Enemy intent
-        'intent-attack': '#E74C3C',
-        'intent-charge': '#9B59B6',
       },
       borderRadius: {
         sm: '0.5rem',
@@ -60,14 +61,15 @@ export default {
         xl: '1.5rem',
       },
       fontFamily: {
-        heading: 'Georgia, "Times New Roman", serif',
+        heading: 'Georgia, "Times New Roman", "Noto Serif SC", serif',
         card: 'Georgia, serif',
+        chinese: '"Noto Serif SC", "STSong", serif',
       },
       boxShadow: {
-        'card': '0 4px 12px rgba(0,0,0,0.4)',
-        'card-hover': '0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(212, 134, 61, 0.3)',
-        'glow': '0 0 20px rgba(212, 134, 61, 0.3)',
-        'glow-strong': '0 0 30px rgba(212, 134, 61, 0.5)',
+        'card': '0 4px 12px rgba(45, 41, 38, 0.15)',
+        'card-hover': '0 8px 24px rgba(45, 41, 38, 0.25)',
+        'seal': '0 2px 8px rgba(196, 72, 62, 0.3)',
+        'paper': '0 2px 4px rgba(45, 41, 38, 0.1)',
       },
     },
   },

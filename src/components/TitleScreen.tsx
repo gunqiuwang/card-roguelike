@@ -18,157 +18,163 @@ export function TitleScreen() {
         overflow-hidden
       "
       style={{
-        background: 'linear-gradient(180deg, #1A1128 0%, #0D0915 100%)',
+        background: 'linear-gradient(180deg, #F5EDE0 0%, #E8DFD0 50%, #F5EDE0 100%)',
       }}
     >
-      {/* Background decoration - castle towers silhouette */}
+      {/* 宣纸纹理 */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-10"
+        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* 山水云雾背景效果 */}
+      <div
+        className="absolute inset-0 pointer-events-none"
         style={{
           background: `
-            radial-gradient(ellipse at 20% 100%, rgba(155, 45, 90, 0.4) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 100%, rgba(212, 134, 61, 0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 80%, rgba(155, 45, 90, 0.2) 0%, transparent 40%)
+            radial-gradient(ellipse at 20% 80%, rgba(139, 115, 85, 0.15) 0%, transparent 40%),
+            radial-gradient(ellipse at 80% 70%, rgba(196, 72, 62, 0.1) 0%, transparent 35%),
+            radial-gradient(ellipse at 50% 50%, rgba(212, 196, 168, 0.3) 0%, transparent 50%)
           `,
         }}
       />
 
-      {/* Floating particles effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 rounded-full animate-float-up"
-            style={{
-              left: `${10 + (i * 8)}%`,
-              top: `${60 + (i % 3) * 15}%`,
-              background: i % 3 === 0 ? '#D4863D' : i % 3 === 1 ? '#9B2D5A' : '#4A9B5C',
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + (i % 3)}s`,
-              opacity: 0.4,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Main content */}
+      {/* 主内容 */}
       <div className="relative z-10 flex flex-col items-center gap-8">
-        {/* Title Card - Castle Crest Style */}
+        {/* 标题卷轴 */}
         <div
           className="
             flex flex-col items-center
-            p-8 rounded-3xl
+            p-8 rounded-xl
             animate-fade-in
           "
           style={{
-            background: 'linear-gradient(180deg, rgba(45, 31, 66, 0.95) 0%, rgba(26, 17, 40, 0.98) 100%)',
-            border: '3px solid #3D2A55',
-            boxShadow: '0 0 60px rgba(155, 45, 90, 0.3), 0 0 120px rgba(212, 134, 61, 0.1)',
+            background: 'linear-gradient(180deg, rgba(253, 248, 240, 0.98) 0%, rgba(232, 223, 208, 0.98) 100%)',
+            border: '4px solid #8B7355',
+            boxShadow: '0 8px 40px rgba(45, 41, 38, 0.2), 0 0 60px rgba(139, 115, 85, 0.1)',
           }}
         >
-          {/* Game Title */}
+          {/* 印章标记 */}
           <div
-            className="text-center mb-2"
+            className="text-4xl mb-4 animate-seal-stamp"
             style={{
-              fontFamily: 'Georgia, serif',
-              textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+              filter: 'drop-shadow(0 2px 4px rgba(196, 72, 62, 0.3))',
             }}
           >
+            🏯
+          </div>
+
+          {/* 游戏标题 */}
+          <div
+            className="text-center mb-2"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
             <div
-              className="text-sm tracking-[0.3em] mb-2"
-              style={{ color: '#8B7355' }}
+              className="text-xs tracking-[0.3em] mb-2"
+              style={{ color: '#7A746D' }}
             >
-              DUNGEON CARD
+              神怪卡牌
             </div>
             <h1
               className="text-5xl md:text-6xl font-bold"
               style={{
-                background: 'linear-gradient(180deg, #E9B872 0%, #D4863D 50%, #A66A2E 100%)',
+                background: 'linear-gradient(180deg, #C4483E 0%, #8B3029 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: 'none',
+                color: '#C4483E',
               }}
             >
-              卡牌地城
+              山海符箓
             </h1>
             <div
               className="text-sm tracking-widest mt-2"
-              style={{ color: '#9B2D5A' }}
+              style={{ color: '#4A4541' }}
             >
-              DUNGEON CARDS
+              SHAN HAI talisman
             </div>
           </div>
 
-          {/* Decorative line */}
+          {/* 装饰线 */}
           <div
-            className="w-32 h-px my-4"
+            className="w-40 h-px my-4"
             style={{
-              background: 'linear-gradient(90deg, transparent, #D4863D, transparent)',
+              background: 'linear-gradient(90deg, transparent, #8B7355, transparent)',
             }}
           />
 
-          {/* Subtitle */}
+          {/* 副标题 */}
           <div
             className="text-center text-sm"
-            style={{ color: '#A89B8C', fontFamily: 'Georgia, serif' }}
+            style={{ color: '#4A4541', fontFamily: 'Georgia, serif' }}
           >
-            <p>魔王城堡的卡牌挑战</p>
-            <p className="mt-1 text-xs">建立你的牌组，击败黑暗势力</p>
+            <p>斩杀妖魔 · 御灵护体 · 符术疗心</p>
+            <p className="mt-1 text-xs" style={{ color: '#7A746D' }}>
+              三派合一，化解山海凶兽
+            </p>
           </div>
 
-          {/* Card icons decoration */}
-          <div className="flex gap-4 mt-6 text-3xl">
-            <span>⚔️</span>
-            <span>🛡️</span>
-            <span>💚</span>
-            <span>🔥</span>
+          {/* 派系图标 */}
+          <div className="flex gap-6 mt-6 text-3xl">
+            <div className="flex flex-col items-center">
+              <span>⚔️</span>
+              <span className="text-xs mt-1" style={{ color: '#8B3029' }}>斩妖</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span>🛡️</span>
+              <span className="text-xs mt-1" style={{ color: '#2D4A5C' }}>御灵</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span>☯️</span>
+              <span className="text-xs mt-1" style={{ color: '#4A5C2D' }}>符术</span>
+            </div>
           </div>
         </div>
 
-        {/* Start Button - Castle Gate style */}
+        {/* 开始按钮 - 印章风格 */}
         <button
           onClick={handleStartGame}
           className="
             min-h-[56px] min-w-[200px]
             px-10 py-4
-            rounded-xl
+            rounded-lg
             font-bold text-lg
             transition-all duration-300
             active:scale-95
-            animate-pulse-once
           "
           style={{
-            background: 'linear-gradient(180deg, #9B2D5A 0%, #6B1E3D 100%)',
-            border: '3px solid #C4456E',
-            color: '#F5E6D3',
-            boxShadow: '0 4px 20px rgba(155, 45, 90, 0.5), 0 0 40px rgba(155, 45, 90, 0.2)',
+            background: 'linear-gradient(180deg, #C4483E 0%, #8B3029 100%)',
+            border: '4px solid #8B3029',
+            color: '#FDF8F0',
+            boxShadow: '0 4px 20px rgba(196, 72, 62, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
             fontFamily: 'Georgia, serif',
-            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)',
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.boxShadow = '0 6px 30px rgba(155, 45, 90, 0.7), 0 0 60px rgba(155, 45, 90, 0.3)';
+            e.currentTarget.style.boxShadow = '0 6px 30px rgba(196, 72, 62, 0.6), inset 0 1px 0 rgba(255,255,255,0.2)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 20px rgba(155, 45, 90, 0.5), 0 0 40px rgba(155, 45, 90, 0.2)';
+            e.currentTarget.style.boxShadow = '0 4px 20px rgba(196, 72, 62, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)';
           }}
         >
-          ⚔️ 开始冒险
+          🏯 进入山海
         </button>
 
-        {/* Version/credit */}
+        {/* 版本信息 */}
         <div
           className="text-xs mt-8"
-          style={{ color: '#5C4A3D' }}
+          style={{ color: '#B8A88C' }}
         >
-          v0.2 - UI Redesign
+          v0.3 - 山海经神怪世界观
         </div>
       </div>
 
-      {/* Bottom decorative border */}
+      {/* 底部装饰 */}
       <div
         className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
         style={{
-          background: 'linear-gradient(180deg, transparent, rgba(45, 31, 66, 0.5))',
+          background: 'linear-gradient(180deg, transparent, rgba(212, 196, 168, 0.5))',
         }}
       />
     </div>
