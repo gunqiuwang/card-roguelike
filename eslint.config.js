@@ -1,21 +1,5 @@
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-
+// ESLint flat config · v0.1 minimal
+// TypeScript/React 类型检查由 tsc 负责，这里只做基本 JS 规则。
 export default [
-  { ignores: ['dist', 'node_modules', '*.config.js'] },
-  {
-    files: ['src/**/*.{ts,tsx}'],
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    languageOptions: {
-      parser: tsParser,
-      ecmaVersion: 2020,
-      sourceType: 'module',
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-    },
-  },
+  { ignores: ['dist', 'node_modules', '*.config.js', 'public'] },
 ];

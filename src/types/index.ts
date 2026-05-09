@@ -1,101 +1,65 @@
-export type CardType = 'attack' | 'defense' | 'heal' | 'skill';
-export type CardRarity = 'starter' | 'common' | 'rare';
-export type School = '斩妖' | '御灵' | '符术';
+/**
+ * 全局类型定义
+ *
+ * v0.1 只定义视觉样机需要的最小类型集。战斗/节点等类型 v0.2 再补。
+ */
+
+// ============================================================================
+// 卡牌
+// ============================================================================
+export type CardType = 'fu' | 'faqi' | 'yao';
+// fu：符咒，faqi：法器（被动/触发），yao：妖卡（封妖得到）
+
+export type CardRarity = 'starter' | 'common' | 'rare' | 'epic' | 'legend';
+
+export type School = 'zhanyao' | 'yuling' | 'fushu' | 'neutral';
 
 export interface Card {
   id: string;
   name: string;
   type: CardType;
-  cost: number;
-  description: string;
-  value: number; // damage, block, or heal amount
   rarity: CardRarity;
   school: School;
-
-  // Optional mechanics
-  multiHit?: number; // for multi-hit attacks
-  ignoreBlock?: boolean; // for ignoring defense
-  counterDamage?: number; // for counter attacks
-  healValue?: number; // additional heal
-  reflectDamage?: number; // damage reflection
-  lifesteal?: number; // percentage of damage converted to healing
-  drawCards?: number; // cards to draw
-  damageReduction?: number; // reduce incoming damage
-  debuffDamage?: number; // reduce enemy attack
-
-  // 符术派新增机制
-  gainEnergy?: number; // 获得灵气
-  reduceCost?: number; // 本回合下一张牌费用减少
-  chainDraw?: number; // 本回合每出一张牌则抽牌
-
-  // 斩妖派机制
-  comboBonus?: boolean; // 斩击狂热加成，连续出斩妖攻击牌时伤害递增
+  cost: number; // 能量消耗（气）
+  description: string; // 支持简单富文本（{damage}{block}{draw}）
+  flavor?: string; // flavor text，引自山海经或原创
+  /** 立绘路径，若为空则 fallback 到墨影 SVG */
+  artSrc?: string;
+  /** 无图时使用的剪影类型 */
+  silhouette?: SilhouetteKind;
 }
 
-export interface PlayerState {
-  hp: number;
-  maxHp: number;
-  energy: number;
-  maxEnergy: number;
-  block: number;
-  gold: number;
-  deck: Card[];
-  discardPile: Card[];
-  drawPile: Card[];
-  hand: Card[];
-  pendingCounterDamage?: number;
-  damageReduction?: number;
-  lifesteal?: number;
-  // 符术派状态
-  pendingEnergyGain?: number; // 下回合开始时获得灵气
-  pendingCostReduction?: number; // 本回合下一张牌费用减少
-  cardsPlayedThisTurn?: number; // 本回合已出牌数
-  // 斩妖派状态
-  zhanyaoCombo?: number; // 斩妖连击计数，连续出斩妖攻击牌时递增
-  // 御灵派状态
-  shieldEcho?: number; // 护体回响值，本回合累计护盾值
-  // 符术派状态
-  fuchainCount?: number; // 符链计数，本回合累计符术牌数（-1表示已触发）
-  // 本回合造成伤害（用于Boss打断检测）
-  damageDealtThisTurn?: number;
-}
+// ============================================================================
+// 妖（敌人，可被封成卡）
+// ============================================================================
+export type YaoRank = 'C' | 'B' | 'S'; // 普通/精英/Boss
 
-export type EnemyIntent = 'attack' | 'charge';
-export type EnemyType = 'normal' | 'elite' | 'boss';
-
-export interface Enemy {
+export interface Yao {
   id: string;
   name: string;
+  rank: YaoRank;
+  chapter: string;
   hp: number;
-  maxHp: number;
-  attack: number;
-  intent: EnemyIntent;
-  type: EnemyType;
-  attackReduction?: number;
-  // Boss蓄力机制
-  isCharging?: boolean; // 是否正在蓄力
-  chargeTurnsLeft?: number; // 蓄力剩余回合
-  willUseUltimate?: boolean; // 下次攻击是否大妖神通
+  flavor: string; // 击败前说的话（世界观）
+  /** 被封后变成的那张卡 */
+  sealedCard: Omit<Card, 'id'>;
+  /** 封印符阵（v0.3 才用） */
+  sealPattern?: string[];
+  /** 立绘路径（Boss 级优先生图） */
+  artSrc?: string;
+  silhouette: SilhouetteKind;
 }
 
-export type GamePhase = 'idle' | 'battle' | 'victory' | 'defeat' | 'reward';
-
-export interface GameState {
-  player: PlayerState;
-  enemy: Enemy | null;
-  phase: GamePhase;
-  isPlayerTurn: boolean;
-  turn: number;
-  rewardOptions: Card[];
-  preferredSchool?: School;
-}
-
-export type GameAction =
-  | { type: 'DRAW_CARDS'; payload: number }
-  | { type: 'PLAY_CARD'; payload: { card: Card; cardIndex: number } }
-  | { type: 'END_TURN' }
-  | { type: 'START_TURN' }
-  | { type: 'SELECT_REWARD'; payload: Card }
-  | { type: 'RESET_GAME'; payload?: { preferredSchool?: string } }
-  | { type: 'LOAD_GAME'; payload: { player: PlayerState; enemy: Enemy; turn: number; isPlayerTurn: boolean; phase: GamePhase } }
-  | { type: 'SET_INTENT' };
+// ============================================================================
+// 墨影剪影类型（无立绘时的 fallback）
+// ============================================================================
+export type SilhouetteKind =
+  | 'fox'      // 狐
+  | 'serpent'  // 蛇
+  | 'beast'    // 四足兽
+  | 'bird'     // 鸟
+  | 'fish'     // 鱼
+  | 'humanoid' // 人形
+  | 'talisman' // 符咒
+  | 'relic'    // 法器
+  | 'hero';    // 主角
