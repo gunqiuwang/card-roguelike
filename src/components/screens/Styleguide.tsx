@@ -113,11 +113,11 @@ export function Styleguide({ onBack }: Props) {
           </div>
           <p className="mt-4 text-mist text-sm">
             鼠标悬停/移动端 tap 可看<span className="text-parchment-light">弱柔光上浮</span>。
-            稀有度分档：
-            <span style={{ color: rarityTheme.common.edge }}> R·暗岩纹铜</span> ·
-            <span style={{ color: rarityTheme.rare.edge }}> SR·青纹古铜</span> ·
-            <span style={{ color: rarityTheme.epic.edge }}> SSR·哑光金纹</span> ·
-            <span style={{ color: rarityTheme.legend.edge }}> SP·苍玉玄纹</span>
+            稀有度五阶：
+            <span style={{ color: rarityTheme.common.edgeLight }}> 凡·陨岩铜</span> ·
+            <span style={{ color: rarityTheme.rare.edgeLight }}> 珍·沉青铜</span> ·
+            <span style={{ color: rarityTheme.epic.edgeLight }}> 灵·鎏金哑纹</span> ·
+            <span style={{ color: rarityTheme.legend.edgeLight }}> 玄·玄玉血纹</span>
           </p>
         </Section>
 
@@ -269,8 +269,9 @@ export function Styleguide({ onBack }: Props) {
             </div>
           </div>
           <p className="mt-4 text-mist text-sm">
-            起手卡无徽章 · R 单环 · SR 双环 · SSR 双环加红点 · SP 三环加虚线。
-            所有环色从稀有度主题色派生，不使用亮金。
+            起手卡无徽章 · 凡（陨岩铜 · 单环）· 珍（沉青铜 · 双环 + 朱点）·
+            灵（鎏金哑纹 · 双环 + 内填）· 玄（玄玉血纹 · 三环含虚线）。
+            所有环色从稀有度主题派生 · 绝不使用亮金。
           </p>
         </Section>
 
@@ -303,9 +304,9 @@ export function Styleguide({ onBack }: Props) {
             <Checkitem label="色板：ember 已调沉 · 整体暗调" />
             <Checkitem label="字体：有文化厚度 · 非廉价" />
             <Checkitem label="卡牌 · 边框雕刻分层感（双层 + 顶受光 + 底暗槽）" />
-            <Checkitem label="卡牌 · 四档主题色正确：R 暗岩铜 / SR 青纹古铜 / SSR 哑光金 / SP 苍玉玄" />
-            <Checkitem label="卡牌 · 四角暗纹是否『凑近才见』" />
-            <Checkitem label="卡牌 · 悬浮仅 4px 上浮 + 弱柔光（无大金边流光）" />
+            <Checkitem label="卡牌 · 四档主题色正确：凡 陨岩铜 / 珍 沉青铜 / 灵 鎏金哑纹 / 玄 玄玉血纹" />
+            <Checkitem label="卡牌 · 金属带边框是否有『铸造厚重感』（不像塑料画框）" />
+            <Checkitem label="卡牌 · 卡名/描述文字在亚麻底上是否清晰可读（重点！）" />
             <Checkitem label="卡牌 · 稀有度徽章『小而雅』不抢戏" />
             <Checkitem label="按钮 · 气质对（非卡通、非中二）" />
             <Checkitem label="全局云雾『低强度 · 不干扰』" />

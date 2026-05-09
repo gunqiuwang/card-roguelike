@@ -158,23 +158,23 @@ button:disabled {
 }
 
 /* ============================================================
- * 卡片 · 内敛史诗 · 雕刻分层
+ * 卡片 · 金属雕刻 · 暗黑洪荒
  * 结构（外到内）：
  *   .card-shell           外壳 · 厚度阴影 · 上浮动效
- *   .card-frame-main      主边框 · 1px 稀有度色 + 顶受光 + 底暗槽（内凹浮雕）
- *   .card-frame-muted     亚边 · inset 4px · 1px edgeMuted（分层）
+ *   .card-metal-band      3px 金属缎面带（主边框）
+ *   .card-metal-noise     金属噪点覆层（只叠在边框上）
+ *   .card-inner-ink       内缩亚边 + 黑色内线
  *
- * 用 CSS 变量承接稀有度主题：
- *   --edge              主边色
- *   --edge-muted        亚边色
- *   --edge-highlight    顶部受光 rgba
- *   --edge-shadow       底部暗槽 rgba
- *   --glow              hover 弱柔光 rgba
+ * 金属带原理：
+ *   · 外层 div 填充 linear-gradient（上亮 / 中色 / 下暗的 3 段）
+ *   · 用 padding + background-clip 把中央挖空，只留 3px 金属环
+ *   · 外层和内层各加 1px 纯黑 inset 线 → 金属"卡"在黑槽中
+ *   · 再叠一层 SVG 噪点，铸造件肌理
  *
- * 禁止事项：
- *   × 宽金边 / 多 px 外发光
- *   × 悬浮时的大范围光晕（原 20px glow 已删除）
- *   × 动态渐变流光
+ * CSS 变量：
+ *   --edge / --edge-light / --edge-dark  缎面三段色
+ *   --edge-muted                         亚边色
+ *   --glow                               hover 弱柔光
  * ============================================================ */
 .card-shell {
   background: transparent;
@@ -182,11 +182,11 @@ button:disabled {
   border: none;
   outline: none;
   border-radius: 16px;
-  /* 外层厚度阴影（模拟卡片在桌面上的"分量"） */
+  /* 外层厚度阴影（模拟卡片的分量） */
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.55),
-    0 6px 14px rgba(0, 0, 0, 0.4),
-    0 12px 28px rgba(0, 0, 0, 0.25);
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 8px 16px rgba(0, 0, 0, 0.45),
+    0 16px 32px rgba(0, 0, 0, 0.3);
   transition:
     transform 300ms var(--ease-snap),
     box-shadow 300ms var(--ease-snap);
@@ -194,35 +194,66 @@ button:disabled {
 .card-shell.is-interactive:hover {
   transform: translateY(-4px);
   box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.6),
-    0 10px 20px rgba(0, 0, 0, 0.5),
-    0 18px 36px rgba(0, 0, 0, 0.3),
-    /* 弱柔光：半径 12px，强度不超 0.3 */
-    0 0 12px var(--glow, rgba(166, 140, 91, 0.25));
+    0 3px 6px rgba(0, 0, 0, 0.65),
+    0 12px 24px rgba(0, 0, 0, 0.5),
+    0 20px 40px rgba(0, 0, 0, 0.32),
+    /* 弱柔光：12px 半径，强度不超 0.32 */
+    0 0 14px var(--glow, rgba(166, 140, 91, 0.28));
 }
 
-/* Layer B · 主边框 · 1px 主色 + inset 受光/暗槽（内凹浮雕） */
-.card-frame-main {
-  border: 1px solid var(--edge, #6B4A2A);
+/* Layer B · 金属缎面带 · 核心视觉
+   用 background 画整张渐变，再用 padding + bg-clip/content-box 把中央挖空 */
+.card-metal-band {
+  padding: 3px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--edge-light, #95785a) 0%,
+      var(--edge-light, #95785a) 8%,
+      var(--edge, #6B4A2A) 35%,
+      var(--edge, #6B4A2A) 65%,
+      var(--edge-dark, #3E2611) 92%,
+      var(--edge-dark, #3E2611) 100%
+    );
+  /* 用 mask 只让最外 3px 环显示，中央镂空 */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  /* 外缘 1px 黑线 + 内缘淡高光（形成凹槽感） */
   box-shadow:
-    /* 顶部受光 1px（非常细） */
-    inset 0 1px 0 var(--edge-highlight, rgba(142, 102, 62, 0.35)),
-    /* 底部暗槽 1px（雕刻凹陷背光） */
-    inset 0 -1px 0 var(--edge-shadow, rgba(10, 6, 3, 0.75)),
-    /* 外缘极细黑线，让边框脱离背景 */
-    0 0 0 1px rgba(0, 0, 0, 0.45);
+    0 0 0 1px rgba(0, 0, 0, 0.85),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
   transition: box-shadow 300ms var(--ease-snap);
+}
+
+/* Layer B' · 金属噪点（铸造件肌理） */
+.card-metal-noise {
+  padding: 3px;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='2' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0'/></filter><rect width='300' height='300' filter='url(%23m)'/></svg>");
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  mix-blend-mode: overlay;
+  opacity: 0.55;
   pointer-events: none;
 }
 
-/* Layer C · 亚边 · 内缩 · 雕刻分层感 */
-.card-frame-muted {
-  inset: 3px;
-  border: 1px solid var(--edge-muted, #4A321C);
+/* Layer C · 内缩亚边（1px edgeMuted + 顶底极细高光/暗槽） */
+.card-inner-ink {
+  inset: 4px;
+  border: 1px solid var(--edge-muted, #3E2611);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
-  opacity: 0.8;
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.25);
+  opacity: 1;
+  pointer-events: none;
 }
 
 /* ============================================================

@@ -78,19 +78,29 @@ export const rarityBorder = {
 } as const;
 
 // ============================================================================
-// 稀有度主题 · R / SR / SSR / SP
-// 风格指南：低调高级、内敛史诗、有雕刻分层、暗纹肌理、弱柔光。
+// 稀有度主题 · 五阶汉字名：凡 / 珍 / 灵 / 玄 / 神
+// 风格指南：低调高级、内敛史诗、暗黑洪荒、金属雕刻。
 //           禁止浮夸流光和刺眼大金边。
 //
-// 每档色值成组：
-//   label         玩家看到的简称（R/SR/SSR/SP）
-//   nameCn        中文雅称（暗岩纹铜…）
-//   edge          主边色（最显眼那一条 1px 细边）
-//   edgeMuted     内缩亚边（饱和度更低 · 雕刻分层用）
-//   highlight     顶部受光 1px（模拟金属被光线打到那一丝亮）
-//   shadow        底部暗槽 1px（模拟雕刻凹陷的背光）
-//   pattern       暗纹颜色（四角/内部暗纹，opacity ≤ 0.25 使用）
-//   glow          hover 柔光色（rgba，不超过 0.3 alpha）
+// 内部代号 → 玩家看到的名字（彻底放弃 R/SR/SSR/SP 这种日系手游黑话）
+//   starter  起手（无徽章）
+//   common   凡      Mortal       陨岩铜     凡品，人间可得
+//   rare     珍      Treasure     沉青铜     珍品，罕见
+//   epic     灵      Numinous     鎏金哑纹   有灵，通晓
+//   legend   玄      Mystic       玄玉血纹   玄品，近神
+//   divine   神      Divine       神骸金    （预留，终章/限定用）
+//
+// 每档色值成组（金属质感必需）：
+//   label         玩家看到的汉字名
+//   nameCn        材质描述词
+//   edge          主边色 · 金属带中段
+//   edgeLight     缎面上光带（浅）
+//   edgeDark      缎面下暗带（深）
+//   edgeMuted     内缩亚边
+//   highlight     顶部受光（极细）
+//   shadow        底部暗槽（极细）
+//   pattern       四角暗纹
+//   glow          hover 弱柔光（≤ 0.3 alpha）
 //   badgeRing     徽章环主色
 //   badgeText     徽章中心字色
 // ============================================================================
@@ -98,66 +108,76 @@ export const rarityTheme = {
   starter: {
     label: '',
     nameCn: '',
-    edge: '#4E4638',        // 近乎无色
+    edge: '#4E4638',
+    edgeLight: '#6B5F47',
+    edgeDark: '#2F2920',
     edgeMuted: '#3A3327',
-    highlight: 'rgba(169,150,110,0.25)',
-    shadow: 'rgba(0,0,0,0.5)',
-    pattern: 'rgba(166,140,91,0.18)',
+    highlight: 'rgba(169,150,110,0.22)',
+    shadow: 'rgba(0,0,0,0.55)',
+    pattern: 'rgba(166,140,91,0.2)',
     glow: 'rgba(166,140,91,0.18)',
     badgeRing: '#6B6259',
     badgeText: '#6B6259',
   },
   common: {
-    // R · 暗岩纹铜
-    label: 'R',
-    nameCn: '暗岩纹铜',
-    edge: '#6B4A2A',        // 暗岩铜主色
-    edgeMuted: '#4A321C',
-    highlight: 'rgba(142,102,62,0.35)',
-    shadow: 'rgba(10,6,3,0.75)',
-    pattern: 'rgba(107,74,42,0.22)',
-    glow: 'rgba(107,74,42,0.25)',
-    badgeRing: '#6B4A2A',
-    badgeText: '#4A321C',
+    // 凡 · 陨岩铜
+    label: '凡',
+    nameCn: '陨岩铜',
+    edge: '#7A5432',
+    edgeLight: '#A57344',
+    edgeDark: '#3E2611',
+    edgeMuted: '#52371D',
+    highlight: 'rgba(180,128,72,0.42)',
+    shadow: 'rgba(10,6,3,0.82)',
+    pattern: 'rgba(122,84,50,0.28)',
+    glow: 'rgba(122,84,50,0.28)',
+    badgeRing: '#7A5432',
+    badgeText: '#3E2611',
   },
   rare: {
-    // SR · 青纹古铜
-    label: 'SR',
-    nameCn: '青纹古铜',
-    edge: '#5A7E6A',        // 青铜带绿锈
+    // 珍 · 沉青铜
+    label: '珍',
+    nameCn: '沉青铜',
+    edge: '#6B9282',
+    edgeLight: '#95B9A8',
+    edgeDark: '#2F4A3C',
     edgeMuted: '#3F5A4A',
-    highlight: 'rgba(120,155,130,0.32)',
-    shadow: 'rgba(5,12,9,0.8)',
-    pattern: 'rgba(74,107,90,0.22)',
-    glow: 'rgba(90,126,106,0.28)',
-    badgeRing: '#5A7E6A',
-    badgeText: '#3F5A4A',
+    highlight: 'rgba(140,180,155,0.42)',
+    shadow: 'rgba(5,12,9,0.85)',
+    pattern: 'rgba(88,124,104,0.28)',
+    glow: 'rgba(107,146,130,0.3)',
+    badgeRing: '#6B9282',
+    badgeText: '#2F4A3C',
   },
   epic: {
-    // SSR · 哑光金纹（注意是"哑光"—— 非鎏金、非高光）
-    label: 'SSR',
-    nameCn: '哑光金纹',
-    edge: '#A08248',        // 哑金
-    edgeMuted: '#76602F',
-    highlight: 'rgba(190,160,100,0.38)',
-    shadow: 'rgba(14,10,4,0.85)',
-    pattern: 'rgba(160,130,72,0.22)',
-    glow: 'rgba(160,130,72,0.3)',
-    badgeRing: '#A08248',
-    badgeText: '#76602F',
+    // 灵 · 鎏金哑纹（哑光，非高光鎏金）
+    label: '灵',
+    nameCn: '鎏金哑纹',
+    edge: '#B39154',
+    edgeLight: '#DBB878',
+    edgeDark: '#6A4F1F',
+    edgeMuted: '#7E6226',
+    highlight: 'rgba(220,190,120,0.48)',
+    shadow: 'rgba(14,10,4,0.88)',
+    pattern: 'rgba(179,145,84,0.3)',
+    glow: 'rgba(179,145,84,0.32)',
+    badgeRing: '#B39154',
+    badgeText: '#6A4F1F',
   },
   legend: {
-    // SP · 苍玉玄纹
-    label: 'SP',
-    nameCn: '苍玉玄纹',
-    edge: '#3E5C66',        // 苍玉偏玄
-    edgeMuted: '#2A3E46',
-    highlight: 'rgba(90,126,140,0.35)',
-    shadow: 'rgba(2,6,8,0.9)',
-    pattern: 'rgba(62,92,102,0.25)',
-    glow: 'rgba(62,92,102,0.3)',
-    badgeRing: '#3E5C66',
-    badgeText: '#2A3E46',
+    // 玄 · 玄玉血纹（山海"玄"= 深青至黑 + 血红一点）
+    label: '玄',
+    nameCn: '玄玉血纹',
+    edge: '#4A6E7A',
+    edgeLight: '#7EA1AE',
+    edgeDark: '#1E3840',
+    edgeMuted: '#2E4A54',
+    highlight: 'rgba(130,170,185,0.45)',
+    shadow: 'rgba(2,6,8,0.92)',
+    pattern: 'rgba(74,110,122,0.3)',
+    glow: 'rgba(74,110,122,0.32)',
+    badgeRing: '#4A6E7A',
+    badgeText: '#1E3840',
   },
 } as const;
 

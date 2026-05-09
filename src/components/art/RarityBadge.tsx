@@ -40,7 +40,7 @@ const labelMap: Record<CardRarity, string> = {
   common: '凡',
   rare: '珍',
   epic: '灵',
-  legend: '绝',
+  legend: '玄',
 };
 
 export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
