@@ -9,9 +9,9 @@
  * 5. 底部：版本号 + 链接到样机页
  */
 
-import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Portrait } from '../art/Portrait';
+import { asset } from '../../lib/asset';
 
 type Props = {
   onStart?: () => void;
@@ -19,8 +19,6 @@ type Props = {
 };
 
 export function TitleScreen({ onStart, onGotoStyleguide }: Props) {
-  const [imgOk] = useState(true); // 让 Portrait 自己处理 fallback
-
   return (
     <div className="relative min-h-screen overflow-hidden texture-ink-wash bg-ink">
       {/* 背景墨云 */}
@@ -58,7 +56,7 @@ export function TitleScreen({ onStart, onGotoStyleguide }: Props) {
         >
           <div className="absolute inset-0 rounded-sm overflow-hidden border border-bone/40 shadow-card">
             <Portrait
-              src={imgOk ? '/images/hero/fangshi_main.webp' : undefined}
+              src={asset('images/hero/fangshi_main.webp')}
               fallbackKind="hero"
               className="w-full h-full"
               alt="方士主角"

@@ -5,6 +5,7 @@
  * 不涉及任何玩法。
  */
 
+import type { ReactNode } from 'react';
 import { Card } from '../card/Card';
 import { Button } from '../ui/Button';
 import { HealthBar } from '../ui/HealthBar';
@@ -218,7 +219,7 @@ function Section({
 }: {
   title: string;
   subtitle?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section>
