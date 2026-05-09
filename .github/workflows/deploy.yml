@@ -29,7 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          # 注意：不启用 cache: npm。本项目暂不提交 package-lock.json
+          # （避免旧毛坯依赖残留冲突）。待 v0.2 稳定后再生成并提交 lock。
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
