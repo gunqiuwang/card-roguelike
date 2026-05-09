@@ -4,9 +4,6 @@
 /* ============================================================
  * 山海志·封妖录 · 全局样式
  * 对应 docs/ART_BIBLE.md 视觉系统
- *
- * 注意：所有 @import 必须在文件最前面（PostCSS 规范），
- *       字体引入位置不可下移。
  * ============================================================ */
 
 :root {
@@ -27,12 +24,10 @@
   --bone-light: #D4B87A;
   --mist: #6B6259;
 
-  /* 字体 */
   --font-heading: "Ma Shan Zheng", "STKaiti", "KaiTi", "楷体", cursive;
   --font-body: "Noto Serif SC", "Source Han Serif SC", "STSong", "宋体", serif;
   --font-numeric: "Cinzel", Georgia, "Noto Serif SC", serif;
 
-  /* 动效 */
   --ease-snap: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-quick: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -44,8 +39,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html,
-body {
+html, body {
   font-family: var(--font-body);
   background-color: var(--ink);
   color: var(--parchment);
@@ -65,37 +59,28 @@ body {
 }
 
 /* ============================================================
- * 纸张纹理（UI 质感底色）
+ * 纸张纹理（面板/符纸场景用，卡牌不再用）
  * ============================================================ */
 .texture-paper {
   background-image:
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
   background-blend-mode: multiply;
 }
-
 .texture-ink-wash {
   background-image:
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.05 0 0 0 0 0.05 0 0 0 0.3 0'/></filter><rect width='400' height='400' filter='url(%23w)'/></svg>");
 }
 
-/* ============================================================
- * 滚动条
- * ============================================================ */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: rgba(166, 140, 91, 0.3);
   border-radius: 2px;
 }
 
-/* ============================================================
- * 按钮重置
- * ============================================================ */
 button {
   border: none;
   background: none;
@@ -104,160 +89,138 @@ button {
   cursor: pointer;
   touch-action: manipulation;
 }
-
 button:disabled {
   cursor: not-allowed;
   opacity: 0.4;
 }
 
 /* ============================================================
- * 动效（克制，少而准）
+ * 动效
  * ============================================================ */
-
-/* 墨水晕开 */
 @keyframes inkSpread {
   from { opacity: 0; filter: blur(8px); }
   to { opacity: 1; filter: blur(0); }
 }
-.anim-ink-spread {
-  animation: inkSpread 600ms ease-out both;
-}
+.anim-ink-spread { animation: inkSpread 600ms ease-out both; }
 
-/* 符火漂浮 */
 @keyframes emberDrift {
   0% { transform: translateY(0) translateX(0); opacity: 0.6; }
   50% { opacity: 1; }
   100% { transform: translateY(-40px) translateX(6px); opacity: 0; }
 }
-.anim-ember {
-  animation: emberDrift 3s ease-in-out infinite;
-}
+.anim-ember { animation: emberDrift 3s ease-in-out infinite; }
 
-/* 印章盖下 */
 @keyframes sealStamp {
   0% { transform: scale(1.8) rotate(-12deg); opacity: 0; }
   50% { transform: scale(0.92) rotate(1deg); opacity: 1; }
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
-.anim-seal-stamp {
-  animation: sealStamp 500ms var(--ease-snap) forwards;
-}
+.anim-seal-stamp { animation: sealStamp 500ms var(--ease-snap) forwards; }
 
-/* 卡牌悬停上浮（用 transition 更好，但有个关键帧备用） */
-.card-lift {
-  transition: transform 300ms var(--ease-snap), box-shadow 300ms var(--ease-snap);
-}
-.card-lift:hover {
-  transform: translateY(-10px);
-}
-
-/* 无选中 */
 .no-select {
   user-select: none;
   -webkit-user-select: none;
 }
 
 /* ============================================================
- * 卡片 · 金属雕刻 · 暗黑洪荒
- * 结构（外到内）：
- *   .card-shell           外壳 · 厚度阴影 · 上浮动效
- *   .card-metal-band      3px 金属缎面带（主边框）
- *   .card-metal-noise     金属噪点覆层（只叠在边框上）
- *   .card-inner-ink       内缩亚边 + 黑色内线
+ * 卡片 · 暗黑百闻牌结构（用户设计 → 1:1 实现）
  *
- * 金属带原理：
- *   · 外层 div 填充 linear-gradient（上亮 / 中色 / 下暗的 3 段）
- *   · 用 padding + background-clip 把中央挖空，只留 3px 金属环
- *   · 外层和内层各加 1px 纯黑 inset 线 → 金属"卡"在黑槽中
- *   · 再叠一层 SVG 噪点，铸造件肌理
+ * 由外到内：
+ *   .card-shell              外壳 · 18px 圆角 · 厚度阴影 · hover 上浮
+ *   .card-gold-frame         主边框 · 1.5px 鎏金缎面（5-stop 对角渐变）
+ *   .card-abyss              深渊暗底（线性暗→更暗）+ 多层 inset 深
+ *   .card-corner-mark        四角 L 形角花（opacity 0.16）
  *
  * CSS 变量：
- *   --edge / --edge-light / --edge-dark  缎面三段色
- *   --edge-muted                         亚边色
- *   --glow                               hover 弱柔光
+ *   --edge-stop-0 … --edge-stop-4   缎面 5 段色
+ *   --edge-muted                    角花色
+ *   --glow                          hover 柔光
+ *   --body-top / --body-bot         卡面暗底两色
  * ============================================================ */
 .card-shell {
   background: transparent;
   padding: 0;
   border: none;
   outline: none;
-  border-radius: 16px;
-  /* 外层厚度阴影（模拟卡片的分量） */
+  border-radius: 18px;
+  position: relative;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.6),
-    0 8px 16px rgba(0, 0, 0, 0.45),
-    0 16px 32px rgba(0, 0, 0, 0.3);
+    0 2px 4px rgba(0, 0, 0, 0.65),
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    0 18px 36px rgba(0, 0, 0, 0.32);
   transition:
     transform 300ms var(--ease-snap),
     box-shadow 300ms var(--ease-snap);
 }
 .card-shell.is-interactive:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.65),
-    0 12px 24px rgba(0, 0, 0, 0.5),
-    0 20px 40px rgba(0, 0, 0, 0.32),
-    /* 弱柔光：12px 半径，强度不超 0.32 */
-    0 0 14px var(--glow, rgba(166, 140, 91, 0.28));
+    0 3px 6px rgba(0, 0, 0, 0.7),
+    0 12px 24px rgba(0, 0, 0, 0.55),
+    0 22px 44px rgba(0, 0, 0, 0.35),
+    0 0 14px var(--glow, rgba(148, 120, 80, 0.22));
 }
 
-/* Layer B · 金属缎面带 · 核心视觉
-   用 background 画整张渐变，再用 padding + bg-clip/content-box 把中央挖空 */
-.card-metal-band {
-  padding: 3px;
-  background:
-    linear-gradient(
-      180deg,
-      var(--edge-light, #95785a) 0%,
-      var(--edge-light, #95785a) 8%,
-      var(--edge, #6B4A2A) 35%,
-      var(--edge, #6B4A2A) 65%,
-      var(--edge-dark, #3E2611) 92%,
-      var(--edge-dark, #3E2611) 100%
-    );
-  /* 用 mask 只让最外 3px 环显示，中央镂空 */
+/* 主边框 · 鎏金缎面 1.5px · 5-stop 对角渐变 */
+.card-gold-frame {
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    var(--edge-stop-0, #3a2e1f) 0%,
+    var(--edge-stop-1, #7a6240) 45%,
+    var(--edge-stop-2, #947850) 50%,
+    var(--edge-stop-3, #7a6240) 55%,
+    var(--edge-stop-4, #3a2e1f) 100%
+  );
   -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+          mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
-  /* 外缘 1px 黑线 + 内缘淡高光（形成凹槽感） */
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  transition: box-shadow 300ms var(--ease-snap);
-}
-
-/* Layer B' · 金属噪点（铸造件肌理） */
-.card-metal-noise {
-  padding: 3px;
-  background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='2' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0'/></filter><rect width='300' height='300' filter='url(%23m)'/></svg>");
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  mix-blend-mode: overlay;
-  opacity: 0.55;
+  z-index: 3;
   pointer-events: none;
 }
 
-/* Layer C · 内缩亚边（1px edgeMuted + 顶底极细高光/暗槽） */
-.card-inner-ink {
-  inset: 4px;
-  border: 1px solid var(--edge-muted, #3E2611);
+/* 深渊暗底 · 多层 inset 深影 */
+.card-abyss {
+  position: absolute;
+  inset: 5px;
+  border-radius: 14px;
+  background: linear-gradient(
+    150deg,
+    var(--body-top, #0c0a08),
+    var(--body-bot, #050403)
+  );
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
-    inset 0 0 0 3px rgba(0, 0, 0, 0.25);
-  opacity: 1;
+    inset 0 0 24px #000,
+    inset 0 0 12px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.03);
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* 四角 L 形角花 · 1px opacity 0.16（仅与底色融合，非抢戏） */
+.card-corner-mark {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--edge-muted, rgba(110, 90, 60, 0.16));
+  z-index: 2;
   pointer-events: none;
 }
+.card-corner-mark.tl { top: 10px;    left: 10px;   border-right: none; border-bottom: none; }
+.card-corner-mark.tr { top: 10px;    right: 10px;  border-left: none;  border-bottom: none; }
+.card-corner-mark.bl { bottom: 10px; left: 10px;   border-right: none; border-top: none; }
+.card-corner-mark.br { bottom: 10px; right: 10px;  border-left: none;  border-top: none; }
 
 /* ============================================================
- * 水墨波纹（InkRipple 组件用的静态点 + 点击动画）
+ * 水墨波纹
  * ============================================================ */
 .ink-ripple-dot {
   width: 8px;
@@ -275,8 +238,7 @@ button:disabled {
 }
 
 /* ============================================================
- * 全局云雾漂移（MistOverlay 用）
- * 低强度、慢速、不干扰注意力
+ * 全局云雾漂移
  * ============================================================ */
 @keyframes mistDrift {
   0%   { transform: translate(-8%, 0) scale(1.05); opacity: 0.5; }
@@ -297,7 +259,7 @@ button:disabled {
 }
 
 /* ============================================================
- * 按钮鎏金边亮起 + 水墨波纹（Button 组件用）
+ * 按钮
  * ============================================================ */
 .btn-gold-glow {
   position: relative;
@@ -309,7 +271,7 @@ button:disabled {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 1px; /* 内置"发光边" */
+  padding: 1px;
   background: linear-gradient(135deg, rgba(212,184,122,0) 0%, rgba(212,184,122,0.7) 50%, rgba(212,184,122,0) 100%);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -321,15 +283,11 @@ button:disabled {
   pointer-events: none;
 }
 .btn-gold-glow:hover::before { opacity: 1; }
-
-/* 点击水墨波纹 */
 .btn-gold-glow::after {
   content: '';
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 10px;
-  height: 10px;
+  left: 50%; top: 50%;
+  width: 10px; height: 10px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(212,184,122,0.45) 0%, transparent 70%);
   transform: translate(-50%, -50%) scale(1);
@@ -345,7 +303,7 @@ button:disabled {
 }
 
 /* ============================================================
- * 伤害/治疗数字 缓慢上浮淡出
+ * 伤害/治疗数字
  * ============================================================ */
 @keyframes numberFloat {
   0%   { transform: translateY(0);     opacity: 0;   }

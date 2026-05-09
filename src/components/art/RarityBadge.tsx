@@ -48,6 +48,8 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
 
   const shape = shapeMap[rarity];
   const theme = rarityTheme[rarity];
+  // 在暗底卡片上用缎面主亮色描环，一致性最好
+  const ringColor = theme.edgeStop2;
   const fillTint = rarity === 'epic' || rarity === 'legend' ? 0.18 : 0;
 
   return (
@@ -64,7 +66,7 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
         cy="16"
         r="14"
         fill="none"
-        stroke={theme.badgeRing}
+        stroke={ringColor}
         strokeWidth="1"
         opacity="0.95"
       />
@@ -75,7 +77,7 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
           cy="16"
           r="11.5"
           fill="none"
-          stroke={theme.badgeRing}
+          stroke={ringColor}
           strokeWidth="0.7"
           opacity="0.8"
         />
@@ -87,7 +89,7 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
           cy="16"
           r="9"
           fill="none"
-          stroke={theme.badgeRing}
+          stroke={ringColor}
           strokeWidth="0.5"
           opacity="0.65"
           strokeDasharray={shape.dashed ? '1.2 1.4' : undefined}
@@ -95,17 +97,18 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
       )}
       {/* 内填玉石/金属面（SSR/SP 显色更明显） */}
       {fillTint > 0 && (
-        <circle cx="16" cy="16" r="7.5" fill={theme.badgeRing} opacity={fillTint} />
+        <circle cx="16" cy="16" r="7.5" fill={ringColor} opacity={fillTint} />
       )}
-      {/* 中心字 · 凡/珍/灵/绝 */}
+      {/* 中心字 · 暗底用浅鎏金，描边黑 */}
       <text
         x="16"
         y="20.5"
         fontSize="11"
         fontFamily='"Ma Shan Zheng", "STKaiti", serif'
-        fill={theme.badgeText}
+        fill="#E0C486"
         textAnchor="middle"
         fontWeight="600"
+        style={{ filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.9))' }}
       >
         {labelMap[rarity]}
       </text>

@@ -1,7 +1,7 @@
 /**
  * 立绘加载器 · 有图用图，无图用墨影剪影
  *
- * 用在卡面、标题页、封印动画。
+ * 用在卡面（onDark）、标题页（onPaper）、封印动画。
  */
 
 import { useState } from 'react';
@@ -16,6 +16,8 @@ type Props = {
   fallbackKind: SilhouetteKind;
   /** 是否显示封印印章（收服的妖卡） */
   sealed?: boolean;
+  /** 剪影背景风格（onDark 暗卡片用 / onPaper 符纸场景用） */
+  silhouetteVariant?: 'onDark' | 'onPaper';
   className?: string;
   alt?: string;
 };
@@ -33,7 +35,14 @@ function normalizeSrc(src: string): string {
   return asset(src);
 }
 
-export function Portrait({ src, fallbackKind, sealed = false, className = '', alt = '' }: Props) {
+export function Portrait({
+  src,
+  fallbackKind,
+  sealed = false,
+  silhouetteVariant = 'onDark',
+  className = '',
+  alt = '',
+}: Props) {
   const [errored, setErrored] = useState(false);
   const showImage = src && !errored;
   const resolvedSrc = src ? normalizeSrc(src) : undefined;
@@ -49,7 +58,12 @@ export function Portrait({ src, fallbackKind, sealed = false, className = '', al
           draggable={false}
         />
       ) : (
-        <InkSilhouette kind={fallbackKind} className="w-full h-full" withSeal={sealed} />
+        <InkSilhouette
+          kind={fallbackKind}
+          className="w-full h-full"
+          withSeal={sealed}
+          variant={silhouetteVariant}
+        />
       )}
     </div>
   );
