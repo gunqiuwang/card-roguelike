@@ -12,7 +12,7 @@ export const colors = {
   inkBlack: '#0F0E0C',      // 主背景、深夜、墨色
   parchment: '#C9B890',     // 符纸底、卡面底
   vermillion: '#B23A2A',    // 朱砂红、印章、关键按钮
-  ember: '#E87722',         // 符火、高亮、能量
+  ember: '#C4551B',         // 符火、高亮、能量（烧焦朱红橙，比原 #E87722 更沉）
   jadeDim: '#4A5D4A',       // 法器、次要
   boneGold: '#A68C5B',      // 金线、稀有边框
   mistGrey: '#6B6259',      // 次要文字、禁用
@@ -26,7 +26,7 @@ export const colorShades = {
   parchmentDark: '#9D8F6F',     // 阴影纸
   vermillionLight: '#D15040',
   vermillionDark: '#8B2A1E',
-  emberGlow: '#FFB268',         // 发光态
+  emberGlow: '#E08A48',         // 发光态（比原 #FFB268 更沉，避免刺眼）
   boneGoldLight: '#D4B87A',
 } as const;
 
@@ -102,7 +102,7 @@ export const motion = {
 export const shadows = {
   paper: '0 2px 8px rgba(0, 0, 0, 0.4)',
   card: '0 4px 16px rgba(0, 0, 0, 0.5)',
-  cardHover: '0 12px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(232, 119, 34, 0.2)',
+  cardHover: '0 12px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(196, 85, 27, 0.2)',
   seal: '0 0 12px rgba(178, 58, 42, 0.5)',
 } as const;
 

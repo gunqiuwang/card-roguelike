@@ -26,7 +26,7 @@ export function TitleScreen({ onStart, onGotoStyleguide }: Props) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 30%, rgba(232,119,34,0.08) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(178,58,42,0.06) 0%, transparent 50%)',
+            'radial-gradient(ellipse at 50% 30%, rgba(196,85,27,0.08) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(178,58,42,0.06) 0%, transparent 50%)',
         }}
       />
 

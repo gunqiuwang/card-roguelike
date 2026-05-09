@@ -28,7 +28,7 @@ mist, dust particles in air. Weathered textures, PBR materials,
 cracked surfaces, aged parchment, tarnished bronze. 
 
 Color palette: deep ink black #0F0E0C, aged parchment #C9B890, 
-vermillion red #B23A2A, ember orange #E87722, jade green #4A5D4A, 
+vermillion red #B23A2A, ember orange #C4551B, jade green #4A5D4A, 
 bone gold #A68C5B. 
 
 Ultra-detailed 8K key art, oil painting depth, dramatic composition,

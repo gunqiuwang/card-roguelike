@@ -27,7 +27,7 @@
 --ink-black:     #0F0E0C   主背景、深夜、墨色
 --parchment:     #C9B890   符纸底、卡面底、主文字背景
 --vermillion:    #B23A2A   朱砂红、印章、关键按钮、封印
---ember:         #E87722   符火、高亮、能量溢出
+--ember:         #C4551B   符火、高亮、能量溢出（烧焦朱红，不刺眼）
 --jade-dim:      #4A5D4A   法器、次要信息、祭坛
 --bone-gold:     #A68C5B   金线、稀有边框、Boss 名称
 --mist-grey:     #6B6259   次要文字、禁用态、雾
@@ -118,7 +118,7 @@ mist, dust particles in air. Weathered textures, PBR materials,
 cracked surfaces, aged parchment, tarnished bronze. 
 
 Color palette: deep ink black #0F0E0C, aged parchment #C9B890, 
-vermillion red #B23A2A, ember orange #E87722, jade green #4A5D4A, 
+vermillion red #B23A2A, ember orange #C4551B, jade green #4A5D4A, 
 bone gold #A68C5B. 
 
 Ultra-detailed 8K key art, oil painting depth, dramatic composition,

@@ -26,8 +26,8 @@ export default {
           dark: '#8B2A1E',
         },
         ember: {
-          DEFAULT: '#E87722',
-          glow: '#FFB268',
+          DEFAULT: '#C4551B',
+          glow: '#E08A48',
         },
         jade: {
           DEFAULT: '#4A5D4A',
@@ -51,7 +51,7 @@ export default {
       boxShadow: {
         paper: '0 2px 8px rgba(0, 0, 0, 0.4)',
         card: '0 4px 16px rgba(0, 0, 0, 0.5)',
-        'card-hover': '0 12px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(232, 119, 34, 0.2)',
+        'card-hover': '0 12px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(196, 85, 27, 0.2)',
         seal: '0 0 12px rgba(178, 58, 42, 0.5)',
       },
       transitionTimingFunction: {
