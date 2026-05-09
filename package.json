@@ -1,11 +1,11 @@
 {
   "name": "card-roguelike",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx"
@@ -15,14 +15,13 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.7.0",
-    "autoprefixer": "^10.4.20",
-    "@tailwindcss/postcss": "^4.2.4",
+    "@vitejs/plugin-react": "^4.3.4",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.0.0",
     "typescript": "~5.6.2",
-    "vite": "^6.0.0"
+    "vite": "^6.0.1"
   }
 }
