@@ -11,6 +11,7 @@
 
 import { Button } from '../ui/Button';
 import { Portrait } from '../art/Portrait';
+import { MistOverlay } from '../art/MistOverlay';
 import { asset } from '../../lib/asset';
 
 type Props = {
@@ -21,6 +22,8 @@ type Props = {
 export function TitleScreen({ onStart, onGotoStyleguide }: Props) {
   return (
     <div className="relative min-h-screen overflow-hidden texture-ink-wash bg-ink">
+      {/* 全局云雾/月光漂移层（慢速、低强度、不干扰） */}
+      <MistOverlay intensity={1} />
       {/* 背景墨云 */}
       <div
         className="absolute inset-0 pointer-events-none"

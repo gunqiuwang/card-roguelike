@@ -156,3 +156,137 @@ button:disabled {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* ============================================================
+ * 卡片外壳 · 细鎏金双线边 + 悬浮微光
+ * 使用 CSS 变量 --card-edge / --card-glow 在 JSX 里注入颜色
+ * ============================================================ */
+.card-shell {
+  background: transparent;
+  transition: transform 300ms var(--ease-snap);
+  padding: 0;
+  border: none;
+  outline: none;
+}
+.card-shell:hover {
+  transform: translateY(-8px);
+}
+
+/* 外层鎏金细边 · 常态 1px，悬浮时亮起 + 外发光一圈 */
+.card-outer-edge {
+  border: 1px solid var(--card-edge, #A68C5B);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    0 6px 14px rgba(0, 0, 0, 0.25);
+  transition:
+    box-shadow 300ms var(--ease-snap),
+    border-color 300ms var(--ease-snap);
+}
+.card-shell:hover .card-outer-edge {
+  border-color: color-mix(in srgb, var(--card-edge) 85%, #fff 15%);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.6),
+    0 10px 24px rgba(0, 0, 0, 0.4),
+    0 0 18px 2px var(--card-glow, rgba(212, 184, 122, 0.45));
+}
+
+/* ============================================================
+ * 水墨波纹（InkRipple 组件用的静态点 + 点击动画）
+ * ============================================================ */
+.ink-ripple-dot {
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+}
+.ink-ripple-play .ink-ripple-dot {
+  animation: inkRipplePlay 550ms ease-out forwards;
+}
+@keyframes inkRipplePlay {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.45; }
+  70%  { opacity: 0.2; }
+  100% { transform: translate(-50%, -50%) scale(32);  opacity: 0; }
+}
+
+/* ============================================================
+ * 全局云雾漂移（MistOverlay 用）
+ * 低强度、慢速、不干扰注意力
+ * ============================================================ */
+@keyframes mistDrift {
+  0%   { transform: translate(-8%, 0) scale(1.05); opacity: 0.5; }
+  50%  { transform: translate(4%, -2%) scale(1.08); opacity: 0.65; }
+  100% { transform: translate(-8%, 0) scale(1.05); opacity: 0.5; }
+}
+.anim-mist-drift {
+  animation: mistDrift 22s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes moonSpot {
+  0%   { transform: translate(0, 0); opacity: 0.3; }
+  50%  { transform: translate(-3%, 2%); opacity: 0.55; }
+  100% { transform: translate(0, 0); opacity: 0.3; }
+}
+.anim-moon-spot {
+  animation: moonSpot 18s ease-in-out infinite;
+}
+
+/* ============================================================
+ * 按钮鎏金边亮起 + 水墨波纹（Button 组件用）
+ * ============================================================ */
+.btn-gold-glow {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.btn-gold-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* 内置"发光边" */
+  background: linear-gradient(135deg, rgba(212,184,122,0) 0%, rgba(212,184,122,0.7) 50%, rgba(212,184,122,0) 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 250ms var(--ease-snap);
+  pointer-events: none;
+}
+.btn-gold-glow:hover::before { opacity: 1; }
+
+/* 点击水墨波纹 */
+.btn-gold-glow::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,184,122,0.45) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  pointer-events: none;
+}
+.btn-gold-glow:active::after {
+  animation: btnRipple 550ms ease-out;
+}
+@keyframes btnRipple {
+  0%   { transform: translate(-50%, -50%) scale(1);  opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(28); opacity: 0; }
+}
+
+/* ============================================================
+ * 伤害/治疗数字 缓慢上浮淡出
+ * ============================================================ */
+@keyframes numberFloat {
+  0%   { transform: translateY(0);     opacity: 0;   }
+  15%  { transform: translateY(-6px);  opacity: 1;   }
+  70%  { transform: translateY(-28px); opacity: 0.9; }
+  100% { transform: translateY(-44px); opacity: 0;   }
+}
+.anim-number-float {
+  animation: numberFloat 1400ms ease-out forwards;
+}
