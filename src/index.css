@@ -1,8 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Cinzel:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 /* ============================================================
  * 山海志·封妖录 · 全局样式
  * 对应 docs/ART_BIBLE.md 视觉系统
+ *
+ * 注意：所有 @import 必须在文件最前面（PostCSS 规范），
+ *       字体引入位置不可下移。
  * ============================================================ */
 
 :root {
@@ -59,11 +63,6 @@ body {
 body {
   overscroll-behavior: none;
 }
-
-/* ============================================================
- * 字体加载（从 Google Fonts 引入；未加载时优雅降级到 fallback）
- * ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Cinzel:wght@400;600;700&display=swap');
 
 /* ============================================================
  * 纸张纹理（UI 质感底色）
