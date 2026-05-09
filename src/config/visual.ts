@@ -67,7 +67,7 @@ export const cardLayout = {
 } as const;
 
 // ============================================================================
-// 稀有度边框色
+// 稀有度边框色（legacy - 仅老代码用；新代码用 rarityTheme）
 // ============================================================================
 export const rarityBorder = {
   starter: colors.boneGold,
@@ -76,6 +76,92 @@ export const rarityBorder = {
   epic: colors.ember,
   legend: colorShades.emberGlow,
 } as const;
+
+// ============================================================================
+// 稀有度主题 · R / SR / SSR / SP
+// 风格指南：低调高级、内敛史诗、有雕刻分层、暗纹肌理、弱柔光。
+//           禁止浮夸流光和刺眼大金边。
+//
+// 每档色值成组：
+//   label         玩家看到的简称（R/SR/SSR/SP）
+//   nameCn        中文雅称（暗岩纹铜…）
+//   edge          主边色（最显眼那一条 1px 细边）
+//   edgeMuted     内缩亚边（饱和度更低 · 雕刻分层用）
+//   highlight     顶部受光 1px（模拟金属被光线打到那一丝亮）
+//   shadow        底部暗槽 1px（模拟雕刻凹陷的背光）
+//   pattern       暗纹颜色（四角/内部暗纹，opacity ≤ 0.25 使用）
+//   glow          hover 柔光色（rgba，不超过 0.3 alpha）
+//   badgeRing     徽章环主色
+//   badgeText     徽章中心字色
+// ============================================================================
+export const rarityTheme = {
+  starter: {
+    label: '',
+    nameCn: '',
+    edge: '#4E4638',        // 近乎无色
+    edgeMuted: '#3A3327',
+    highlight: 'rgba(169,150,110,0.25)',
+    shadow: 'rgba(0,0,0,0.5)',
+    pattern: 'rgba(166,140,91,0.18)',
+    glow: 'rgba(166,140,91,0.18)',
+    badgeRing: '#6B6259',
+    badgeText: '#6B6259',
+  },
+  common: {
+    // R · 暗岩纹铜
+    label: 'R',
+    nameCn: '暗岩纹铜',
+    edge: '#6B4A2A',        // 暗岩铜主色
+    edgeMuted: '#4A321C',
+    highlight: 'rgba(142,102,62,0.35)',
+    shadow: 'rgba(10,6,3,0.75)',
+    pattern: 'rgba(107,74,42,0.22)',
+    glow: 'rgba(107,74,42,0.25)',
+    badgeRing: '#6B4A2A',
+    badgeText: '#4A321C',
+  },
+  rare: {
+    // SR · 青纹古铜
+    label: 'SR',
+    nameCn: '青纹古铜',
+    edge: '#5A7E6A',        // 青铜带绿锈
+    edgeMuted: '#3F5A4A',
+    highlight: 'rgba(120,155,130,0.32)',
+    shadow: 'rgba(5,12,9,0.8)',
+    pattern: 'rgba(74,107,90,0.22)',
+    glow: 'rgba(90,126,106,0.28)',
+    badgeRing: '#5A7E6A',
+    badgeText: '#3F5A4A',
+  },
+  epic: {
+    // SSR · 哑光金纹（注意是"哑光"—— 非鎏金、非高光）
+    label: 'SSR',
+    nameCn: '哑光金纹',
+    edge: '#A08248',        // 哑金
+    edgeMuted: '#76602F',
+    highlight: 'rgba(190,160,100,0.38)',
+    shadow: 'rgba(14,10,4,0.85)',
+    pattern: 'rgba(160,130,72,0.22)',
+    glow: 'rgba(160,130,72,0.3)',
+    badgeRing: '#A08248',
+    badgeText: '#76602F',
+  },
+  legend: {
+    // SP · 苍玉玄纹
+    label: 'SP',
+    nameCn: '苍玉玄纹',
+    edge: '#3E5C66',        // 苍玉偏玄
+    edgeMuted: '#2A3E46',
+    highlight: 'rgba(90,126,140,0.35)',
+    shadow: 'rgba(2,6,8,0.9)',
+    pattern: 'rgba(62,92,102,0.25)',
+    glow: 'rgba(62,92,102,0.3)',
+    badgeRing: '#3E5C66',
+    badgeText: '#2A3E46',
+  },
+} as const;
+
+export type RarityThemeKey = keyof typeof rarityTheme;
 
 // ============================================================================
 // 派别色（斩妖/御灵/符术）

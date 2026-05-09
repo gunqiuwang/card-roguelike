@@ -10,6 +10,17 @@
 export type CardType = 'fu' | 'faqi' | 'yao';
 // fu：符咒，faqi：法器（被动/触发），yao：妖卡（封妖得到）
 
+/**
+ * 稀有度（内部命名 → 玩家看到的别名）
+ *   starter → 无徽章（起手基础卡）
+ *   common  → R    · 暗岩纹铜
+ *   rare    → SR   · 青纹古铜
+ *   epic    → SSR  · 哑光金纹
+ *   legend  → SP   · 苍玉玄纹
+ *
+ * 保留内部名防止 v0.2+ 战斗/掉落系统命名抖动。
+ * 玩家展示始终使用 rarityTheme[x].label。
+ */
 export type CardRarity = 'starter' | 'common' | 'rare' | 'epic' | 'legend';
 
 export type School = 'zhanyao' | 'yuling' | 'fushu' | 'neutral';

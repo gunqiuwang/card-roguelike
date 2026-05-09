@@ -1,16 +1,17 @@
 /**
  * 稀有度徽章 · 小而雅，右下角一粒章子
  *
- * 设计原则（百闻牌同款）：角落小徽章，鎏金/青玉纹章，不靠大闪光大特效。
+ * 设计原则：角落小徽章，不靠大闪光大特效。
+ * 颜色从 rarityTheme 派生（R 暗岩铜 / SR 青纹古铜 / SSR 哑光金 / SP 苍玉玄）。
  *
- * 五档：
- *   starter  无徽章（基础符/起手卡）
- *   common   青玉单环          ·
- *   rare     青玉双环 + 小印    ✦
- *   epic     鎏金双环 + 小朱印  ❖
- *   legend   鎏金三环 + 符篆    ✷
+ * 四档环数递增：
+ *   R    单环
+ *   SR   双环 + 红点
+ *   SSR  双环 + 红点 + 内填色块
+ *   SP   三环（含虚线）+ 红点 + 内填色块
  */
 
+import { rarityTheme } from '../../config/visual';
 import type { CardRarity } from '../../types';
 
 type Props = {
@@ -20,61 +21,34 @@ type Props = {
   className?: string;
 };
 
-type Style = {
-  outer: string;
-  inner: string;
-  dot: string;
-  mark: string;   // 中心符号
-  glyph: string;  // '' | '·' | '珍' | '灵' | '绝'
+type Shape = {
   rings: 0 | 1 | 2 | 3;
+  withDot: boolean;
+  dashed: boolean;
 };
 
-const styleMap: Record<CardRarity, Style> = {
-  starter: {
-    outer: '#A68C5B',
-    inner: '#A68C5B',
-    dot: '#6B6259',
-    mark: '',
-    glyph: '',
-    rings: 0,
-  },
-  common: {
-    outer: '#4A5D4A',
-    inner: '#6B7C6B',
-    dot: '#4A5D4A',
-    mark: '·',
-    glyph: '凡',
-    rings: 1,
-  },
-  rare: {
-    outer: '#4A5D4A',
-    inner: '#A68C5B',
-    dot: '#B23A2A',
-    mark: '',
-    glyph: '珍',
-    rings: 2,
-  },
-  epic: {
-    outer: '#A68C5B',
-    inner: '#D4B87A',
-    dot: '#B23A2A',
-    mark: '',
-    glyph: '灵',
-    rings: 2,
-  },
-  legend: {
-    outer: '#D4B87A',
-    inner: '#A68C5B',
-    dot: '#C4551B',
-    mark: '',
-    glyph: '绝',
-    rings: 3,
-  },
+const shapeMap: Record<CardRarity, Shape> = {
+  starter: { rings: 0, withDot: false, dashed: false },
+  common: { rings: 1, withDot: false, dashed: false }, // R
+  rare: { rings: 2, withDot: true, dashed: false }, //   SR
+  epic: { rings: 2, withDot: true, dashed: false }, //   SSR
+  legend: { rings: 3, withDot: true, dashed: true }, //  SP
+};
+
+const labelMap: Record<CardRarity, string> = {
+  starter: '',
+  common: '凡',
+  rare: '珍',
+  epic: '灵',
+  legend: '绝',
 };
 
 export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
-  const s = styleMap[rarity];
-  if (rarity === 'starter') return null; // 起手卡不显示徽章
+  if (rarity === 'starter') return null;
+
+  const shape = shapeMap[rarity];
+  const theme = rarityTheme[rarity];
+  const fillTint = rarity === 'epic' || rarity === 'legend' ? 0.18 : 0;
 
   return (
     <svg
@@ -82,32 +56,63 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
       height={size}
       viewBox="0 0 32 32"
       className={`pointer-events-none ${className}`}
-      aria-label={`稀有度 ${rarity}`}
+      aria-label={`稀有度 ${theme.label}`}
     >
       {/* 外环 */}
-      <circle cx="16" cy="16" r="14" fill="none" stroke={s.outer} strokeWidth="1" opacity="0.9" />
+      <circle
+        cx="16"
+        cy="16"
+        r="14"
+        fill="none"
+        stroke={theme.badgeRing}
+        strokeWidth="1"
+        opacity="0.95"
+      />
       {/* 第二环 */}
-      {s.rings >= 2 && (
-        <circle cx="16" cy="16" r="11.5" fill="none" stroke={s.inner} strokeWidth="0.7" opacity="0.8" />
+      {shape.rings >= 2 && (
+        <circle
+          cx="16"
+          cy="16"
+          r="11.5"
+          fill="none"
+          stroke={theme.badgeRing}
+          strokeWidth="0.7"
+          opacity="0.8"
+        />
       )}
-      {/* 第三环 */}
-      {s.rings >= 3 && (
-        <circle cx="16" cy="16" r="9" fill="none" stroke={s.outer} strokeWidth="0.5" opacity="0.6" strokeDasharray="1 1.4" />
+      {/* 第三环 · SP 独享虚线 */}
+      {shape.rings >= 3 && (
+        <circle
+          cx="16"
+          cy="16"
+          r="9"
+          fill="none"
+          stroke={theme.badgeRing}
+          strokeWidth="0.5"
+          opacity="0.65"
+          strokeDasharray={shape.dashed ? '1.2 1.4' : undefined}
+        />
       )}
-      {/* 内填 · 玉石/鎏金面 */}
-      <circle cx="16" cy="16" r="7.5" fill={s.inner} opacity="0.28" />
-      {/* 中心符 */}
+      {/* 内填玉石/金属面（SSR/SP 显色更明显） */}
+      {fillTint > 0 && (
+        <circle cx="16" cy="16" r="7.5" fill={theme.badgeRing} opacity={fillTint} />
+      )}
+      {/* 中心字 · 凡/珍/灵/绝 */}
       <text
         x="16"
         y="20.5"
         fontSize="11"
         fontFamily='"Ma Shan Zheng", "STKaiti", serif'
-        fill={s.dot}
+        fill={theme.badgeText}
         textAnchor="middle"
         fontWeight="600"
       >
-        {s.glyph}
+        {labelMap[rarity]}
       </text>
+      {/* 红点（SR 及以上） · 放右下角 */}
+      {shape.withDot && (
+        <circle cx="24.5" cy="23" r="1.3" fill="#8B2A1E" opacity="0.85" />
+      )}
     </svg>
   );
 }

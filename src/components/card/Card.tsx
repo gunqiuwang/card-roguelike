@@ -1,46 +1,37 @@
 /**
- * 卡牌组件 · 对应 docs/ART_BIBLE.md §四 卡面版式规范
+ * 卡牌组件 · 山海经暗黑洪荒 / 内敛史诗
  *
- * 3:4 竖版，精修细节：
- *   · 细鎏金双线边（外鎏金 + 内缩暗金）
- *   · 四角极简云纹雕花
- *   · 和纸 + 水墨晕染底
- *   · 右下角稀有度徽章（小而雅，不抢戏）
- *   · 悬浮：轻微上浮 + 投影加深 + 边缘微光一圈
+ * 对应用户规范：
+ *   R   暗岩纹铜
+ *   SR  青纹古铜
+ *   SSR 哑光金纹
+ *   SP  苍玉玄纹
+ *
+ * 结构（由外到内）：
+ *   Layer A · card-shell          外壳 · 16px 圆角 · 厚度阴影 · hover 上浮
+ *   Layer B · card-frame-main     主边框（1px 稀有度主色）· 受光高光 + 暗槽
+ *   Layer C · card-frame-muted    内缩亚边（1px edgeMuted · 雕刻分层感）
+ *   Layer D · card-body           卡面本体（和纸 + 水墨 + 纸纹）
+ *     · 四角暗纹 relic variant opacity 0.3
+ *     · 内容分区：能量 / 立绘 / 卡名 / 描述 / 底栏
  */
 
+import type { CSSProperties } from 'react';
 import { Portrait } from '../art/Portrait';
 import { CornerFlourish } from '../art/CornerFlourish';
 import { RarityBadge } from '../art/RarityBadge';
+import { rarityTheme } from '../../config/visual';
 import type { Card as CardModel, SilhouetteKind } from '../../types';
 
 type Props = {
   card: CardModel;
-  /** 渲染尺寸（宽度 px），高度按 3:4 自动算 */
+  /** 渲染宽度（px），高度按 3:4 自动 */
   width?: number;
-  /** 是否可交互（悬停上浮 + 边缘微光） */
+  /** 可交互：hover 上浮 + 弱柔光 */
   interactive?: boolean;
-  /** 是否是已封印的妖卡（加朱砂印） */
+  /** 已封印妖卡 · 加朱砂"封"字 */
   sealed?: boolean;
   onClick?: () => void;
-};
-
-/** 稀有度 → 外层鎏金边颜色 */
-const rarityEdge: Record<CardModel['rarity'], string> = {
-  starter: '#A68C5B',       // bone
-  common: '#6B7C6B',        // jade 淡
-  rare: '#D4B87A',          // bone-light
-  epic: '#E0C486',          // 鎏金高亮
-  legend: '#F0D69A',        // 偏金，+ CSS 光晕
-};
-
-/** 悬浮时的边缘微光色（光圈） */
-const rarityGlow: Record<CardModel['rarity'], string> = {
-  starter: 'rgba(166,140,91,0.35)',
-  common: 'rgba(74,93,74,0.35)',
-  rare: 'rgba(212,184,122,0.45)',
-  epic: 'rgba(224,196,134,0.55)',
-  legend: 'rgba(240,214,154,0.7)',
 };
 
 const schoolLabel: Record<CardModel['school'], string> = {
@@ -50,10 +41,11 @@ const schoolLabel: Record<CardModel['school'], string> = {
   neutral: '',
 };
 
+// 派别标签底色 · 暗调，不抢戏
 const schoolBgClass: Record<CardModel['school'], string> = {
-  zhanyao: 'bg-vermillion',
+  zhanyao: 'bg-vermillion-dark',
   yuling: 'bg-jade',
-  fushu: 'bg-ember',
+  fushu: 'bg-vermillion-dark',
   neutral: 'bg-mist',
 };
 
@@ -71,12 +63,23 @@ export function Card({
   onClick,
 }: Props) {
   const height = width * (4 / 3);
-  const edgeColor = rarityEdge[card.rarity];
-  const glowColor = rarityGlow[card.rarity];
+  const theme = rarityTheme[card.rarity];
 
   const fallbackKind: SilhouetteKind =
     card.silhouette ??
     (card.type === 'fu' ? 'talisman' : card.type === 'faqi' ? 'relic' : 'beast');
+
+  // CSS 变量注入，驱动内凹浮雕的颜色
+  const shellStyle: CSSProperties = {
+    width,
+    height,
+    fontFamily: 'var(--font-body)',
+    ['--edge' as string]: theme.edge,
+    ['--edge-muted' as string]: theme.edgeMuted,
+    ['--edge-highlight' as string]: theme.highlight,
+    ['--edge-shadow' as string]: theme.shadow,
+    ['--glow' as string]: theme.glow,
+  };
 
   return (
     <button
@@ -85,92 +88,100 @@ export function Card({
       disabled={!onClick}
       className={[
         'card-shell group relative no-select',
-        interactive ? 'cursor-pointer' : 'cursor-default',
+        interactive ? 'cursor-pointer is-interactive' : 'cursor-default',
       ].join(' ')}
-      style={
-        {
-          width,
-          height,
-          fontFamily: 'var(--font-body)',
-          '--card-edge': edgeColor,
-          '--card-glow': glowColor,
-        } as React.CSSProperties
-      }
+      style={shellStyle}
       aria-label={card.name}
     >
       {/* ══════════════════════════════════════════════════════════
-         层 L0 · 外层鎏金细边（1px）+ 悬浮外发光
+         Layer B · 主边框（1px 稀有度主色 · 顶部受光 · 底部暗槽）
+         ── 通过 inset shadow 营造"雕进去"的分层感
          ════════════════════════════════════════════════════════ */}
-      <div className="card-outer-edge absolute inset-0 rounded-[13px] pointer-events-none" />
+      <div className="card-frame-main absolute inset-0 rounded-[16px]" />
 
       {/* ══════════════════════════════════════════════════════════
-         层 L1 · 卡面主体（和纸 + 水墨晕染）
+         Layer C · 内缩亚边（edgeMuted · 雕刻分层）
+         ════════════════════════════════════════════════════════ */}
+      <div className="card-frame-muted absolute rounded-[10px] pointer-events-none" />
+
+      {/* ══════════════════════════════════════════════════════════
+         Layer D · 卡面本体
          ════════════════════════════════════════════════════════ */}
       <div
-        className="absolute inset-[1.5px] rounded-[11px] overflow-hidden bg-parchment"
-        style={{ boxShadow: 'inset 0 0 0 1px rgba(15,14,12,0.35)' }}
+        className="absolute rounded-[10px] overflow-hidden bg-parchment"
+        style={{ inset: '5px' }}
       >
-        {/* 底层 和纸渐变（比纯色更有层次） */}
+        {/* 和纸底层渐变（多层提升层次） */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse at 30% 20%, #E0D2AB 0%, transparent 55%), radial-gradient(ellipse at 80% 100%, #9D8F6F 0%, transparent 60%), #C9B890',
+              'radial-gradient(ellipse at 30% 18%, #D8C8A0 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, #8E8060 0%, transparent 55%), #B3A278',
           }}
         />
         {/* 水墨晕染 */}
-        <div className="absolute inset-0 texture-ink-wash opacity-35 pointer-events-none" />
+        <div className="absolute inset-0 texture-ink-wash opacity-45 pointer-events-none" />
         {/* 纸纹噪点 */}
-        <div className="absolute inset-0 texture-paper opacity-55 pointer-events-none" />
+        <div className="absolute inset-0 texture-paper opacity-60 pointer-events-none" />
 
-        {/* ══════════════════════════════════════════════════════
-           层 L2 · 内缩暗金线（细双线效果）
-           ══════════════════════════════════════════════════════ */}
-        <div
-          className="absolute rounded-[8px] pointer-events-none"
-          style={{
-            inset: '6px',
-            border: '1px solid rgba(166,140,91,0.45)',
-            boxShadow: 'inset 0 0 18px rgba(93,75,40,0.08)',
-          }}
+        {/* 四角暗纹（relic 山海暗纹，opacity 0.3） */}
+        <CornerFlourish
+          corner="tl"
+          color={theme.pattern}
+          size={16}
+          opacity={1}
+          className="absolute top-1 left-1"
+        />
+        <CornerFlourish
+          corner="tr"
+          color={theme.pattern}
+          size={16}
+          opacity={1}
+          className="absolute top-1 right-1"
+        />
+        <CornerFlourish
+          corner="bl"
+          color={theme.pattern}
+          size={16}
+          opacity={1}
+          className="absolute bottom-1 left-1"
+        />
+        <CornerFlourish
+          corner="br"
+          color={theme.pattern}
+          size={16}
+          opacity={1}
+          className="absolute bottom-1 right-1"
         />
 
-        {/* ══════════════════════════════════════════════════════
-           层 L3 · 四角云纹
-           ══════════════════════════════════════════════════════ */}
-        <CornerFlourish corner="tl" color={edgeColor} size={16} opacity={0.75} className="absolute top-1.5 left-1.5" />
-        <CornerFlourish corner="tr" color={edgeColor} size={16} opacity={0.75} className="absolute top-1.5 right-1.5" />
-        <CornerFlourish corner="bl" color={edgeColor} size={16} opacity={0.6} className="absolute bottom-1.5 left-1.5" />
-        <CornerFlourish corner="br" color={edgeColor} size={16} opacity={0.6} className="absolute bottom-1.5 right-1.5" />
-
-        {/* ══════════════════════════════════════════════════════
-           内容区域（相对内边距）
-           ══════════════════════════════════════════════════════ */}
-        <div className="relative w-full h-full flex flex-col" style={{ padding: '10px 12px' }}>
-          {/* ── 顶栏：能量 + 类型标签 ── */}
+        {/* 内容区域 */}
+        <div className="relative w-full h-full flex flex-col" style={{ padding: '9px 11px' }}>
+          {/* ── 顶栏：能量 + 类型 ── */}
           <div className="relative flex justify-between items-start" style={{ height: '8%' }}>
-            {/* 能量水晶 */}
+            {/* 能量水晶（朱砂，暗底） */}
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center shadow-seal"
+              className="w-8 h-8 rounded-full flex items-center justify-center"
               style={{
-                background: 'radial-gradient(circle at 30% 30%, #D15040 0%, #B23A2A 55%, #6B1A10 100%)',
+                background:
+                  'radial-gradient(circle at 30% 30%, #B54A3A 0%, #8B2A1E 55%, #4E140A 100%)',
                 border: '1.5px solid #0F0E0C',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,200,180,0.15)',
                 marginLeft: -10,
                 marginTop: -8,
               }}
             >
               <span
-                className="text-parchment-light font-bold leading-none drop-shadow-[0_1px_0_rgba(0,0,0,0.6)]"
+                className="text-parchment-light font-bold leading-none drop-shadow-[0_1px_0_rgba(0,0,0,0.7)]"
                 style={{ fontFamily: 'var(--font-numeric)', fontSize: '16px' }}
               >
                 {card.cost}
               </span>
             </div>
 
-            {/* 类型印（右上角小字） */}
+            {/* 类型印（右上角） */}
             <span
               className="font-heading text-ink/40 tracking-widest"
-              style={{ fontSize: '10px', marginRight: -4, marginTop: -2 }}
+              style={{ fontSize: '10px', marginRight: -2, marginTop: -2 }}
             >
               {typeLabel[card.type]}
             </span>
@@ -178,11 +189,15 @@ export function Card({
 
           {/* ── 立绘区 ── */}
           <div
-            className="relative mt-1 rounded-[6px] overflow-hidden"
+            className="relative mt-1 rounded-[5px] overflow-hidden"
             style={{
               height: '54%',
-              boxShadow:
-                'inset 0 0 0 1px rgba(166,140,91,0.6), inset 0 0 0 2px rgba(15,14,12,0.4), 0 1px 3px rgba(0,0,0,0.35)',
+              boxShadow: [
+                'inset 0 0 0 1px rgba(15,14,12,0.55)',      // 黑色内框
+                'inset 0 1px 0 rgba(255,255,255,0.06)',     // 细受光
+                'inset 0 -1px 0 rgba(0,0,0,0.35)',          // 细暗槽
+                '0 1px 2px rgba(0,0,0,0.3)',                // 外浮
+              ].join(', '),
             }}
           >
             <Portrait
@@ -192,41 +207,47 @@ export function Card({
               className="w-full h-full"
               alt={card.name}
             />
-            {/* 立绘底部渐隐到卡面，帮卡名悬浮不突兀 */}
+            {/* 立绘底部渐隐到卡面 */}
             <div
               className="absolute inset-x-0 bottom-0 pointer-events-none"
               style={{
                 height: '22%',
                 background:
-                  'linear-gradient(to top, rgba(201,184,144,0.55), transparent)',
+                  'linear-gradient(to top, rgba(179,162,120,0.7), transparent)',
               }}
             />
           </div>
 
           {/* ── 卡名 ── */}
           <div className="relative mt-2 flex items-center justify-center" style={{ height: '11%' }}>
-            {/* 卡名上下的极细装饰线 */}
-            <div className="absolute top-0 left-6 right-6 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(166,140,91,0.5), transparent)' }} />
+            <div
+              className="absolute top-0 left-6 right-6 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent, ${theme.edge}88, transparent)`,
+              }}
+            />
             <h3
               className="font-heading text-ink tracking-[0.15em] leading-none"
               style={{ fontSize: '19px', fontWeight: 600 }}
             >
               {card.name}
             </h3>
-            <div className="absolute bottom-0 left-6 right-6 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(166,140,91,0.5), transparent)' }} />
+            <div
+              className="absolute bottom-0 left-6 right-6 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent, ${theme.edge}88, transparent)`,
+              }}
+            />
           </div>
 
           {/* ── 描述 ── */}
           <div className="relative mt-2 flex items-center justify-center px-1" style={{ height: '18%' }}>
-            <p
-              className="text-center text-ink/85 leading-snug"
-              style={{ fontSize: '12px' }}
-            >
+            <p className="text-center text-ink/85 leading-snug" style={{ fontSize: '12px' }}>
               {card.description}
             </p>
           </div>
 
-          {/* ── flavor（可选，只在空间够时显示） ── */}
+          {/* ── flavor ── */}
           {card.flavor && (
             <div className="relative mt-1 flex items-center justify-center px-2" style={{ height: '5%' }}>
               <p
@@ -249,7 +270,6 @@ export function Card({
             >
               {schoolLabel[card.school] || ' '}
             </span>
-            {/* 稀有度徽章 · 右下角 */}
             <div style={{ marginBottom: -6, marginRight: -6 }}>
               <RarityBadge rarity={card.rarity} size={26} />
             </div>
@@ -258,16 +278,12 @@ export function Card({
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-         层 L∞ · 已封印朱砂印（覆盖在最顶层）
+         Layer ∞ · 已封印朱砂印
          ════════════════════════════════════════════════════════ */}
       {sealed && (
         <div
           className="absolute pointer-events-none"
-          style={{
-            top: '38%',
-            right: '10%',
-            transform: 'rotate(-8deg)',
-          }}
+          style={{ top: '38%', right: '10%', transform: 'rotate(-8deg)' }}
         >
           <div
             className="px-2 py-0.5 bg-vermillion/85 text-parchment-light font-heading tracking-widest shadow-seal"

@@ -17,6 +17,7 @@ import { RarityBadge } from '../art/RarityBadge';
 import { CornerFlourish } from '../art/CornerFlourish';
 import { MistOverlay } from '../art/MistOverlay';
 import { sampleCards } from '../../data/cards';
+import { rarityTheme } from '../../config/visual';
 import { colors, colorShades } from '../../config/visual';
 import type { CardRarity, SilhouetteKind } from '../../types';
 
@@ -98,7 +99,7 @@ export function Styleguide({ onBack }: Props) {
         </Section>
 
         {/* Section 3: 卡牌 */}
-        <Section title="三 · 卡 牌" subtitle="3:4 版式 · 稀有度边框差异 · 无图时自动墨影 fallback">
+        <Section title="三 · 卡 牌" subtitle="3:4 版式 · 雕刻分层 · 内敛史诗">
           <div className="flex flex-wrap gap-6 justify-center md:justify-start">
             {sampleCards.map((card) => (
               <Card key={card.id} card={card} interactive />
@@ -111,11 +112,55 @@ export function Styleguide({ onBack }: Props) {
             />
           </div>
           <p className="mt-4 text-mist text-sm">
-            鼠标悬停/移动端 tap 可看上浮交互。稀有度由低到高：
-            <span className="text-bone"> 凡 </span>·
-            <span className="text-jade"> 珍 </span>·
-            <span className="text-vermillion-light"> 灵 </span>·
-            <span className="text-ember"> 绝 </span>
+            鼠标悬停/移动端 tap 可看<span className="text-parchment-light">弱柔光上浮</span>。
+            稀有度分档：
+            <span style={{ color: rarityTheme.common.edge }}> R·暗岩纹铜</span> ·
+            <span style={{ color: rarityTheme.rare.edge }}> SR·青纹古铜</span> ·
+            <span style={{ color: rarityTheme.epic.edge }}> SSR·哑光金纹</span> ·
+            <span style={{ color: rarityTheme.legend.edge }}> SP·苍玉玄纹</span>
+          </p>
+        </Section>
+
+        {/* Section 3b: 稀有度同款对比 */}
+        <Section
+          title="三·甲 · 稀有度同款对比"
+          subtitle="同一张底卡，只换边框主题 · 验证雕刻分层与弱柔光"
+        >
+          <div className="flex flex-wrap gap-6 justify-center md:justify-start">
+            {(['common', 'rare', 'epic', 'legend'] as CardRarity[]).map((r) => {
+              const theme = rarityTheme[r];
+              return (
+                <div key={r} className="flex flex-col items-center gap-3">
+                  <Card
+                    card={{
+                      ...sampleCards[2],
+                      id: `demo_${r}`,
+                      name: '桃木斩',
+                      rarity: r,
+                    }}
+                    interactive
+                  />
+                  <div className="text-center">
+                    <div
+                      className="font-heading text-sm tracking-widest"
+                      style={{ color: theme.edge }}
+                    >
+                      {theme.label}
+                    </div>
+                    <div className="text-mist text-xs mt-0.5 font-heading tracking-wider">
+                      {theme.nameCn}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-4 text-mist text-sm">
+            同一张卡，四档边框对比。注意：
+            <span className="text-parchment-light">双层边 + 顶受光 + 底暗槽</span>
+            形成内凹浮雕感；<span className="text-parchment-light">四角暗纹 opacity ≤ 0.3</span>，
+            凑近才看得见；悬浮仅 <span className="text-parchment-light">上浮 4px + 12px 弱柔光</span>，
+            禁止大金边流光。
           </p>
         </Section>
 
@@ -191,25 +236,41 @@ export function Styleguide({ onBack }: Props) {
         </Section>
 
         {/* Section 7: 稀有度徽章全系 */}
-        <Section title="七 · 稀有度徽章" subtitle="角落小徽章，鎏金/青玉纹章 · 不靠大闪光大特效">
+        <Section title="七 · 稀有度徽章" subtitle="R / SR / SSR / SP · 角落小徽章 · 不抢戏">
           <div className="flex flex-wrap gap-6 items-end">
-            {(['common', 'rare', 'epic', 'legend'] as CardRarity[]).map((r) => (
-              <div key={r} className="flex flex-col items-center gap-2">
-                <div className="p-4 bg-parchment rounded border border-bone/30 shadow-paper">
-                  <RarityBadge rarity={r} size={44} />
+            {(['common', 'rare', 'epic', 'legend'] as CardRarity[]).map((r) => {
+              const theme = rarityTheme[r];
+              return (
+                <div key={r} className="flex flex-col items-center gap-2">
+                  <div className="p-4 bg-parchment rounded border border-bone/30 shadow-paper">
+                    <RarityBadge rarity={r} size={44} />
+                  </div>
+                  <div
+                    className="text-xs font-heading tracking-widest"
+                    style={{ color: theme.edge }}
+                  >
+                    {theme.label}
+                  </div>
+                  <div className="text-mist text-[11px] font-heading tracking-wider">
+                    {theme.nameCn}
+                  </div>
                 </div>
-                <div className="text-xs text-mist font-heading tracking-widest">{r}</div>
-              </div>
-            ))}
+              );
+            })}
             <div className="flex flex-col items-center gap-2 opacity-60">
-              <div className="p-4 bg-parchment rounded border border-bone/30 shadow-paper flex items-center justify-center" style={{ width: 76, height: 76 }}>
+              <div
+                className="p-4 bg-parchment rounded border border-bone/30 shadow-paper flex items-center justify-center"
+                style={{ width: 76, height: 76 }}
+              >
                 <span className="text-ink/30 text-xs font-heading">无</span>
               </div>
               <div className="text-xs text-mist font-heading tracking-widest">starter</div>
+              <div className="text-mist text-[11px] font-heading tracking-wider">起手</div>
             </div>
           </div>
           <p className="mt-4 text-mist text-sm">
-            起手卡无徽章 · 凡（青玉单环）· 珍（双环加红点）· 灵（鎏金双环）· 绝（鎏金三环 + 虚线）
+            起手卡无徽章 · R 单环 · SR 双环 · SSR 双环加红点 · SP 三环加虚线。
+            所有环色从稀有度主题色派生，不使用亮金。
           </p>
         </Section>
 
@@ -236,19 +297,20 @@ export function Styleguide({ onBack }: Props) {
         </Section>
 
         {/* Section 10: 反馈清单 */}
-        <Section title="十 · 反馈清单" subtitle="看完后请对照打分。我看不到图，你来做审美裁判。">
+        <Section title="十 · 反馈清单" subtitle="按『低调高级 · 内敛史诗』规范逐条打分">
           <div className="space-y-2 bg-ink-soft/60 border border-bone/20 rounded p-5 font-body text-sm">
-            <Checkitem label="整体气质是否对味（苍、冷、锐）" />
-            <Checkitem label="色板是否够沉稳（ember 不刺眼）" />
-            <Checkitem label="字体组合是否有文化厚度（非廉价）" />
-            <Checkitem label="卡牌 · 细鎏金双线边 + 四角云纹是否精致" />
-            <Checkitem label="卡牌 · 悬浮时边缘微光一圈是否柔和" />
-            <Checkitem label="卡牌 · 稀有度徽章是否『小而雅』不抢戏" />
-            <Checkitem label="按钮 · 鎏金边亮起是否顺眼" />
-            <Checkitem label="按钮 · 按压水墨波纹是否有古风感" />
-            <Checkitem label="全局云雾漂移是否『低强度、不干扰』" />
-            <Checkitem label="浮动数字是否『缓慢优雅』不花哨" />
-            <Checkitem label="墨影 fallback 是否能接受（至少不丑）" />
+            <Checkitem label="整体气质：暗黑洪荒 · 不浮夸" />
+            <Checkitem label="色板：ember 已调沉 · 整体暗调" />
+            <Checkitem label="字体：有文化厚度 · 非廉价" />
+            <Checkitem label="卡牌 · 边框雕刻分层感（双层 + 顶受光 + 底暗槽）" />
+            <Checkitem label="卡牌 · 四档主题色正确：R 暗岩铜 / SR 青纹古铜 / SSR 哑光金 / SP 苍玉玄" />
+            <Checkitem label="卡牌 · 四角暗纹是否『凑近才见』" />
+            <Checkitem label="卡牌 · 悬浮仅 4px 上浮 + 弱柔光（无大金边流光）" />
+            <Checkitem label="卡牌 · 稀有度徽章『小而雅』不抢戏" />
+            <Checkitem label="按钮 · 气质对（非卡通、非中二）" />
+            <Checkitem label="全局云雾『低强度 · 不干扰』" />
+            <Checkitem label="浮动数字『缓慢优雅』不花哨" />
+            <Checkitem label="墨影 fallback 能接受（至少不丑）" />
           </div>
           <p className="mt-4 text-mist text-sm">
             有任何一条不对，告诉我哪里、想改成什么样。我改到对为止。

@@ -158,36 +158,71 @@ button:disabled {
 }
 
 /* ============================================================
- * 卡片外壳 · 细鎏金双线边 + 悬浮微光
- * 使用 CSS 变量 --card-edge / --card-glow 在 JSX 里注入颜色
+ * 卡片 · 内敛史诗 · 雕刻分层
+ * 结构（外到内）：
+ *   .card-shell           外壳 · 厚度阴影 · 上浮动效
+ *   .card-frame-main      主边框 · 1px 稀有度色 + 顶受光 + 底暗槽（内凹浮雕）
+ *   .card-frame-muted     亚边 · inset 4px · 1px edgeMuted（分层）
+ *
+ * 用 CSS 变量承接稀有度主题：
+ *   --edge              主边色
+ *   --edge-muted        亚边色
+ *   --edge-highlight    顶部受光 rgba
+ *   --edge-shadow       底部暗槽 rgba
+ *   --glow              hover 弱柔光 rgba
+ *
+ * 禁止事项：
+ *   × 宽金边 / 多 px 外发光
+ *   × 悬浮时的大范围光晕（原 20px glow 已删除）
+ *   × 动态渐变流光
  * ============================================================ */
 .card-shell {
   background: transparent;
-  transition: transform 300ms var(--ease-snap);
   padding: 0;
   border: none;
   outline: none;
+  border-radius: 16px;
+  /* 外层厚度阴影（模拟卡片在桌面上的"分量"） */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.55),
+    0 6px 14px rgba(0, 0, 0, 0.4),
+    0 12px 28px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 300ms var(--ease-snap),
+    box-shadow 300ms var(--ease-snap);
 }
-.card-shell:hover {
-  transform: translateY(-8px);
+.card-shell.is-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.6),
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    0 18px 36px rgba(0, 0, 0, 0.3),
+    /* 弱柔光：半径 12px，强度不超 0.3 */
+    0 0 12px var(--glow, rgba(166, 140, 91, 0.25));
 }
 
-/* 外层鎏金细边 · 常态 1px，悬浮时亮起 + 外发光一圈 */
-.card-outer-edge {
-  border: 1px solid var(--card-edge, #A68C5B);
+/* Layer B · 主边框 · 1px 主色 + inset 受光/暗槽（内凹浮雕） */
+.card-frame-main {
+  border: 1px solid var(--edge, #6B4A2A);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.45),
-    0 6px 14px rgba(0, 0, 0, 0.25);
-  transition:
-    box-shadow 300ms var(--ease-snap),
-    border-color 300ms var(--ease-snap);
+    /* 顶部受光 1px（非常细） */
+    inset 0 1px 0 var(--edge-highlight, rgba(142, 102, 62, 0.35)),
+    /* 底部暗槽 1px（雕刻凹陷背光） */
+    inset 0 -1px 0 var(--edge-shadow, rgba(10, 6, 3, 0.75)),
+    /* 外缘极细黑线，让边框脱离背景 */
+    0 0 0 1px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 300ms var(--ease-snap);
+  pointer-events: none;
 }
-.card-shell:hover .card-outer-edge {
-  border-color: color-mix(in srgb, var(--card-edge) 85%, #fff 15%);
+
+/* Layer C · 亚边 · 内缩 · 雕刻分层感 */
+.card-frame-muted {
+  inset: 3px;
+  border: 1px solid var(--edge-muted, #4A321C);
   box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.6),
-    0 10px 24px rgba(0, 0, 0, 0.4),
-    0 0 18px 2px var(--card-glow, rgba(212, 184, 122, 0.45));
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  opacity: 0.8;
 }
 
 /* ============================================================
