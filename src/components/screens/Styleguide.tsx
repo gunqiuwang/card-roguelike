@@ -30,7 +30,7 @@ export function Styleguide({ onBack }: Props) {
       <MistOverlay intensity={0.7} />
       {/* 顶栏 */}
       <header className="sticky top-0 z-20 bg-ink-soft/95 backdrop-blur border-b border-bone/20">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div>
             <div className="text-bone/70 text-xs font-heading tracking-widest">山海志·封妖录</div>
             <h1 className="font-heading text-parchment-light text-2xl tracking-wider">视 觉 样 机</h1>
@@ -41,7 +41,7 @@ export function Styleguide({ onBack }: Props) {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 space-y-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-20">
         {/* Section 1: 色板 */}
         <Section title="一 · 锁定七色" subtitle="所有 UI 只用这些颜色（衍生阶允许）">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -378,8 +378,8 @@ function TypeSample({
   size: string;
 }) {
   return (
-    <div className="flex items-baseline gap-5 border-b border-bone/10 pb-3">
-      <div className="w-40 shrink-0 text-mist text-xs font-heading tracking-widest">{label}</div>
+    <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-5 border-b border-bone/10 pb-3">
+      <div className="w-full sm:w-40 shrink-0 text-mist text-xs font-heading tracking-widest">{label}</div>
       <div className={className} style={{ fontSize: size }}>
         {example}
       </div>

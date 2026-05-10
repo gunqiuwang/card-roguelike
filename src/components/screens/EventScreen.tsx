@@ -15,11 +15,11 @@ export function EventScreen() {
   const def = getEvent(pe.eventId);
 
   return (
-    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-6 py-10">
+    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-4 sm:px-6 py-8 sm:py-10">
       <MistOverlay intensity={0.7} />
 
       <div
-        className="relative max-w-xl w-full bg-ink-soft border border-bone/50 rounded p-8 shadow-card"
+        className="relative max-w-xl w-full bg-ink-soft border border-bone/50 rounded p-5 sm:p-8 shadow-card"
         style={{ boxShadow: '0 0 0 1px rgba(166,140,91,0.2), 0 4px 16px rgba(0,0,0,0.6)' }}
       >
         <CornerFlourish corner="tl" className="absolute top-2 left-2" />
@@ -30,7 +30,7 @@ export function EventScreen() {
         <div className="text-bone/70 text-xs font-heading tracking-widest text-center mb-1">
           奇 遇
         </div>
-        <h1 className="font-heading text-parchment-light text-3xl tracking-widest text-center mb-5">
+        <h1 className="font-heading text-parchment-light text-2xl sm:text-3xl tracking-widest text-center mb-5">
           {def.title}
         </h1>
         <p className="text-parchment/85 leading-loose whitespace-pre-line text-center mb-6">
