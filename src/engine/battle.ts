@@ -418,25 +418,18 @@ export function endTurn(state: BattleState, rng: RNG): void {
     }
   }
   // 敌人回合末：状态衰减 + 中毒 + block 归零（为下回合）
-  for (const e of state.enemies) {
+  for (let i = 0; i < state.enemies.length; i++) {
+    const e = state.enemies[i];
     if (e.hp <= 0) continue;
     e.block = 0;
-    // 中毒结算
+    // 中毒结算（注意：不触发 SEAL_CHOICE —— 按 DESIGN §6.1，
+    // 封印仅在"玩家致死一击"触发。被动毒死直接算斩。）
     if (e.status.poison > 0) {
       const dmg = e.status.poison;
-      const afterBlock = dmg; // 已在敌 block=0 之后
-      e.hp = Math.max(0, e.hp - afterBlock);
-      pushFx(state, { target: 'enemy', enemyIdx: state.enemies.indexOf(e), kind: 'poison', value: dmg });
+      e.hp = Math.max(0, e.hp - dmg);
+      pushFx(state, { target: 'enemy', enemyIdx: i, kind: 'poison', value: dmg });
       log(state, `${e.name} 中毒 ${dmg}。`);
       e.status.poison = Math.max(0, e.status.poison - 1);
-      if (e.hp > 0) {
-        // 未死，但 HP 或许触发 seal
-        checkSealTrigger(state, state.enemies.indexOf(e));
-        if ((state.phase as BattlePhase) === 'sealChoice') {
-          // 毒入 seal 门槛时，战斗暂停让玩家选
-          return;
-        }
-      }
     }
     decayEnemyStatus(e);
     // 下一意图
