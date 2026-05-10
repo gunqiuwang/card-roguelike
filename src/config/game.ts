@@ -1,32 +1,34 @@
 /**
- * 游戏规则常量 · 对应 docs/GAMEPLAY.md
+ * 游戏规则常量 · v0.2
  *
- * 这里放不经常改的"规则"常量。经常调的数值请放 balance.ts。
+ * 这里放"规则层"的常量——不会因为调数值而改变的东西。
+ * 经常调的数字请放 balance.ts。
  */
 
+import { balance } from './balance';
+
+// ============================================================================
+// 玩家 / 战斗基础规则（冻结 = 由 balance.player 镜像）
+// ============================================================================
 export const game = {
-  // 手牌
-  handSizePerTurn: 5,
+  handSizePerTurn: balance.player.handSizePerTurn,
   handSizeMax: 10,
+  energyPerTurn: balance.player.energyPerTurn,
+  deckSizeMax: balance.player.deckSizeMax,
+  deckSizeStart: balance.player.deckSizeStart,
+  maxHpStart: balance.player.maxHp,
+  sealThresholdHpPercent: balance.seal.thresholdHpPercent,
 
-  // 能量
-  energyPerTurn: 3,
-
-  // 牌组
-  deckSizeMax: 20,
-  deckSizeStart: 10,
-
-  // 封妖触发
-  sealThresholdHpPercent: 0.3, // 敌人 HP ≤ 30% 可封
-
-  // 妖性 (v0.4)
+  // v0.4 妖性阈值（预留）
   yaoxingCalm: 30,
   yaoxingRestless: 60,
   yaoxingFrenzy: 90,
   yaoxingMax: 100,
 } as const;
 
-// 章节名（对应 LORE.md §二）
+// ============================================================================
+// 章节元数据（对齐 LORE.md §二）
+// ============================================================================
 export const chapters = [
   { id: 'qingqiu', name: '青丘残岭', order: 1 },
   { id: 'taotie', name: '饕餮旧墟', order: 2 },
@@ -36,3 +38,11 @@ export const chapters = [
 ] as const;
 
 export type ChapterId = typeof chapters[number]['id'];
+
+export function chapterName(id: string): string {
+  return chapters.find((c) => c.id === id)?.name ?? id;
+}
+
+export function chapterOrder(id: string): number {
+  return chapters.find((c) => c.id === id)?.order ?? 0;
+}
