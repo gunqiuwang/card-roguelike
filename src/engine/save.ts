@@ -23,6 +23,7 @@ function emptyMeta(): MetaProgress {
     seals: 0,
     deepestChapter: 0,
     unlockedYao: [],
+    tutorialDone: false,
   };
 }
 
@@ -117,6 +118,7 @@ function migrateMeta(m: Partial<MetaProgress> | undefined): MetaProgress {
     seals: m.seals ?? 0,
     deepestChapter: m.deepestChapter ?? 0,
     unlockedYao: m.unlockedYao ?? [],
+    tutorialDone: m.tutorialDone ?? false,
   };
 }
 

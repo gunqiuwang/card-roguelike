@@ -334,6 +334,8 @@ export interface MetaProgress {
   deepestChapter: number;
   /** 图鉴：已封印过的妖 id */
   unlockedYao: string[];
+  /** 新手教程已完成（完成后不再自动弹教程） */
+  tutorialDone: boolean;
 }
 
 export interface SaveData {
