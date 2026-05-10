@@ -30,7 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Build (Vite only, no tsc in build)
+      - name: Engine smoke test
+        run: npm run smoke
+
+      - name: Build (tsc --noEmit then vite build)
         env:
           VITE_BASE: /card-roguelike/
         run: npm run build

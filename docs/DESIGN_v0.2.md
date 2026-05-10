@@ -470,14 +470,14 @@ START
 | deckStart | 10 | 起手牌组（见 §2.4） |
 | deckMax | 20 | 牌组上限 |
 
-### 9.2 第一章敌人数据
+### 9.2 第一章敌人数据（v0.2 首次仿真后定稿）
 
 | 敌人 | 等级 | HP | 意图序列（循环） | 封后卡 | 灵气奖励 |
 |---|---|---|---|---|---|
-| 青狐小妖 | C | 22 | [atk 6, atk 4, def 4] | 凡·狐媚（1费, draw 1 + poison 1） | 10~15 |
-| 夜狐 | C | 28 | [atk 5, atk 5, debuff weak 1] | 凡·夜袭（1费, damage 5 + vulnerable 1） | 12~18 |
-| 九尾狐·绯（精英） | B | 55 | [atk 8, def 6, charge, charge, atk 14] | 珍·九尾幻术（1费, sealIntent 1） | 30~40 |
-| 绯·九尾真身（Boss） | S | 90 | [atk 10, def 8, charge, charge, big: atk 18 + weak 2] | 灵·幻狐之瞳（2费, damage 12 + draw 1） | 55~65 |
+| 青狐小妖 | C | 42 | [atk 7, atk 5, def 5] | 凡·狐媚（1费, draw 1 + poison 1） | 10~15 |
+| 夜狐 | C | 48 | [atk 6, atk 6, debuff weak 1] | 凡·夜袭（1费, damage 5 + vulnerable 1） | 12~18 |
+| 九尾狐·绯（精英） | B | 88 | [atk 9, def 7, charge, charge, atk 16] | 珍·九尾幻术（1费, sealIntent 1） | 30~40 |
+| 绯·九尾真身（Boss） | S | 140 | [atk 11, def 9, charge, charge, big: atk 20 + weak 2] | 灵·幻狐之瞳（2费, damage 12 + draw 1） | 55~65 |
 
 ### 9.3 基础卡牌数值（起手池，12 张）
 
