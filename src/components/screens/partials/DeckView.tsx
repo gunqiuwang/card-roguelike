@@ -10,6 +10,7 @@ import { Button } from '../../ui/Button';
 import { Card as CardView } from '../../card/Card';
 import { useGame } from '../../../store/GameStore';
 import { cardToInstance } from '../../../engine';
+import { useResponsiveCardWidth } from '../../../lib/responsive';
 import type { Card, CardInstance } from '../../../types';
 
 type Pile = 'deck' | 'draw' | 'hand' | 'discard';
@@ -19,6 +20,7 @@ export function DeckViewButton() {
   const [open, setOpen] = useState(false);
   const inBattle = !!run?.battle;
   const [pile, setPile] = useState<Pile>(inBattle ? 'draw' : 'deck');
+  const cardWidth = useResponsiveCardWidth('deck');
 
   if (!run) return null;
 
@@ -47,11 +49,11 @@ export function DeckViewButton() {
       </Button>
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink-deep/90 backdrop-blur p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink-deep/90 backdrop-blur p-4 sm:p-6"
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-ink-soft border border-bone/40 rounded max-w-5xl w-full max-h-[85vh] overflow-auto p-6"
+            className="bg-ink-soft border border-bone/40 rounded max-w-5xl w-full max-h-[85vh] overflow-auto p-4 sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
@@ -81,7 +83,7 @@ export function DeckViewButton() {
               </div>
             )}
 
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
               {cards.length === 0 ? (
                 <div className="text-mist py-8 text-center w-full font-heading tracking-widest">
                   · 空 ·
@@ -91,7 +93,7 @@ export function DeckViewButton() {
                   <CardView
                     key={(c as CardInstance).uid ?? `${c.id}-${i}`}
                     card={'uid' in c ? c : cardToInstance(c)}
-                    width={140}
+                    width={cardWidth}
                   />
                 ))
               )}

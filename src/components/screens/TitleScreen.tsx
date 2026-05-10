@@ -45,7 +45,7 @@ export function TitleScreen({ onGotoStyleguide }: Props) {
         ))}
       </div>
 
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center min-h-screen gap-8 md:gap-16 px-6 py-10">
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center min-h-screen gap-8 md:gap-16 px-4 sm:px-6 py-10">
         {/* 方士立绘 */}
         <div
           className="relative anim-ink-spread"

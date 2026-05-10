@@ -42,6 +42,7 @@ import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
 import { TutorialOverlay } from './partials/TutorialOverlay';
 import { SealMiniGame } from './partials/SealMiniGame';
+import { useResponsiveCardWidth } from '../../lib/responsive';
 
 function StatusBadges({ enemy }: { enemy: EnemyState }) {
   const s = enemy.status;
@@ -97,6 +98,7 @@ function Badge({
 export function BattleScreen() {
   const { run, playCard, endTurn, chooseSeal, returnToTitle } = useGame();
   const [targetIdx, setTargetIdx] = useState(0);
+  const handCardWidth = useResponsiveCardWidth('hand');
 
   const battle = run?.battle;
 
@@ -136,13 +138,14 @@ export function BattleScreen() {
         className="sticky top-0 z-30 bg-ink-soft/95 border-b border-bone/30 backdrop-blur"
         data-zone="top-bar"
       >
-        <div className="max-w-2xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-between gap-3">
+        <div className="max-w-2xl mx-auto px-3 sm:px-4 py-2">
+          <div className="flex items-center justify-between gap-2 sm:gap-3">
             <Button variant="ghost" size="sm" onClick={returnToTitle}>
               ← 返回
             </Button>
-            <div className="text-xs text-mist font-heading tracking-widest">
-              第一章 · 青丘残岭 · 回合 {battle.turn}
+            <div className="text-[10px] sm:text-xs text-mist font-heading tracking-widest text-center min-w-0 truncate">
+              <span className="hidden sm:inline">第一章 · 青丘残岭 · </span>
+              回合 {battle.turn}
             </div>
             <DeckViewButton />
           </div>
@@ -179,10 +182,10 @@ export function BattleScreen() {
            ② 中部 · 敌人区（大、居中、显眼）
          ═══════════════════════════════════════ */}
       <section
-        className="flex-1 relative flex flex-col items-center justify-center px-4 py-6"
+        className="flex-1 relative flex flex-col items-center justify-center px-3 sm:px-4 py-4 sm:py-6"
         data-zone="enemies"
       >
-        <div className="flex justify-center gap-6 flex-wrap w-full max-w-2xl">
+        <div className="flex justify-center gap-4 sm:gap-6 flex-wrap w-full max-w-2xl">
           {battle.enemies.map((e, idx) => {
             const intent = intentOf(e);
             const isDead = e.hp <= 0;
@@ -225,8 +228,7 @@ export function BattleScreen() {
 
                 {/* 立绘（大） */}
                 <div
-                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card"
-                  style={{ width: 140, height: 180 }}
+                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card w-28 h-36 sm:w-32 sm:h-40 md:w-36 md:h-48"
                 >
                   <Portrait
                     src={e.artSrc}
@@ -271,7 +273,7 @@ export function BattleScreen() {
                       <span className="text-bone-light ml-2">🛡 {e.block}</span>
                     )}
                   </div>
-                  <div className="mt-1 w-[140px]">
+                  <div className="mt-1 w-28 sm:w-32 md:w-36">
                     <HealthBar current={e.hp} max={e.maxHp} block={e.block} width={undefined} />
                   </div>
                   <StatusBadges enemy={e} />
@@ -333,8 +335,8 @@ export function BattleScreen() {
           {/* 第二行：手牌（横向滚动，移动端友好） */}
           <div
             data-zone="hand"
-            className="flex gap-2 justify-center overflow-x-auto pb-2"
-            style={{ minHeight: 210, scrollbarWidth: 'thin' }}
+            className="flex gap-2 justify-center overflow-x-auto pb-2 min-h-[170px] sm:min-h-[200px] md:min-h-[210px]"
+            style={{ scrollbarWidth: 'thin' }}
           >
             {battle.hand.length === 0 ? (
               <div className="flex items-center text-mist text-sm font-heading tracking-widest">
@@ -356,7 +358,7 @@ export function BattleScreen() {
                   >
                     <Card
                       card={c}
-                      width={130}
+                      width={handCardWidth}
                       interactive={canPlay}
                       onClick={canPlay ? () => playCard(i, targetIdx) : undefined}
                     />

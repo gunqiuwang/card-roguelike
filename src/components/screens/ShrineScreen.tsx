@@ -12,12 +12,14 @@ import { CornerFlourish } from '../art/CornerFlourish';
 import { balance } from '../../config/balance';
 import { cardToInstance } from '../../engine';
 import type { CardInstance } from '../../types';
+import { useResponsiveCardWidth } from '../../lib/responsive';
 
 type Mode = 'menu' | 'upgrade' | 'remove' | 'tame' | 'scrolls';
 
 export function ShrineScreen() {
   const { run, shrineAct, advanceFromShrine, shrineMessage, shrineScrolls } = useGame();
   const [mode, setMode] = useState<Mode>('menu');
+  const shrineCardWidth = useResponsiveCardWidth('shrine');
   if (!run) return null;
 
   const costUpgrade = balance.shrine.upgradeCardCost;
@@ -45,7 +47,7 @@ export function ShrineScreen() {
     <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-4 py-8">
       <MistOverlay intensity={0.6} />
 
-      <div className="relative max-w-3xl w-full bg-ink-soft border border-bone/50 rounded p-6 shadow-card">
+      <div className="relative max-w-3xl w-full bg-ink-soft border border-bone/50 rounded p-4 sm:p-6 shadow-card">
         <CornerFlourish corner="tl" className="absolute top-2 left-2" />
         <CornerFlourish corner="tr" className="absolute top-2 right-2" />
         <CornerFlourish corner="bl" className="absolute bottom-2 left-2" />
@@ -116,7 +118,7 @@ export function ShrineScreen() {
             <div className="flex flex-wrap gap-3 justify-center max-h-[48vh] overflow-auto">
               {run.deck.map((c, i) => (
                 <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-                  <Card card={withYx(i)} width={130} />
+                  <Card card={withYx(i)} width={shrineCardWidth} />
                   <Button
                     size="sm"
                     variant={mode === 'remove' ? 'danger' : 'primary'}
@@ -153,7 +155,7 @@ export function ShrineScreen() {
                 const yx = run.yaoxing?.[c.id] ?? 0;
                 return (
                   <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-                    <Card card={withYx(i)} width={130} />
+                    <Card card={withYx(i)} width={shrineCardWidth} />
                     <Button
                       size="sm"
                       onClick={() => {

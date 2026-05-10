@@ -8,14 +8,16 @@ import { Card } from '../card/Card';
 import { MistOverlay } from '../art/MistOverlay';
 import { cardToInstance } from '../../engine';
 import { balance } from '../../config/balance';
+import { useResponsiveCardWidth } from '../../lib/responsive';
 
 export function OverflowScreen() {
   const { run, resolveOverflow } = useGame();
+  const cardWidth = useResponsiveCardWidth('overflow');
   if (!run?.pendingOverflow) return null;
   const max = balance.player.deckSizeMax;
 
   return (
-    <div className="relative min-h-screen bg-ink text-parchment flex flex-col items-center justify-start px-6 py-10">
+    <div className="relative min-h-screen bg-ink text-parchment flex flex-col items-center justify-start px-4 sm:px-6 py-8 sm:py-10">
       <MistOverlay intensity={0.5} />
       <div className="relative z-10 max-w-5xl w-full">
         <div className="text-center mb-6">
@@ -29,10 +31,10 @@ export function OverflowScreen() {
             牌组上限 {max} 张，当前 {run.deck.length}。请选一张删除。
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
           {run.deck.map((c, i) => (
             <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-              <Card card={cardToInstance(c)} width={140} interactive />
+              <Card card={cardToInstance(c)} width={cardWidth} interactive />
               <Button
                 size="sm"
                 variant="danger"
