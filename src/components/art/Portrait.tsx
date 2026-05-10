@@ -4,7 +4,7 @@
  * 用在卡面（onDark）、标题页（onPaper）、封印动画。
  */
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { InkSilhouette } from './InkSilhouette';
 import { asset } from '../../lib/asset';
 import type { SilhouetteKind } from '../../types';
@@ -35,7 +35,7 @@ function normalizeSrc(src: string): string {
   return asset(src);
 }
 
-export function Portrait({
+export const Portrait = memo(function Portrait({
   src,
   fallbackKind,
   sealed = false,
@@ -67,4 +67,4 @@ export function Portrait({
       )}
     </div>
   );
-}
+});

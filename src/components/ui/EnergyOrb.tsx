@@ -2,13 +2,15 @@
  * 能量（气）水晶 · 符火造型
  */
 
+import { memo } from 'react';
+
 type Props = {
   current: number;
   max: number;
   size?: number;
 };
 
-export function EnergyOrb({ current, max, size = 64 }: Props) {
+export const EnergyOrb = memo(function EnergyOrb({ current, max, size = 64 }: Props) {
   return (
     <div
       className="relative no-select"
@@ -58,4 +60,4 @@ export function EnergyOrb({ current, max, size = 64 }: Props) {
       </div>
     </div>
   );
-}
+});

@@ -14,7 +14,7 @@
  * 110-260 的卡宽区间文字不重叠、不溢出。
  */
 
-import type { CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { Portrait } from '../art/Portrait';
 import { RarityBadge } from '../art/RarityBadge';
 import { rarityTheme } from '../../config/visual';
@@ -50,7 +50,7 @@ const typeLabel: Record<CardModel['type'], string> = {
   yao: '妖',
 };
 
-export function Card({
+export const Card = memo(function Card({
   card,
   width = DESIGN_WIDTH,
   interactive = false,
@@ -416,7 +416,7 @@ export function Card({
       )}
     </button>
   );
-}
+});
 
 /**
  * 妖性条 · 妖卡专属底栏

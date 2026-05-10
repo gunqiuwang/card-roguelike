@@ -11,6 +11,7 @@
  *   SP   三环（含虚线）+ 红点 + 内填色块
  */
 
+import { memo } from 'react';
 import { rarityTheme } from '../../config/visual';
 import type { CardRarity } from '../../types';
 
@@ -43,7 +44,7 @@ const labelMap: Record<CardRarity, string> = {
   legend: '玄',
 };
 
-export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
+export const RarityBadge = memo(function RarityBadge({ rarity, size = 28, className = '' }: Props) {
   if (rarity === 'starter') return null;
 
   const shape = shapeMap[rarity];
@@ -118,4 +119,4 @@ export function RarityBadge({ rarity, size = 28, className = '' }: Props) {
       )}
     </svg>
   );
-}
+});

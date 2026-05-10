@@ -2,6 +2,8 @@
  * 血量条 · 气血槽
  */
 
+import { memo } from 'react';
+
 type Props = {
   current: number;
   max: number;
@@ -11,7 +13,7 @@ type Props = {
   label?: boolean;
 };
 
-export function HealthBar({ current, max, block = 0, width, label = true }: Props) {
+export const HealthBar = memo(function HealthBar({ current, max, block = 0, width, label = true }: Props) {
   const pct = Math.max(0, Math.min(1, current / max));
   const style: React.CSSProperties =
     width !== undefined ? { width } : { width: '100%' };
@@ -42,4 +44,4 @@ export function HealthBar({ current, max, block = 0, width, label = true }: Prop
       )}
     </div>
   );
-}
+});
