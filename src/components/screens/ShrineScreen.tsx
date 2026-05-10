@@ -3,7 +3,7 @@
  *   菜单：升阶 / 删卡 / 驯妖 / 买秘卷 / 静修 / 离去
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useGame } from '../../store/GameStore';
 import { Button } from '../ui/Button';
 import { Card } from '../card/Card';
@@ -20,6 +20,32 @@ export function ShrineScreen() {
   const { run, shrineAct, advanceFromShrine, shrineMessage, shrineScrolls } = useGame();
   const [mode, setMode] = useState<Mode>('menu');
   const shrineCardWidth = useResponsiveCardWidth('shrine');
+
+  // Stable CardInstance[] for Card's React.memo to hit across renders.
+  //
+  // The engine mutates run.deck in place (splice on remove, replace-at-index on
+  // upgrade) and mutates run.yaoxing value fields in place on tame. Array /
+  // object identity therefore doesn't change across those actions, so a plain
+  // [run.deck, run.yaoxing] dep list would yield stale instances. Build a
+  // primitive content signal that captures per-card id+name+yaoxing and key
+  // the memo on that. String comparison per render is cheap; keeping instance
+  // refs stable is the point of the memo.
+  //
+  // NOTE: these hooks must run every render; don't early-return above them.
+  const shrineSignal = run
+    ? run.deck
+        .map((c) => `${c.id}:${c.name}:${run.yaoxing?.[c.id] ?? c.yaoxing ?? ''}`)
+        .join('|')
+    : '';
+  const deckInstances = useMemo<CardInstance[]>(
+    () =>
+      (run?.deck ?? []).map((c) => {
+        const yx = run?.yaoxing?.[c.id];
+        return cardToInstance(yx !== undefined ? { ...c, yaoxing: yx } : c);
+      }),
+    [shrineSignal],
+  );
+
   if (!run) return null;
 
   const costUpgrade = balance.shrine.upgradeCardCost;
@@ -35,13 +61,6 @@ export function ShrineScreen() {
   const canUpgrade = run.currency >= costUpgrade && run.deck.length > 0;
   const canRemove = run.currency >= costRemove && run.deck.length > 1;
   const canTame = run.currency >= costTame && hasYaoCards && anyRestless;
-
-  /** 把 run.deck[idx] 包装成带最新 yaoxing 的实例（显示用） */
-  const withYx = (cardIdx: number): CardInstance => {
-    const c = run.deck[cardIdx];
-    const yx = run.yaoxing?.[c.id];
-    return cardToInstance(yx !== undefined ? { ...c, yaoxing: yx } : c);
-  };
 
   return (
     <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-4 py-8">
@@ -118,7 +137,7 @@ export function ShrineScreen() {
             <div className="flex flex-wrap gap-3 justify-center max-h-[48vh] overflow-auto">
               {run.deck.map((c, i) => (
                 <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-                  <Card card={withYx(i)} width={shrineCardWidth} />
+                  <Card card={deckInstances[i]} width={shrineCardWidth} />
                   <Button
                     size="sm"
                     variant={mode === 'remove' ? 'danger' : 'primary'}
@@ -155,7 +174,7 @@ export function ShrineScreen() {
                 const yx = run.yaoxing?.[c.id] ?? 0;
                 return (
                   <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-                    <Card card={withYx(i)} width={shrineCardWidth} />
+                    <Card card={deckInstances[i]} width={shrineCardWidth} />
                     <Button
                       size="sm"
                       onClick={() => {

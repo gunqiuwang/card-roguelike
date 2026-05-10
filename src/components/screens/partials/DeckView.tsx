@@ -5,7 +5,7 @@
  * · 战斗中：展示 drawPile / hand / discardPile 三堆（tab 切换）
  */
 
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Button } from '../../ui/Button';
 import { Card as CardView } from '../../card/Card';
 import { useGame } from '../../../store/GameStore';
@@ -22,11 +22,9 @@ export function DeckViewButton() {
   const [pile, setPile] = useState<Pile>(inBattle ? 'draw' : 'deck');
   const cardWidth = useResponsiveCardWidth('deck');
 
-  if (!run) return null;
-
-  let cards: (Card | CardInstance)[] = run.deck;
+  let cards: (Card | CardInstance)[] = run?.deck ?? [];
   let title = '当 前 牌 组';
-  if (inBattle && run.battle) {
+  if (run && inBattle && run.battle) {
     if (pile === 'draw') {
       cards = [...run.battle.drawPile];
       title = '抽 牌 堆';
@@ -41,6 +39,21 @@ export function DeckViewButton() {
       title = '当 前 牌 组';
     }
   }
+
+  // Hoist the displayed list into stable CardInstance references so <CardView>'s
+  // React.memo shallow check doesn't bail on fresh cardToInstance() results.
+  // In-battle branch entries already carry `uid` (CardInstance) and are passed
+  // through unchanged. Non-battle branch (run.deck) used to mint a fresh instance
+  // every render, now memoized on the `cards` array identity.
+  //
+  // NOTE: hook must run every render. Keep the early `if (!run) return null`
+  // below this call to preserve the hook order.
+  const stableCards = useMemo(
+    () => cards.map((c) => ('uid' in c ? c : cardToInstance(c))),
+    [cards],
+  );
+
+  if (!run) return null;
 
   return (
     <>
@@ -89,10 +102,10 @@ export function DeckViewButton() {
                   · 空 ·
                 </div>
               ) : (
-                cards.map((c, i) => (
+                stableCards.map((c, i) => (
                   <CardView
-                    key={(c as CardInstance).uid ?? `${c.id}-${i}`}
-                    card={'uid' in c ? c : cardToInstance(c)}
+                    key={c.uid ?? `${c.id}-${i}`}
+                    card={c}
                     width={cardWidth}
                   />
                 ))

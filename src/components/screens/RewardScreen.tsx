@@ -2,6 +2,7 @@
  * 奖励屏 · 战后 3 选 1
  */
 
+import { useMemo } from 'react';
 import { useGame } from '../../store/GameStore';
 import { Button } from '../ui/Button';
 import { Card } from '../card/Card';
@@ -12,6 +13,14 @@ import { useResponsiveCardWidth } from '../../lib/responsive';
 export function RewardScreen() {
   const { run, takeReward } = useGame();
   const cardWidth = useResponsiveCardWidth('reward');
+  // cardChoices is freshly minted in resolveBattle(); its identity is stable for
+  // the lifetime of this screen. Hoist the CardInstance[] here so <Card>'s
+  // React.memo shallow check doesn't bail on fresh refs each render.
+  const cardChoices = run?.pendingReward?.cardChoices;
+  const cardInstances = useMemo(
+    () => (cardChoices ?? []).map(cardToInstance),
+    [cardChoices],
+  );
   if (!run?.pendingReward) return null;
   const rew = run.pendingReward;
 
@@ -33,7 +42,7 @@ export function RewardScreen() {
         <div className="flex gap-3 sm:gap-6 justify-center flex-wrap mb-8 sm:mb-10">
           {rew.cardChoices.map((c, i) => (
             <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-3">
-              <Card card={cardToInstance(c)} width={cardWidth} interactive />
+              <Card card={cardInstances[i]} width={cardWidth} interactive />
               <Button size="sm" onClick={() => takeReward(i)}>
                 取 此
               </Button>

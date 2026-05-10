@@ -2,6 +2,7 @@
  * 牌组溢出屏 · 牌组 > 20 时强制删一张
  */
 
+import { useMemo } from 'react';
 import { useGame } from '../../store/GameStore';
 import { Button } from '../ui/Button';
 import { Card } from '../card/Card';
@@ -13,6 +14,14 @@ import { useResponsiveCardWidth } from '../../lib/responsive';
 export function OverflowScreen() {
   const { run, resolveOverflow } = useGame();
   const cardWidth = useResponsiveCardWidth('overflow');
+  // Hoist run.deck → CardInstance[] so <Card>'s memo doesn't bail on fresh refs.
+  // run.deck identity is stable for the lifetime of this screen: pendingOverflow
+  // is set once (deck push), the modal shows, and resolveOverflow() unmounts.
+  const deck = run?.deck;
+  const deckInstances = useMemo(
+    () => (deck ?? []).map(cardToInstance),
+    [deck],
+  );
   if (!run?.pendingOverflow) return null;
   const max = balance.player.deckSizeMax;
 
@@ -34,7 +43,7 @@ export function OverflowScreen() {
         <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
           {run.deck.map((c, i) => (
             <div key={`${c.id}-${i}`} className="flex flex-col items-center gap-2">
-              <Card card={cardToInstance(c)} width={cardWidth} interactive />
+              <Card card={deckInstances[i]} width={cardWidth} interactive />
               <Button
                 size="sm"
                 variant="danger"
