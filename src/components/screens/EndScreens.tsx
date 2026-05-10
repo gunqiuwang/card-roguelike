@@ -10,9 +10,9 @@ import { CornerFlourish } from '../art/CornerFlourish';
 export function VictoryScreen() {
   const { meta, returnToTitle, newRun } = useGame();
   return (
-    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-6">
+    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-4 sm:px-6">
       <MistOverlay intensity={0.9} />
-      <div className="relative z-10 max-w-md w-full text-center bg-ink-soft/80 border border-bone/40 rounded p-10">
+      <div className="relative z-10 max-w-md w-full text-center bg-ink-soft/80 border border-bone/40 rounded p-6 sm:p-10">
         <CornerFlourish corner="tl" className="absolute top-2 left-2" />
         <CornerFlourish corner="tr" className="absolute top-2 right-2" />
         <CornerFlourish corner="bl" className="absolute bottom-2 left-2" />
@@ -45,9 +45,9 @@ export function VictoryScreen() {
 export function GameOverScreen() {
   const { run, returnToTitle, newRun } = useGame();
   return (
-    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-6">
+    <div className="relative min-h-screen bg-ink text-parchment flex items-center justify-center px-4 sm:px-6">
       <MistOverlay intensity={1.2} withMoonSpot={false} />
-      <div className="relative z-10 max-w-md w-full text-center bg-ink-soft/80 border border-vermillion/50 rounded p-10">
+      <div className="relative z-10 max-w-md w-full text-center bg-ink-soft/80 border border-vermillion/50 rounded p-6 sm:p-10">
         <CornerFlourish corner="tl" className="absolute top-2 left-2" color="#8B2A1E" />
         <CornerFlourish corner="tr" className="absolute top-2 right-2" color="#8B2A1E" />
         <CornerFlourish corner="bl" className="absolute bottom-2 left-2" color="#8B2A1E" />

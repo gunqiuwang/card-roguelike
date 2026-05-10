@@ -20,12 +20,12 @@ export function CodexScreen() {
     <div className="relative min-h-screen bg-ink text-parchment">
       <MistOverlay intensity={0.7} />
       <header className="sticky top-0 z-20 bg-ink-soft/95 border-b border-bone/20 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
+          <div className="min-w-0">
             <div className="text-bone/70 text-xs font-heading tracking-widest">封 妖 录</div>
             <h1 className="font-heading text-parchment-light text-xl tracking-wider">图 鉴</h1>
           </div>
-          <div className="text-mist text-xs font-heading tracking-widest">
+          <div className="hidden sm:block text-mist text-xs font-heading tracking-widest text-center">
             通关 {meta.victories} · 封 {meta.seals} · 已录 {unlocked.size}/{ALL_YAO.length}
           </div>
           <Button variant="ghost" size="sm" onClick={returnToTitle}>
@@ -34,22 +34,25 @@ export function CodexScreen() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div className="sm:hidden text-mist text-xs font-heading tracking-widest text-center mb-4">
+          通关 {meta.victories} · 封 {meta.seals} · 已录 {unlocked.size}/{ALL_YAO.length}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {ALL_YAO.map((y) => {
             const known = unlocked.has(y.id);
             return (
               <div
                 key={y.id}
                 className={[
-                  'relative flex gap-4 p-4 border rounded',
+                  'relative flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 border rounded',
                   known
                     ? 'bg-ink-soft border-bone/40'
                     : 'bg-ink-deep border-bone/15 opacity-70',
                 ].join(' ')}
               >
                 <div
-                  className="rounded-sm overflow-hidden border border-bone/30 shrink-0"
+                  className="rounded-sm overflow-hidden border border-bone/30 shrink-0 self-center sm:self-auto"
                   style={{ width: 96, height: 128 }}
                 >
                   <Portrait
@@ -60,7 +63,7 @@ export function CodexScreen() {
                     alt={y.name}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-heading text-parchment-light text-lg tracking-widest">
                       {known ? y.name : '？？？'}

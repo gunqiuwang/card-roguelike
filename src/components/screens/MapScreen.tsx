@@ -90,7 +90,7 @@ export function MapScreen() {
                 {/* 圆形节点编号 */}
                 <div
                   className={[
-                    'relative w-16 h-16 flex items-center justify-center font-heading tracking-widest bg-ink border-2 rounded-full shrink-0 z-10 transition-all',
+                    'relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center font-heading tracking-widest bg-ink border-2 rounded-full shrink-0 z-10 transition-all',
                     isCur
                       ? 'border-ember-glow ring-4 ring-ember/30 shadow-seal'
                       : isDone
@@ -129,7 +129,7 @@ export function MapScreen() {
                     </div>
                   </div>
                   {isCur && !isDone && (
-                    <Button size="sm" onClick={enterNode}>
+                    <Button size="sm" onClick={enterNode} className="whitespace-nowrap">
                       {isFirstRun ? '踏入 →' : '进 入 →'}
                     </Button>
                   )}
