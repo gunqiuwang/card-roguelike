@@ -1,14 +1,35 @@
 /**
- * 战斗屏 · v0.2 核心 UI
+ * 战斗屏 · v0.2.1 · 清晰分区重排
  *
- * 布局：
- *   · 顶栏：玩家 HP/Block + 敌人 HP/意图（多敌横排）
- *   · 中区：敌人立绘 + 浮动数字
- *   · 底栏：能量 · 手牌 · 结束回合
- *   · SEAL_CHOICE 浮层
+ * 布局（手机优先，桌面居中 640px）：
+ *   ┌──────────────────────────────────────────┐
+ *   │ ← 返回  ·  方士 · 青丘残岭 · [牌组 12]   │ ← 顶栏（固定）
+ *   │ 气血 65/70 ▓▓▓▓░░  气 3/3  ·  回合 2    │
+ *   ├──────────────────────────────────────────┤
+ *   │                                          │
+ *   │            ⚔ 6   ← 意图                  │
+ *   │         ┌────────┐                       │
+ *   │         │ 青狐   │  ← 敌人立绘（大，居中）│
+ *   │         │        │                       │
+ *   │         └────────┘                       │
+ *   │         HP 18/30  🩸 毒2                  │
+ *   │                                          │
+ *   │ ─────── 最近一条日志 ────────             │
+ *   ├──────────────────────────────────────────┤
+ *   │ 抽 8 · 弃 2 · [牌组]       [结束回合]    │ ← 底栏（固定）
+ *   │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐                │
+ *   │ │烈│ │镇│ │桃│ │抽│ │烈│  ← 手牌         │
+ *   │ └──┘ └──┘ └──┘ └──┘ └──┘                │
+ *   └──────────────────────────────────────────┘
+ *
+ * 关键：
+ *   · 顶/底栏 position:sticky，内容区独立滚动
+ *   · 敌人可点击 = 多敌切 target
+ *   · 出牌 = 点卡片（卡本身就是 <button>）
+ *   · 未激活时 data-zone 给 TutorialOverlay 定位用
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../store/GameStore';
 import { Button } from '../ui/Button';
 import { HealthBar } from '../ui/HealthBar';
@@ -16,35 +37,19 @@ import { EnergyOrb } from '../ui/EnergyOrb';
 import { FloatingNumber } from '../ui/FloatingNumber';
 import { Card } from '../card/Card';
 import { Portrait } from '../art/Portrait';
-import { MistOverlay } from '../art/MistOverlay';
 import { intentOf } from '../../engine';
 import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
+import { TutorialOverlay } from './partials/TutorialOverlay';
 
 function StatusBadges({ enemy }: { enemy: EnemyState }) {
   const s = enemy.status;
   return (
     <div className="flex gap-1 flex-wrap justify-center mt-1">
-      {s.poison > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-jade/30 border border-jade/60 rounded-sm font-numeric text-jade">
-          毒 {s.poison}
-        </span>
-      )}
-      {s.weak > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-mist/30 border border-mist rounded-sm font-numeric text-mist">
-          虚 {s.weak}
-        </span>
-      )}
-      {s.vulnerable > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-vermillion/30 border border-vermillion/60 rounded-sm font-numeric text-vermillion-light">
-          易 {s.vulnerable}
-        </span>
-      )}
-      {s.intentSealed > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-ember/30 border border-ember/60 rounded-sm font-numeric text-ember-glow">
-          封印
-        </span>
-      )}
+      {s.poison > 0 && <Badge color="jade">毒 {s.poison}</Badge>}
+      {s.weak > 0 && <Badge color="mist">虚 {s.weak}</Badge>}
+      {s.vulnerable > 0 && <Badge color="vermillion">易 {s.vulnerable}</Badge>}
+      {s.intentSealed > 0 && <Badge color="ember">意封</Badge>}
     </div>
   );
 }
@@ -53,68 +58,56 @@ function PlayerStatusBadges() {
   const { run } = useGame();
   if (!run?.battle) return null;
   const s = run.battle.playerStatus;
+  if (s.poison === 0 && s.weak === 0 && s.vulnerable === 0) return null;
   return (
     <div className="flex gap-1 flex-wrap">
-      {s.poison > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-jade/30 border border-jade/60 rounded-sm font-numeric text-jade">
-          毒 {s.poison}
-        </span>
-      )}
-      {s.weak > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-mist/30 border border-mist rounded-sm font-numeric text-mist">
-          虚 {s.weak}
-        </span>
-      )}
-      {s.vulnerable > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-vermillion/30 border border-vermillion/60 rounded-sm font-numeric text-vermillion-light">
-          易 {s.vulnerable}
-        </span>
-      )}
+      {s.poison > 0 && <Badge color="jade">毒 {s.poison}</Badge>}
+      {s.weak > 0 && <Badge color="mist">虚 {s.weak}</Badge>}
+      {s.vulnerable > 0 && <Badge color="vermillion">易 {s.vulnerable}</Badge>}
     </div>
   );
 }
 
+function Badge({
+  children,
+  color,
+}: {
+  children: React.ReactNode;
+  color: 'jade' | 'mist' | 'vermillion' | 'ember';
+}) {
+  const cls = {
+    jade: 'bg-jade/30 border-jade/60 text-jade',
+    mist: 'bg-mist/30 border-mist text-mist',
+    vermillion: 'bg-vermillion/30 border-vermillion/60 text-vermillion-light',
+    ember: 'bg-ember/30 border-ember/60 text-ember-glow',
+  }[color];
+  return (
+    <span
+      className={[
+        'text-[10px] px-1.5 py-0.5 border rounded-sm font-numeric',
+        cls,
+      ].join(' ')}
+    >
+      {children}
+    </span>
+  );
+}
+
 export function BattleScreen() {
-  const { run, playCard, endTurn, chooseSeal } = useGame();
+  const { run, playCard, endTurn, chooseSeal, returnToTitle } = useGame();
   const [targetIdx, setTargetIdx] = useState(0);
-  const [consumedFxIds, setConsumedFxIds] = useState<Set<string>>(new Set());
-  const battleKey = useRef(0);
 
   const battle = run?.battle;
 
-  // 当敌人全死或 target 无效 → 自动选第一个活的
+  // 当当前 target 已死 → 自动切活的
   useEffect(() => {
     if (!battle) return;
-    if (!battle.enemies[targetIdx] || battle.enemies[targetIdx].hp <= 0) {
+    const cur = battle.enemies[targetIdx];
+    if (!cur || cur.hp <= 0) {
       const alive = battle.enemies.findIndex((e) => e.hp > 0);
-      if (alive >= 0) setTargetIdx(alive);
+      if (alive >= 0 && alive !== targetIdx) setTargetIdx(alive);
     }
   }, [battle, targetIdx]);
-
-  // 战斗切换（不同敌人）时清一下已消费的 fx
-  useEffect(() => {
-    if (!battle) return;
-    battleKey.current += 1;
-    setConsumedFxIds(new Set());
-  }, [battle?.enemies.map((e) => e.instanceId).join('|')]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // fx 自动过期
-  useEffect(() => {
-    if (!battle || battle.fx.length === 0) return;
-    const t = setTimeout(() => {
-      setConsumedFxIds((prev) => {
-        const next = new Set(prev);
-        for (const f of battle.fx) next.add(f.id);
-        return next;
-      });
-    }, 1400);
-    return () => clearTimeout(t);
-  }, [battle?.fx.length]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const activeFx = useMemo(
-    () => (battle ? battle.fx.filter((f) => !consumedFxIds.has(f.id)) : []),
-    [battle, consumedFxIds],
-  );
 
   if (!run || !battle) {
     return (
@@ -124,45 +117,114 @@ export function BattleScreen() {
     );
   }
 
-  const aliveEnemies = battle.enemies.filter((e) => e.hp > 0);
   const isSealChoice = battle.phase === 'sealChoice';
   const sealTargetIdx = battle.enemies.findIndex(
     (e) => e.sealChoiceTriggered && !e.sealed && e.hp > 0,
   );
   const sealTarget = sealTargetIdx >= 0 ? battle.enemies[sealTargetIdx] : null;
 
-  return (
-    <div className="relative min-h-screen bg-ink text-parchment overflow-hidden">
-      <MistOverlay intensity={0.5} withMoonSpot={false} />
+  // 最近一条玩家/敌人相关日志
+  const lastLog = battle.log[battle.log.length - 1] ?? '';
 
-      {/* 敌人区 */}
-      <section className="relative pt-8 pb-4 px-6">
-        <div className="flex justify-center gap-8 flex-wrap">
+  return (
+    <div className="relative min-h-screen bg-ink text-parchment flex flex-col">
+      {/* ═══════════════════════════════════════
+           ① 顶栏 · 玩家状态 + 回合 + 牌组入口
+         ═══════════════════════════════════════ */}
+      <header
+        className="sticky top-0 z-30 bg-ink-soft/95 border-b border-bone/30 backdrop-blur"
+        data-zone="top-bar"
+      >
+        <div className="max-w-2xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="ghost" size="sm" onClick={returnToTitle}>
+              ← 返回
+            </Button>
+            <div className="text-xs text-mist font-heading tracking-widest">
+              第一章 · 青丘残岭 · 回合 {battle.turn}
+            </div>
+            <DeckViewButton />
+          </div>
+
+          <div className="mt-2 flex items-center gap-3" data-zone="player-stats">
+            <div className="flex-1">
+              <div className="flex items-center justify-between text-[11px] text-mist font-heading tracking-widest mb-1">
+                <span>气 血</span>
+                <span className="font-numeric text-parchment-light">
+                  {battle.playerHp}/{battle.playerMaxHp}
+                  {battle.playerBlock > 0 && (
+                    <span className="text-bone-light ml-2">🛡 {battle.playerBlock}</span>
+                  )}
+                </span>
+              </div>
+              <HealthBar
+                current={battle.playerHp}
+                max={battle.playerMaxHp}
+                block={battle.playerBlock}
+                width={undefined}
+              />
+              <div className="mt-1">
+                <PlayerStatusBadges />
+              </div>
+            </div>
+            <div data-zone="energy" className="shrink-0">
+              <EnergyOrb current={battle.energy} max={battle.energyMax} size={52} />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ═══════════════════════════════════════
+           ② 中部 · 敌人区（大、居中、显眼）
+         ═══════════════════════════════════════ */}
+      <section
+        className="flex-1 relative flex flex-col items-center justify-center px-4 py-6"
+        data-zone="enemies"
+      >
+        <div className="flex justify-center gap-6 flex-wrap w-full max-w-2xl">
           {battle.enemies.map((e, idx) => {
             const intent = intentOf(e);
             const isDead = e.hp <= 0;
             const isTarget = idx === targetIdx;
+            const isMulti = battle.enemies.length > 1;
+            const isLowHP = !isDead && e.hp <= e.maxHp * 0.3;
+
             return (
               <button
                 key={e.instanceId}
                 onClick={() => !isDead && setTargetIdx(idx)}
                 disabled={isDead}
+                data-zone={idx === 0 ? 'enemy-first' : undefined}
                 className={[
-                  'relative flex flex-col items-center transition-opacity no-select',
+                  'relative flex flex-col items-center transition-all p-2 rounded no-select',
                   isDead ? 'opacity-25' : '',
-                  isTarget && !isDead ? 'ring-2 ring-ember-glow/70 rounded-sm' : '',
+                  isMulti && isTarget && !isDead
+                    ? 'ring-2 ring-ember-glow bg-ember/5'
+                    : '',
+                  isMulti && !isTarget && !isDead ? 'hover:bg-ink-soft/50' : '',
                 ].join(' ')}
-                style={{ padding: 8 }}
               >
-                {/* 意图徽章 */}
+                {/* 意图徽章（大、醒目） */}
                 {!isDead && intent && (
-                  <div className="mb-2 px-2 py-0.5 bg-ink-soft border border-bone/40 rounded-sm font-heading tracking-widest text-sm text-parchment-light">
+                  <div
+                    data-zone={idx === 0 ? 'intent' : undefined}
+                    className={[
+                      'mb-2 px-3 py-1 rounded border font-heading tracking-widest',
+                      intent.kind === 'attack'
+                        ? 'bg-vermillion/20 border-vermillion/60 text-vermillion-light'
+                        : intent.kind === 'defend'
+                          ? 'bg-jade/20 border-jade/60 text-jade'
+                          : 'bg-ember/20 border-ember/60 text-ember-glow',
+                    ].join(' ')}
+                    style={{ fontSize: 15 }}
+                  >
                     {intent.label}
                   </div>
                 )}
-                {/* 立绘 */}
+
+                {/* 立绘（大） */}
                 <div
-                  className="relative rounded-sm overflow-hidden border border-bone/30"
+                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card"
                   style={{ width: 140, height: 180 }}
                 >
                   <Portrait
@@ -173,173 +235,187 @@ export function BattleScreen() {
                     className="w-full h-full"
                     alt={e.name}
                   />
-                  {/* 低血标记 */}
-                  {!isDead && e.hp <= e.maxHp * 0.3 && (
-                    <div className="absolute top-1 right-1 text-vermillion-light text-xl animate-pulse font-heading">
+                  {/* 低血警告 */}
+                  {isLowHP && (
+                    <div className="absolute top-1 right-1 text-vermillion-light text-2xl font-heading animate-pulse leading-none">
                       印
                     </div>
                   )}
+                  {/* 浮动数字覆盖敌人立绘 */}
+                  {battle.fx
+                    .filter((f) => f.target === 'enemy' && f.enemyIdx === idx)
+                    .slice(-3)
+                    .map((f) => (
+                      <FloatingNumber
+                        key={f.id}
+                        value={f.value}
+                        kind={f.kind}
+                        offsetX={50}
+                        offsetY={60}
+                      />
+                    ))}
                 </div>
-                {/* 名 + 血 */}
+
+                {/* 名 + 血 + 状态 */}
                 <div className="mt-2 text-center">
-                  <div className="font-heading tracking-widest text-parchment-light text-sm">
+                  <div className="font-heading tracking-widest text-parchment-light text-base">
                     {e.name}
+                    <span className="text-[10px] text-mist ml-2 font-numeric">
+                      [{e.rank}]
+                    </span>
                   </div>
-                  <div className="mt-1">
-                    <HealthBar current={e.hp} max={e.maxHp} block={e.block} width={140} />
+                  <div className="mt-1 text-[11px] font-numeric text-mist">
+                    HP {e.hp}/{e.maxHp}
+                    {e.block > 0 && (
+                      <span className="text-bone-light ml-2">🛡 {e.block}</span>
+                    )}
+                  </div>
+                  <div className="mt-1 w-[140px]">
+                    <HealthBar current={e.hp} max={e.maxHp} block={e.block} width={undefined} />
                   </div>
                   <StatusBadges enemy={e} />
                 </div>
-
-                {/* 浮动数字 */}
-                {activeFx
-                  .filter((f) => f.target === 'enemy' && f.enemyIdx === idx)
-                  .map((f) => (
-                    <FloatingNumber
-                      key={f.id}
-                      value={f.value}
-                      kind={f.kind}
-                      offsetX={50}
-                      offsetY={40}
-                    />
-                  ))}
               </button>
             );
           })}
         </div>
 
-        {/* 日志（最后一条） */}
-        <div className="mt-4 text-center text-mist text-xs font-heading tracking-widest">
-          {battle.log[battle.log.length - 1] ?? ' '}
-        </div>
-      </section>
-
-      {/* 玩家状态区 */}
-      <section className="relative px-6">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex-1">
-            <div className="text-xs text-mist font-heading tracking-widest mb-1">方 士</div>
-            <HealthBar
-              current={battle.playerHp}
-              max={battle.playerMaxHp}
-              block={battle.playerBlock}
-              width={220}
-            />
-            <div className="mt-1">
-              <PlayerStatusBadges />
-            </div>
-            {/* 玩家身上的浮动数字 */}
-            <div className="relative">
-              {activeFx
-                .filter((f) => f.target === 'player')
-                .map((f) => (
-                  <FloatingNumber
-                    key={f.id}
-                    value={f.value}
-                    kind={f.kind}
-                    offsetX={30}
-                    offsetY={0}
-                  />
-                ))}
-            </div>
+        {/* 最近日志 */}
+        {lastLog && (
+          <div className="mt-4 text-center text-mist text-xs font-heading tracking-widest max-w-md px-4">
+            {lastLog}
           </div>
-          <div className="flex items-center gap-3">
-            <EnergyOrb current={battle.energy} max={battle.energyMax} size={60} />
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={endTurn}
-                disabled={battle.phase !== 'playerAction'}
-                size="md"
-              >
-                结 束 回 合
-              </Button>
-              <div className="text-mist text-[10px] font-heading tracking-widest text-center">
-                回合 {battle.turn}
+        )}
+
+        {/* 玩家浮动数字 */}
+        <div className="relative">
+          {battle.fx
+            .filter((f) => f.target === 'player')
+            .slice(-3)
+            .map((f) => (
+              <FloatingNumber
+                key={f.id}
+                value={f.value}
+                kind={f.kind}
+                offsetX={0}
+                offsetY={0}
+              />
+            ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+           ③ 底栏 · 手牌 + 结束回合
+         ═══════════════════════════════════════ */}
+      <footer
+        className="sticky bottom-0 z-30 bg-ink-soft/95 border-t border-bone/30 backdrop-blur pt-2 pb-3"
+        data-zone="bottom-bar"
+      >
+        <div className="max-w-3xl mx-auto px-2">
+          {/* 第一行：牌堆信息 + 结束回合 */}
+          <div className="flex items-center justify-between mb-2 px-2 text-[11px] font-heading tracking-widest text-mist">
+            <span>
+              抽 <span className="text-parchment-light font-numeric">{battle.drawPile.length}</span>
+              <span className="mx-2">·</span>
+              弃 <span className="text-parchment-light font-numeric">{battle.discardPile.length}</span>
+            </span>
+            <Button
+              onClick={endTurn}
+              disabled={battle.phase !== 'playerAction'}
+              size="sm"
+              data-zone="end-turn"
+            >
+              结 束 回 合 →
+            </Button>
+          </div>
+
+          {/* 第二行：手牌（横向滚动，移动端友好） */}
+          <div
+            data-zone="hand"
+            className="flex gap-2 justify-center overflow-x-auto pb-2"
+            style={{ minHeight: 210, scrollbarWidth: 'thin' }}
+          >
+            {battle.hand.length === 0 ? (
+              <div className="flex items-center text-mist text-sm font-heading tracking-widest">
+                · 手 牌 已 尽 · 请结束回合
               </div>
-            </div>
+            ) : (
+              battle.hand.map((c, i) => {
+                const canPay = battle.energy >= c.cost;
+                const canPlay = canPay && battle.phase === 'playerAction';
+                return (
+                  <div
+                    key={c.uid}
+                    className={[
+                      'shrink-0 transition-transform',
+                      canPlay ? 'hover:-translate-y-1' : '',
+                      !canPay ? 'opacity-40 grayscale' : '',
+                    ].join(' ')}
+                    data-zone={i === 0 ? 'hand-first-card' : undefined}
+                  >
+                    <Card
+                      card={c}
+                      width={130}
+                      interactive={canPlay}
+                      onClick={canPlay ? () => playCard(i, targetIdx) : undefined}
+                    />
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
-      </section>
+      </footer>
 
-      {/* 手牌区 */}
-      <section className="relative mt-4 pb-8 px-4">
-        <div className="flex gap-3 justify-center flex-wrap min-h-[260px] items-end">
-          {battle.hand.map((c, i) => {
-            const canPay = battle.energy >= c.cost;
-            return (
-              <div
-                key={c.uid}
-                className={[
-                  'transition-transform',
-                  canPay ? '' : 'opacity-40 grayscale',
-                ].join(' ')}
-                style={{ marginBottom: 0 }}
-              >
-                <Card
-                  card={c}
-                  width={150}
-                  interactive={canPay && battle.phase === 'playerAction'}
-                  onClick={
-                    canPay && battle.phase === 'playerAction'
-                      ? () => playCard(i, targetIdx)
-                      : undefined
-                  }
-                />
-              </div>
-            );
-          })}
-          {battle.hand.length === 0 && (
-            <div className="text-mist text-sm font-heading tracking-widest">
-              · 手 牌 已 尽 ·
-            </div>
-          )}
-        </div>
-
-        {/* 牌堆计数 */}
-        <div className="mt-2 max-w-3xl mx-auto flex items-center justify-between text-mist text-xs font-heading tracking-widest">
-          <span>抽 牌 {battle.drawPile.length}</span>
-          <DeckViewButton />
-          <span>弃 牌 {battle.discardPile.length}</span>
-        </div>
-      </section>
-
-      {/* SEAL_CHOICE 浮层 */}
+      {/* ═══════════════════════════════════════
+           SEAL_CHOICE 浮层
+         ═══════════════════════════════════════ */}
       {isSealChoice && sealTarget && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink-deep/85 backdrop-blur">
-          <div className="max-w-md w-full mx-6 p-6 bg-ink-soft border border-bone/50 rounded shadow-card text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-deep/85 backdrop-blur p-6">
+          <div className="max-w-md w-full p-6 bg-ink-soft border border-bone/60 rounded shadow-card text-center">
             <div className="text-vermillion-light font-heading text-sm tracking-widest mb-2">
               镇 妖 印 现
             </div>
             <h2 className="font-heading text-parchment-light text-2xl tracking-widest mb-3">
               斩 ，抑 或 封 ？
             </h2>
-            <p className="text-mist text-sm italic mb-5">"{sealTarget.flavor}"</p>
-            <div className="flex flex-col gap-3 items-center">
-              <div className="flex gap-3">
-                <Button
-                  variant="danger"
-                  onClick={() => chooseSeal(sealTargetIdx, 'kill')}
-                >
+            <p className="text-mist text-sm italic mb-6 leading-loose">
+              "{sealTarget.flavor}"
+            </p>
+            <div className="flex gap-3 justify-center mb-3">
+              <Button
+                variant="danger"
+                size="md"
+                onClick={() => chooseSeal(sealTargetIdx, 'kill')}
+              >
+                斩
+              </Button>
+              <Button size="md" onClick={() => chooseSeal(sealTargetIdx, 'seal')}>
+                封
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[11px] text-mist text-left">
+              <div className="p-2 bg-ink border border-bone/20 rounded">
+                <div className="text-vermillion-light font-heading tracking-widest mb-1">
                   斩
-                </Button>
-                <Button onClick={() => chooseSeal(sealTargetIdx, 'seal')}>
-                  封
-                </Button>
+                </div>
+                灵气 + 卡牌奖励
               </div>
-              <div className="text-mist text-xs font-heading tracking-widest mt-2">
-                斩 → 灵气 + 卡牌奖励 ·&nbsp; 封 → 妖卡入组
+              <div className="p-2 bg-ink border border-bone/20 rounded">
+                <div className="text-ember-glow font-heading tracking-widest mb-1">
+                  封
+                </div>
+                妖卡入组 · 少量灵气
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* 全败浮层保底（phase lost 时上层会跳到 gameOver 屏，不会停留在此） */}
-      {aliveEnemies.length === 0 && battle.phase !== 'won' && battle.phase !== 'lost' && (
-        <div className="fixed bottom-4 inset-x-0 text-center text-mist text-xs font-heading tracking-widest">
-          · 敌 尽 ·
-        </div>
-      )}
+      {/* ═══════════════════════════════════════
+           教程浮层（TutorialOverlay 会 self-gate）
+         ═══════════════════════════════════════ */}
+      <TutorialOverlay />
     </div>
   );
 }

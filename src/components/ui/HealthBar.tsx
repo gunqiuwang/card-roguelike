@@ -11,10 +11,12 @@ type Props = {
   label?: boolean;
 };
 
-export function HealthBar({ current, max, block = 0, width = 220, label = true }: Props) {
+export function HealthBar({ current, max, block = 0, width, label = true }: Props) {
   const pct = Math.max(0, Math.min(1, current / max));
+  const style: React.CSSProperties =
+    width !== undefined ? { width } : { width: '100%' };
   return (
-    <div className="flex flex-col gap-1 no-select" style={{ width }}>
+    <div className="flex flex-col gap-1 no-select" style={style}>
       <div className="relative h-4 rounded-sm bg-ink-soft border border-ink overflow-hidden shadow-paper">
         {/* 底层血 */}
         <div

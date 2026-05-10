@@ -25,7 +25,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -72,6 +71,20 @@ export type Screen =
   | 'overflow';
 
 // ============================================================================
+// 教程 · 新手指引 · 步骤 ID
+// ============================================================================
+export type TutorialStep =
+  | 'none'           // 不在教程（老玩家 / 已跳过）
+  | 'welcome'        // 欢迎 · 介绍"这是第一战"
+  | 'showHand'       // 介绍手牌
+  | 'showEnergy'     // 介绍能量
+  | 'showIntent'    // 介绍敌人意图
+  | 'tryPlay'       // 引导打一张卡
+  | 'tryEndTurn'    // 引导结束回合
+  | 'sealHint'      // 敌血低时介绍封妖
+  | 'done';         // 完成（写入 meta.tutorialDone）
+
+// ============================================================================
 // Store interface
 // ============================================================================
 export interface GameStore {
@@ -80,6 +93,7 @@ export interface GameStore {
   screen: Screen;
   hasSavedRun: boolean;
   shrineMessage: string;
+  tutorialStep: TutorialStep;
 
   // run 生命周期
   newRun: () => void;
@@ -103,6 +117,10 @@ export interface GameStore {
   resolveEventChoice: (idx: number) => void;
   dismissEvent: () => void;
   shrineAct: (action: ShrineAction) => void;
+
+  // 教程
+  advanceTutorial: () => void;
+  skipTutorial: () => void;
 }
 
 const GameCtx = createContext<GameStore | null>(null);
@@ -124,12 +142,14 @@ export function GameProvider({
     seals: 0,
     deepestChapter: 0,
     unlockedYao: [],
+    tutorialDone: false,
   });
   const rngRef = useRef<RNG>(createDefaultRng());
   const [screen, setScreen] = useState<Screen>(initialScreen);
   const [, setVersion] = useState(0);
   const [shrineMessage, setShrineMessage] = useState('');
   const [hasSavedRun, setHasSavedRun] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState<TutorialStep>('none');
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -160,6 +180,12 @@ export function GameProvider({
     metaRef.current.runs += 1;
     setScreen('map');
     setHasSavedRun(true);
+    // 若之前没完成教程 → 起手从 'welcome' 开始
+    if (!metaRef.current.tutorialDone) {
+      setTutorialStep('welcome');
+    } else {
+      setTutorialStep('none');
+    }
     persist();
     bump();
   }, [bump, persist]);
@@ -307,29 +333,43 @@ export function GameProvider({
       const run = runRef.current;
       if (!run?.battle) return;
       enginePlayCard(run.battle, handIdx, rngRef.current, targetIdx);
+      // 教程：首次出牌 → 进入 tryEndTurn
+      if (tutorialStep === 'tryPlay') setTutorialStep('tryEndTurn');
       if (run.battle.phase === 'won' || run.battle.phase === 'lost') postBattleRoute();
       bump();
     },
-    [bump, postBattleRoute],
+    [bump, postBattleRoute, tutorialStep],
   );
 
   const endTurn = useCallback(() => {
     const run = runRef.current;
     if (!run?.battle) return;
     engineEndTurn(run.battle, rngRef.current);
+    // 教程：首次结束回合 → 教程完成
+    if (tutorialStep === 'tryEndTurn') {
+      setTutorialStep('done');
+      metaRef.current = { ...metaRef.current, tutorialDone: true };
+      persist();
+    }
     if (run.battle.phase === 'won' || run.battle.phase === 'lost') postBattleRoute();
     bump();
-  }, [bump, postBattleRoute]);
+  }, [bump, postBattleRoute, tutorialStep, persist]);
 
   const chooseSeal = useCallback(
     (enemyIdx: number, choice: 'kill' | 'seal') => {
       const run = runRef.current;
       if (!run?.battle) return;
       engineChooseSeal(run.battle, enemyIdx, choice);
+      // 教程：封妖提示也算完结
+      if (tutorialStep === 'sealHint') {
+        setTutorialStep('done');
+        metaRef.current = { ...metaRef.current, tutorialDone: true };
+        persist();
+      }
       if (run.battle.phase === 'won' || run.battle.phase === 'lost') postBattleRoute();
       bump();
     },
-    [bump, postBattleRoute],
+    [bump, postBattleRoute, tutorialStep, persist],
   );
 
   // ==========================================================================
@@ -404,56 +444,81 @@ export function GameProvider({
   }, [bump, persist, routeToNextNode]);
 
   // ==========================================================================
-  // store 对象（memo：避免子组件不必要 re-render 时能跳过）
+  // 教程控制
   // ==========================================================================
-  const value = useMemo<GameStore>(
-    () => ({
-      run: runRef.current,
-      meta: metaRef.current,
-      screen,
-      hasSavedRun,
-      shrineMessage,
-      newRun,
-      continueRun,
-      quitRun,
-      returnToTitle,
-      gotoScreen,
-      enterNode,
-      advanceFromShrine,
-      playCard,
-      endTurn,
-      chooseSeal,
-      takeReward,
-      resolveOverflow,
-      resolveEventChoice,
-      dismissEvent,
-      shrineAct,
-    }),
-    // 注意：这里 depend on `screen + version` 就够了，其余都是 stable ref/callback
-    // 但 useState 的 version 通过 `bump` 已驱动 re-render，
-    // 所以 run / meta / hasSavedRun / shrineMessage 每次 render 都取最新。
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      screen,
-      hasSavedRun,
-      shrineMessage,
-      newRun,
-      continueRun,
-      quitRun,
-      returnToTitle,
-      gotoScreen,
-      enterNode,
-      advanceFromShrine,
-      playCard,
-      endTurn,
-      chooseSeal,
-      takeReward,
-      resolveOverflow,
-      resolveEventChoice,
-      dismissEvent,
-      shrineAct,
-    ],
-  );
+  const advanceTutorial = useCallback(() => {
+    setTutorialStep((cur) => {
+      switch (cur) {
+        case 'welcome': return 'showHand';
+        case 'showHand': return 'showEnergy';
+        case 'showEnergy': return 'showIntent';
+        case 'showIntent': return 'tryPlay';
+        case 'tryPlay': return 'tryPlay';     // 等玩家真打一张
+        case 'tryEndTurn': return 'tryEndTurn';  // 等玩家真结束回合
+        case 'sealHint': return 'sealHint';   // 等玩家做封/斩
+        case 'done':
+        case 'none':
+        default:
+          return 'none';
+      }
+    });
+  }, []);
+
+  const skipTutorial = useCallback(() => {
+    setTutorialStep('none');
+    metaRef.current = { ...metaRef.current, tutorialDone: true };
+    persist();
+    bump();
+  }, [bump, persist]);
+
+  // 在战斗中：当敌人血量首次低于 30% 时，若还在教程里，自动打开 sealHint
+  useEffect(() => {
+    const run = runRef.current;
+    if (!run?.battle) return;
+    if (metaRef.current.tutorialDone) return;
+    // 只在 tryPlay / tryEndTurn 阶段升格到 sealHint
+    if (tutorialStep !== 'tryPlay' && tutorialStep !== 'tryEndTurn') return;
+    const anyLow = run.battle.enemies.some(
+      (e) => e.hp > 0 && e.hp <= e.maxHp * 0.3 && !e.sealChoiceTriggered && !e.sealed,
+    );
+    if (run.battle.phase === 'sealChoice' || anyLow) {
+      setTutorialStep('sealHint');
+    }
+  });
+
+  // ==========================================================================
+  // store 对象 · 每次 render 直接构造一个新对象
+  //
+  // 为什么不 useMemo：我们的引擎是"原地修改"语义（battle / run 都是
+  // ref.current 指向的同一对象，mutate 不换引用）。useMemo 的 deps
+  // 没法可靠声明"ref 内部任意字段是否变了"，漏写就会 UI 卡死点不动。
+  // 每次 render 生成新对象成本 = 一次浅拷贝的方法表，微不足道。
+  // ==========================================================================
+  const value: GameStore = {
+    run: runRef.current,
+    meta: metaRef.current,
+    screen,
+    hasSavedRun,
+    shrineMessage,
+    tutorialStep,
+    newRun,
+    continueRun,
+    quitRun,
+    returnToTitle,
+    gotoScreen,
+    enterNode,
+    advanceFromShrine,
+    playCard,
+    endTurn,
+    chooseSeal,
+    takeReward,
+    resolveOverflow,
+    resolveEventChoice,
+    dismissEvent,
+    shrineAct,
+    advanceTutorial,
+    skipTutorial,
+  };
 
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;
 }
