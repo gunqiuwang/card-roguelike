@@ -69,15 +69,18 @@ export function Card({
     (card.type === 'fu' ? 'talisman' : card.type === 'faqi' ? 'relic' : 'beast');
 
   // 缩放后的内部尺寸
+  // 窄卡（width<160）把能量水晶缩到 26px base，回收顶栏高度，避免描述行被挤没
   const padY = sc(10);
   const padX = sc(12);
-  const orbSize = sc(32);
-  const orbFont = sc(16);
+  const orbSize = sc(width < 160 ? 26 : 32);
+  const orbFont = sc(width < 160 ? 14 : 16);
   const typeFont = sc(11);
   const nameFont = sc(19);
-  const descFont = sc(12);
-  const flavorFont = sc(10);
-  const schoolFont = sc(10);
+  // 字号可读性下限：Noto Serif SC 在 ~9px 以下难以辨识；
+  // 正常宽度（s>=1）下 floor 不生效，保持设计原比例。
+  const descFont = Math.max(9, sc(12));
+  const flavorFont = Math.max(9, sc(10));
+  const schoolFont = Math.max(9, sc(10));
   const badgeSize = sc(26);
   const cornerSize = sc(36);
   const cornerInset = sc(10);
@@ -85,8 +88,12 @@ export function Card({
   // 卡面内可用高度（.card-abyss 内收 5px 上下 → -10，再减上下 padding）
   const innerH = height - 10;
   const contentH = innerH - padY * 2;
-  // 立绘固定高度：约 50% 内容高，保证缩放后比例一致
-  const portraitH = Math.max(40, Math.round(contentH * 0.5));
+  // 立绘高度：正常宽度下占内容高 50%；窄卡（s<0.7）收到 42% 回收纵向预算给描述行
+  const portraitRatio = s < 0.7 ? 0.42 : 0.5;
+  const portraitH = Math.max(40, Math.round(contentH * portraitRatio));
+
+  // 极窄卡（s<0.6）隐藏 flavor，避免描述行被挤到 0px
+  const showFlavor = Boolean(card.flavor) && s >= 0.6;
 
   // 卡名字距在窄卡上收紧，避免拥挤（但保持鎏金味）
   const nameLetterSpacing = width < 160 ? '0.08em' : '0.14em';
@@ -294,8 +301,8 @@ export function Card({
             </p>
           </div>
 
-          {/* ── flavor · 灰字 italic · 单行截断 ── */}
-          {card.flavor && (
+          {/* ── flavor · 灰字 italic · 单行截断（极窄卡隐藏以保描述行空间） ── */}
+          {showFlavor && (
             <div
               className="relative flex items-center justify-center"
               style={{
@@ -323,13 +330,36 @@ export function Card({
             </div>
           )}
 
-          {/* ── 底栏 · 妖卡用妖性条直接替代派别+徽章 ── */}
+          {/* ── 底栏 · 妖卡：稀有度徽章（迷你行） + 妖性条 ── */}
           <div
             className="relative"
             style={{ flex: '0 0 auto', marginTop: sc(4) }}
           >
             {isYao ? (
-              <YaoxingStrip value={card.yaoxing!} scale={s} />
+              <>
+                {/* 迷你行：与普通底栏同样的 school/徽章排布，保留语义对齐 */}
+                <div
+                  className="flex justify-between items-end"
+                  style={{ marginBottom: sc(3) }}
+                >
+                  <span
+                    className={[
+                      'font-heading tracking-wider',
+                      schoolColorClass[card.school],
+                    ].join(' ')}
+                    style={{
+                      fontSize: schoolFont,
+                      letterSpacing: '0.2em',
+                      textShadow: '0 1px 1px rgba(0,0,0,0.8)',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {schoolLabel[card.school] || ''}
+                  </span>
+                  <RarityBadge rarity={card.rarity} size={badgeSize} />
+                </div>
+                <YaoxingStrip value={card.yaoxing!} scale={s} />
+              </>
             ) : (
               <div className="flex justify-between items-end">
                 <span
@@ -371,7 +401,7 @@ export function Card({
           <div
             className="bg-vermillion/85 text-parchment-light font-heading tracking-widest shadow-seal"
             style={{
-              fontSize: sc(14),
+              fontSize: Math.max(10, sc(14)),
               padding: `${sc(2)}px ${sc(8)}px`,
             }}
           >

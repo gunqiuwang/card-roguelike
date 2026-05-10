@@ -58,9 +58,15 @@ export function useResponsiveCardWidth(mode: ResponsiveMode): number {
     if (typeof window === 'undefined') return;
     const onResize = () => setVw(window.innerWidth);
     window.addEventListener('resize', onResize);
+    // iOS Safari 旋转时 `resize` 偶尔会报旋转前的宽度；
+    // 同时监听 `orientationchange` 作为兜底，确保横竖屏切换时宽度正确
+    window.addEventListener('orientationchange', onResize);
     // 挂载后立刻再读一次，避免初始值错估（SSR 回退 / orientation change）
     setVw(window.innerWidth);
-    return () => window.removeEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
   }, []);
 
   return TABLE[mode][bucketOf(vw)];
