@@ -40,7 +40,7 @@ const TABLE: Record<ResponsiveMode, Record<Bucket, number>> = {
   overflow: { narrow: 120, tablet: 135, tabletWide: 142, wide: 150 },
 };
 
-function bucketOf(vw: number): Bucket {
+export function bucketOf(vw: number): Bucket {
   if (vw < NARROW_BP) return 'narrow';
   if (vw < TABLET_WIDE_BP) return 'tablet';
   if (vw < WIDE_BP) return 'tabletWide';

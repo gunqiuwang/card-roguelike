@@ -129,6 +129,7 @@ export function Card({
       ].join(' ')}
       style={shellStyle}
       aria-label={card.name}
+      data-testid="card-root"
     >
       {/* Layer 1 · 深渊暗底（最底层） */}
       <div className="card-abyss">
@@ -167,6 +168,7 @@ export function Card({
                   '0 0 6px rgba(139,42,30,0.4)',
                 ].join(', '),
               }}
+              data-testid="card-energy-orb"
             >
               <span
                 className="font-bold leading-none"
@@ -296,6 +298,7 @@ export function Card({
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
               }}
+              data-testid="card-description"
             >
               {card.description}
             </p>
@@ -324,6 +327,7 @@ export function Card({
                   overflow: 'hidden',
                   maxWidth: '100%',
                 }}
+                data-testid="card-flavor"
               >
                 {card.flavor}
               </p>
@@ -404,6 +408,7 @@ export function Card({
               fontSize: Math.max(10, sc(14)),
               padding: `${sc(2)}px ${sc(8)}px`,
             }}
+            data-testid="card-seal-stamp"
           >
             封
           </div>
@@ -431,7 +436,7 @@ function YaoxingStrip({ value, scale }: { value: number; scale: number }) {
     pct >= 90 ? '噬主' : pct >= 60 ? '狂乱' : pct >= 30 ? '躁动' : '温顺';
   const sc = (n: number) => Math.max(1, Math.round(n * scale));
   return (
-    <div className="w-full">
+    <div className="w-full" data-testid="yaoxing-strip">
       <div
         className="flex items-center font-heading tracking-widest"
         style={{
