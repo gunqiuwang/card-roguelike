@@ -16,6 +16,7 @@ import { OverflowScreen } from './components/screens/OverflowScreen';
 import { VictoryScreen, GameOverScreen } from './components/screens/EndScreens';
 import { CodexScreen } from './components/screens/CodexScreen';
 import { GameProvider, useGame } from './store/GameStore';
+import { BacklashModal } from './components/screens/partials/BacklashModal';
 
 function isStyleguideHash(): boolean {
   return window.location.hash.replace('#', '').trim() === 'styleguide';
@@ -78,6 +79,7 @@ export default function App() {
   return (
     <GameProvider>
       <Router />
+      <BacklashModal />
     </GameProvider>
   );
 }

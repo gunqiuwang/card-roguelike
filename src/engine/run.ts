@@ -23,11 +23,13 @@ import type {
   MapNode,
   RunState,
   NodeKind,
+  Scroll,
 } from '../types';
 import { balance } from '../config/balance';
 import { buildStarterDeck, ALL_REWARD_CARDS } from '../data/cards';
 import { ALL_EVENTS, getEvent } from '../data/events';
 import { getYao } from '../data/yao';
+import { rollShrineScrolls, getScroll } from '../data/scrolls';
 import { createRng, type RNG } from './rng';
 import { startBattle } from './battle';
 
@@ -54,16 +56,16 @@ export function generateChapter1Map(rng: RNG): MapNode[] {
     {
       id: 'n2',
       kind: 'battle',
-      label: '狐踪·双袭',
-      enemyYaoIds: ['qinghu', 'qinghu'],
+      label: '鸮啼·荒山',
+      enemyYaoIds: ['xiaoshou'],
       done: false,
     },
     { id: 'n3', kind: 'event', label: '荒野·奇遇', eventId, done: false },
     {
       id: 'n4',
       kind: 'battle',
-      label: '夜狐·混踪',
-      enemyYaoIds: ['qinghu', 'yehu'],
+      label: '草蛇·双毒',
+      enemyYaoIds: ['caotou_she', 'qinghu'],
       done: false,
     },
     { id: 'n5', kind: 'shrine', label: '瞽人·祭坛', done: false },
@@ -77,8 +79,8 @@ export function generateChapter1Map(rng: RNG): MapNode[] {
     {
       id: 'n7',
       kind: 'battle',
-      label: '夜狐·夜袭',
-      enemyYaoIds: ['yehu', 'yehu'],
+      label: '夜狐·枭首',
+      enemyYaoIds: ['yehu', 'xiaoshou'],
       done: false,
     },
     {
@@ -118,6 +120,9 @@ export function createRun(seed: number): RunState {
       damageDealt: 0,
       damageTaken: 0,
     },
+    scrolls: [],
+    yaoxing: {},
+    nightBacklashTriggered: false,
   };
 }
 
@@ -148,9 +153,10 @@ export function enterNode(run: RunState, rng: RNG): void {
       [...node.enemyYaoIds],
       run.hp,
       run.maxHp,
-      run.deck,
+      deckWithYaoxing(run),
       rng,
       battleKindOfNode(node.kind),
+      run.scrolls ?? [],
     );
   } else if (node.kind === 'event') {
     if (!node.eventId) return;
@@ -162,6 +168,20 @@ export function enterNode(run: RunState, rng: RNG): void {
 // ============================================================================
 // 战斗收尾 → pendingReward
 // ============================================================================
+/**
+ * 在进入战斗前，给 deck 注入每张妖卡的当前妖性。
+ * 这样战斗里 card.yaoxing 读到的是全局最新值。
+ */
+function deckWithYaoxing(run: RunState): Card[] {
+  const map = run.yaoxing ?? {};
+  return run.deck.map((c) => {
+    if (c.type !== 'yao') return c;
+    const yx = map[c.id];
+    if (yx === undefined) return c;
+    return { ...c, yaoxing: yx };
+  });
+}
+
 export function resolveBattle(run: RunState, rng: RNG): void {
   const battle = run.battle;
   if (!battle) return;
@@ -169,31 +189,48 @@ export function resolveBattle(run: RunState, rng: RNG): void {
   const outcome = battle.outcome;
   if (!outcome) return;
 
-  // 同步玩家 HP（输：hp=0；赢：带当前 hp 出来）
   run.hp = battle.playerHp;
   run.stats.turnsPlayed += battle.turn;
 
   if (outcome.result === 'lose') {
-    // 清战斗，由上层调用 gameOver 屏幕
     run.battle = null;
     return;
   }
 
-  // 记录统计
+  // 战斗中妖性可能变化 → 同步回 run.yaoxing（战斗里的 drawPile/hand/discardPile 里的妖卡）
+  if (!run.yaoxing) run.yaoxing = {};
+  const allBattleCards = [
+    ...battle.drawPile,
+    ...battle.hand,
+    ...battle.discardPile,
+    ...battle.exhaustPile,
+  ];
+  for (const c of allBattleCards) {
+    if (c.type === 'yao' && c.yaoxing !== undefined) {
+      run.yaoxing[c.id] = c.yaoxing;
+    }
+  }
+
+  // 战后闲置妖卡妖性衰减 1
+  for (const id of Object.keys(run.yaoxing)) {
+    run.yaoxing[id] = Math.max(0, run.yaoxing[id] - balance.yaoxing.decayPerBattle);
+  }
+
   for (const e of battle.enemies) {
     if (e.sealed) run.stats.seals += 1;
     else run.stats.kills += 1;
   }
 
-  // 加灵气
   run.currency += outcome.currencyGained;
 
-  // 封妖：妖卡进牌组
+  // 封妖：妖卡进牌组 + 注册妖性
   for (const yaoCard of outcome.sealedCards) {
     run.deck.push(yaoCard);
+    if (yaoCard.yaoxing !== undefined) {
+      run.yaoxing[yaoCard.id] = yaoCard.yaoxing;
+    }
   }
 
-  // 战后回血
   const healPct =
     battle.kind === 'boss'
       ? balance.heal.boss
@@ -205,13 +242,11 @@ export function resolveBattle(run: RunState, rng: RNG): void {
   const healed = Math.round(run.maxHp * healPct * healMult);
   run.hp = Math.min(run.maxHp, run.hp + healed);
 
-  // Boss 战：永久 maxHp +5
   if (battle.kind === 'boss') {
     run.maxHp += balance.heal.bossMaxHpGain;
-    run.hp += balance.heal.bossMaxHpGain; // 同步给当前 hp
+    run.hp += balance.heal.bossMaxHpGain;
   }
 
-  // 生成 3 选 1 卡牌奖励（仅当至少一只被斩）
   let cardChoices: Card[] = [];
   if (outcome.shouldOfferReward) {
     cardChoices = rollCardChoices(battle.kind, rng);
@@ -325,6 +360,8 @@ export type ShrineAction =
   | { kind: 'remove'; cardIdx: number }
   | { kind: 'upgrade'; cardIdx: number }
   | { kind: 'rest' }
+  | { kind: 'tame'; cardIdx: number }
+  | { kind: 'buyScroll'; scrollId: string }
   | { kind: 'leave' };
 
 export function shrineAct(run: RunState, action: ShrineAction): string {
@@ -337,6 +374,8 @@ export function shrineAct(run: RunState, action: ShrineAction): string {
       if (!card) return '未选中牌。';
       run.currency -= balance.shrine.removeCardCost;
       run.deck.splice(action.cardIdx, 1);
+      // 清 yaoxing
+      if (card.type === 'yao' && run.yaoxing) delete run.yaoxing[card.id];
       return `已删【${card.name}】。（-${balance.shrine.removeCardCost} 灵气）`;
     }
     case 'upgrade': {
@@ -347,8 +386,28 @@ export function shrineAct(run: RunState, action: ShrineAction): string {
       run.deck[action.cardIdx] = upgradeCard(card);
       return `【${card.name}】得以升阶。`;
     }
+    case 'tame': {
+      if (run.currency < balance.shrine.tameCardCost) return '灵气不足。';
+      const card = run.deck[action.cardIdx];
+      if (!card || card.type !== 'yao') return '只能驯化妖卡。';
+      if (!run.yaoxing) run.yaoxing = {};
+      const cur = run.yaoxing[card.id] ?? (card.yaoxing ?? 0);
+      if (cur <= 0) return '此妖已温顺。';
+      run.currency -= balance.shrine.tameCardCost;
+      const reduced = Math.max(0, cur - balance.shrine.tameAmount);
+      run.yaoxing[card.id] = reduced;
+      return `你对【${card.name}】低声念咒。妖性 ${cur} → ${reduced}。`;
+    }
+    case 'buyScroll': {
+      const scroll = getScroll(action.scrollId);
+      if (!scroll) return '未知秘卷。';
+      if (run.scrolls.includes(scroll.id)) return '此卷已在身。';
+      if (run.currency < scroll.cost) return '灵气不足。';
+      run.currency -= scroll.cost;
+      run.scrolls.push(scroll.id);
+      return `你得【${scroll.name}】。${scroll.flavor}`;
+    }
     case 'rest': {
-      // 静修：免费 +10 HP
       const healed = Math.min(run.maxHp - run.hp, 10);
       run.hp += healed;
       return `你静坐片刻。气血回复 ${healed}。`;
@@ -372,6 +431,37 @@ function upgradeCard(c: Card): Card {
 
 export function leaveShrine(run: RunState): void {
   advanceNode(run);
+}
+
+// ============================================================================
+// 祭坛 · 每次进入时随机的秘卷清单（2 张）
+// ============================================================================
+export function shrineScrollOffers(run: RunState, rng: RNG): Scroll[] {
+  return rollShrineScrolls(run.scrolls, rng);
+}
+
+// ============================================================================
+// 夜间反噬：牌组妖卡平均妖性 ≥ 50 → 非战斗节点后触发
+// 返回是否触发（以及相关文案，由 UI 读取 run.pendingBacklash）
+// ============================================================================
+export interface BacklashState {
+  hpLost: number;
+  message: string;
+}
+
+export function checkBacklash(run: RunState): BacklashState | null {
+  if (!run.yaoxing) return null;
+  const yaoIds = run.deck.filter((c) => c.type === 'yao').map((c) => c.id);
+  if (yaoIds.length === 0) return null;
+  const total = yaoIds.reduce((s, id) => s + (run.yaoxing![id] ?? 0), 0);
+  const avg = total / yaoIds.length;
+  if (avg < balance.backlash.threshold) return null;
+  const hpLost = Math.round(run.maxHp * balance.backlash.damagePercent);
+  run.hp = Math.max(1, run.hp - hpLost);
+  return {
+    hpLost,
+    message: `夜深。牌组中的妖卡低声哀鸣。你从梦中惊醒，口有血腥。（-${hpLost} 气血）`,
+  };
 }
 
 // ============================================================================

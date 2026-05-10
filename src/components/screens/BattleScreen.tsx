@@ -41,6 +41,7 @@ import { intentOf } from '../../engine';
 import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
 import { TutorialOverlay } from './partials/TutorialOverlay';
+import { SealMiniGame } from './partials/SealMiniGame';
 
 function StatusBadges({ enemy }: { enemy: EnemyState }) {
   const s = enemy.status;
@@ -416,6 +417,11 @@ export function BattleScreen() {
            教程浮层（TutorialOverlay 会 self-gate）
          ═══════════════════════════════════════ */}
       <TutorialOverlay />
+
+      {/* ═══════════════════════════════════════
+           拼符封印小游戏 · phase 'sealMiniGame'
+         ═══════════════════════════════════════ */}
+      {battle.phase === 'sealMiniGame' && <SealMiniGame />}
     </div>
   );
 }
