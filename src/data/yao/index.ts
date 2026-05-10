@@ -23,6 +23,7 @@ export const YAO_QINGHU: Yao = {
     { kind: 'attack', damage: 5, label: '⚔ 5' },
     { kind: 'defend', block: 5, label: '🛡 5' },
   ],
+  sealPattern: ['dot', 'horizontal', 'dot'],
   sealedCard: {
     name: '狐媚',
     type: 'yao',
@@ -56,6 +57,7 @@ export const YAO_YEHU: Yao = {
     { kind: 'attack', damage: 6, label: '⚔ 6' },
     { kind: 'cast', status: { kind: 'weak', stack: 1 }, label: '✨ 虚弱 1' },
   ],
+  sealPattern: ['vertical', 'dot', 'slash'],
   sealedCard: {
     name: '夜袭',
     type: 'yao',
@@ -91,6 +93,9 @@ export const YAO_JIUWEI_ELITE: Yao = {
     { kind: 'charge', label: '🌀🌀 蓄力更强' },
     { kind: 'attack', damage: 16, label: '⚔ 16 (释)' },
   ],
+  sealPattern: ['loop', 'dot', 'horizontal', 'slash', 'hook'],
+  chargeClimaxIndex: 4,
+  interruptHpPercent: 0.5,
   sealedCard: {
     name: '九尾幻术',
     type: 'yao',
@@ -124,6 +129,9 @@ export const YAO_JIUWEI_BOSS: Yao = {
     { kind: 'charge', label: '🌀🌀 蓄力更强' },
     { kind: 'attack', damage: 20, status: { kind: 'weak', stack: 2 }, label: '⚔ 20 + 虚 2' },
   ],
+  sealPattern: ['loop', 'dot', 'horizontal', 'vertical', 'slash', 'hook', 'dot'],
+  chargeClimaxIndex: 4,
+  interruptHpPercent: 0.4,
   sealedCard: {
     name: '幻狐之瞳',
     type: 'yao',
@@ -145,11 +153,78 @@ export const YAO_JIUWEI_BOSS: Yao = {
 };
 
 // ============================================================================
+// 鸮首（C · 普通 · 鸟类，替代一只狐）
+// ============================================================================
+export const YAO_XIAOSHOU: Yao = {
+  id: 'xiaoshou',
+  name: '鸮首',
+  rank: 'C',
+  chapter: 'qingqiu',
+  hp: 36,
+  intents: [
+    { kind: 'attack', damage: 4, label: '⚔ 4' },
+    { kind: 'cast', status: { kind: 'vulnerable', stack: 1 }, label: '✨ 易伤 1' },
+    { kind: 'attack', damage: 8, label: '⚔ 8' },
+  ],
+  sealPattern: ['horizontal', 'slash', 'dot'],
+  sealedCard: {
+    name: '鸮啼',
+    type: 'yao',
+    rarity: 'common',
+    school: 'zhanyao',
+    cost: 1,
+    description: '造成 4 点伤害，使敌易伤 1 层。',
+    flavor: '——夜半一声啼，山半都醒了。',
+    effects: [
+      { kind: 'damage', amount: 4 },
+      { kind: 'applyStatus', status: 'vulnerable', stack: 1, target: 'enemy' },
+    ],
+    silhouette: 'bird',
+  },
+  flavor: '鸟形人面，闻其啼者，病。',
+  silhouette: 'bird',
+  rewardCurrency: [10, 14],
+};
+
+// ============================================================================
+// 草头蛇（C · 普通 · 蛇类，中毒流）
+// ============================================================================
+export const YAO_CAOTOU_SHE: Yao = {
+  id: 'caotou_she',
+  name: '草头蛇',
+  rank: 'C',
+  chapter: 'qingqiu',
+  hp: 40,
+  intents: [
+    { kind: 'cast', status: { kind: 'poison', stack: 2 }, label: '🩸 毒 2' },
+    { kind: 'attack', damage: 4, label: '⚔ 4' },
+    { kind: 'defend', block: 4, label: '🛡 4' },
+  ],
+  sealPattern: ['vertical', 'hook', 'dot'],
+  sealedCard: {
+    name: '蛇毒',
+    type: 'yao',
+    rarity: 'common',
+    school: 'fushu',
+    cost: 1,
+    description: '使敌中毒 2 层。',
+    flavor: '——草中藏牙，一口即亡。',
+    effects: [{ kind: 'applyStatus', status: 'poison', stack: 2, target: 'enemy' }],
+    silhouette: 'serpent',
+  },
+  flavor: '青草中三点白。那是牙。',
+  silhouette: 'serpent',
+  rewardCurrency: [10, 15],
+};
+
+// ============================================================================
 // 导出集合 + 查询
 // ============================================================================
 export const ALL_YAO: readonly Yao[] = [
   YAO_QINGHU,
   YAO_YEHU,
+  YAO_XIAOSHOU,
+  YAO_CAOTOU_SHE,
   YAO_JIUWEI_ELITE,
   YAO_JIUWEI_BOSS,
 ];

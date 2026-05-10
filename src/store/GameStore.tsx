@@ -29,10 +29,12 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { MetaProgress, RunState } from '../types';
+import type { MetaProgress, RunState, Scroll } from '../types';
 import {
   advanceNode,
   chooseSeal as engineChooseSeal,
+  submitStroke as engineSubmitStroke,
+  cancelSealChoice as engineCancelSealChoice,
   createDefaultRng,
   createRun,
   currentNode,
@@ -50,9 +52,12 @@ import {
   type RNG,
   type ShrineAction,
   shrineAct as engineShrineAct,
+  shrineScrollOffers,
+  checkBacklash,
   takeReward as engineTakeReward,
   loadSave,
 } from '../engine';
+import type { StrokeKind } from '../types';
 
 // ============================================================================
 // 屏幕枚举
@@ -110,6 +115,8 @@ export interface GameStore {
   playCard: (handIdx: number, targetIdx?: number) => void;
   endTurn: () => void;
   chooseSeal: (enemyIdx: number, choice: 'kill' | 'seal') => void;
+  submitStroke: (stroke: StrokeKind) => void;
+  cancelSealChoice: () => void;
 
   // 奖励 / 事件 / 祭坛 / 溢出
   takeReward: (cardIdx: number | 'skip') => void;
@@ -117,6 +124,11 @@ export interface GameStore {
   resolveEventChoice: (idx: number) => void;
   dismissEvent: () => void;
   shrineAct: (action: ShrineAction) => void;
+  /** 祭坛当前可购买的秘卷（进入祭坛时由 store 滚一次） */
+  shrineScrolls: Scroll[];
+  /** 夜间反噬提示 · 非 null 时 UI 弹出；玩家点确认后置 null */
+  backlashMessage: string | null;
+  acknowledgeBacklash: () => void;
 
   // 教程
   advanceTutorial: () => void;
@@ -150,6 +162,8 @@ export function GameProvider({
   const [shrineMessage, setShrineMessage] = useState('');
   const [hasSavedRun, setHasSavedRun] = useState(false);
   const [tutorialStep, setTutorialStep] = useState<TutorialStep>('none');
+  const [shrineScrolls, setShrineScrolls] = useState<Scroll[]>([]);
+  const [backlashMessage, setBacklashMessage] = useState<string | null>(null);
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -270,6 +284,15 @@ export function GameProvider({
   const routeToNextNode = useCallback(() => {
     const run = runRef.current;
     if (!run) return;
+    // 夜间反噬（节点完成后触发一次）
+    const bl = checkBacklash(run);
+    if (bl) {
+      setBacklashMessage(bl.message);
+      persist();
+      bump();
+      // 伤害已经应用；玩家关闭提示后由 acknowledgeBacklash 继续推进
+      return;
+    }
     const fin = runFinished(run);
     if (fin === 'victory') {
       metaRef.current.victories += 1;
@@ -319,7 +342,11 @@ export function GameProvider({
     else if (run.pendingEvent) setScreen('event');
     else {
       const n = currentNode(run);
-      if (n?.kind === 'shrine') setScreen('shrine');
+      if (n?.kind === 'shrine') {
+        // 祭坛：滚一次可购买的秘卷
+        setShrineScrolls(shrineScrollOffers(run, rngRef.current));
+        setScreen('shrine');
+      }
     }
     persist();
     bump();
@@ -371,6 +398,24 @@ export function GameProvider({
     },
     [bump, postBattleRoute, tutorialStep, persist],
   );
+
+  const submitStroke = useCallback(
+    (stroke: StrokeKind) => {
+      const run = runRef.current;
+      if (!run?.battle) return;
+      engineSubmitStroke(run.battle, stroke);
+      if (run.battle.phase === 'won' || run.battle.phase === 'lost') postBattleRoute();
+      bump();
+    },
+    [bump, postBattleRoute],
+  );
+
+  const cancelSealChoice = useCallback(() => {
+    const run = runRef.current;
+    if (!run?.battle) return;
+    engineCancelSealChoice(run.battle);
+    bump();
+  }, [bump]);
 
   // ==========================================================================
   // 奖励 / 事件 / 祭坛 / 溢出
@@ -438,10 +483,34 @@ export function GameProvider({
     if (!run) return;
     engineLeaveShrine(run);
     setShrineMessage('');
+    setShrineScrolls([]);
     routeToNextNode();
     persist();
     bump();
   }, [bump, persist, routeToNextNode]);
+
+  const acknowledgeBacklash = useCallback(() => {
+    setBacklashMessage(null);
+    // 关闭后继续正常路由
+    const run = runRef.current;
+    if (!run) return;
+    const fin = runFinished(run);
+    if (fin === 'defeated') {
+      runRef.current = null;
+      setHasSavedRun(false);
+      persistRun(null);
+      persistMeta(metaRef.current);
+      setScreen('gameOver');
+      bump();
+      return;
+    }
+    const node = currentNode(run);
+    if (!node) return;
+    if (node.kind === 'shrine') setScreen('shrine');
+    else setScreen('map');
+    persist();
+    bump();
+  }, [bump, persist]);
 
   // ==========================================================================
   // 教程控制
@@ -501,6 +570,8 @@ export function GameProvider({
     hasSavedRun,
     shrineMessage,
     tutorialStep,
+    shrineScrolls,
+    backlashMessage,
     newRun,
     continueRun,
     quitRun,
@@ -511,6 +582,8 @@ export function GameProvider({
     playCard,
     endTurn,
     chooseSeal,
+    submitStroke,
+    cancelSealChoice,
     takeReward,
     resolveOverflow,
     resolveEventChoice,
@@ -518,6 +591,7 @@ export function GameProvider({
     shrineAct,
     advanceTutorial,
     skipTutorial,
+    acknowledgeBacklash,
   };
 
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;

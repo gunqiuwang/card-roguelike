@@ -22,6 +22,7 @@ import {
   endTurn,
   intentOf,
   playCard,
+  submitStroke,
 } from './battle';
 import type { RNG } from './rng';
 
@@ -120,7 +121,6 @@ export function aiPlayTurn(
   let safety = balance.sim.maxActionsPerTurn;
   while (safety-- > 0) {
     if (state.phase === 'sealChoice') {
-      // 选最低 HP 的敌（它就是刚被推下阈值的那只）
       const idx = state.enemies.findIndex((e) => e.sealChoiceTriggered && !e.sealed && e.hp > 0);
       const enemy = state.enemies[idx];
       let choice: 'kill' | 'seal' = 'kill';
@@ -130,10 +130,17 @@ export function aiPlayTurn(
       chooseSeal(state, idx, choice);
       continue;
     }
+    if (state.phase === 'sealMiniGame') {
+      // AI：总是完美完成拼符（相当于一个记了符谱的玩家）
+      const ch = state.sealChallenge;
+      if (!ch) break;
+      const expected = ch.sequence[ch.progress];
+      submitStroke(state, expected);
+      continue;
+    }
     if (state.phase !== 'playerAction') break;
     const action = bestAction(state);
     if (!action) break;
-    // 出此卡
     playCard(state, action.handIdx, rng);
   }
   if (state.phase === 'playerAction') {

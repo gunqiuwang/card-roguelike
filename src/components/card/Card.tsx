@@ -302,6 +302,55 @@ export function Card({
           </div>
         </div>
       )}
+
+      {/* 妖性条（只对 yao 类型的卡显示） */}
+      {card.type === 'yao' && card.yaoxing !== undefined && (
+        <YaoxingStrip value={card.yaoxing} />
+      )}
     </button>
+  );
+}
+
+function YaoxingStrip({ value }: { value: number }) {
+  const pct = Math.max(0, Math.min(100, value));
+  const color =
+    pct >= 90
+      ? '#8B2A1E'
+      : pct >= 60
+        ? '#C4551B'
+        : pct >= 30
+          ? '#A68C5B'
+          : '#6B7A5E';
+  const label =
+    pct >= 90 ? '噬主' : pct >= 60 ? '狂乱' : pct >= 30 ? '躁动' : '温顺';
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        bottom: 3,
+        left: 6,
+        right: 6,
+        zIndex: 5,
+      }}
+    >
+      <div
+        className="flex items-center gap-1 mb-0.5 font-heading tracking-widest"
+        style={{ fontSize: 8, color, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+      >
+        <span>妖</span>
+        <span className="ml-auto font-numeric">{pct}</span>
+        <span>·</span>
+        <span>{label}</span>
+      </div>
+      <div
+        className="relative h-1 rounded-sm overflow-hidden"
+        style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <div
+          className="absolute inset-y-0 left-0 transition-all"
+          style={{ width: `${pct}%`, background: color }}
+        />
+      </div>
+    </div>
   );
 }

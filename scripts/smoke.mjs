@@ -27,6 +27,7 @@ const src = `
 import {
   createRng, startBattle, playCard, endTurn, chooseSeal, drawCards,
   cardToInstance, aiRunBattle, intentOf,
+  submitStroke,
 } from '${resolve(root, 'src/engine/index.ts').replace(/\\\\/g, '/')}';
 import {
   createRun, enterNode, resolveBattle, takeReward, resolveOverflow,
@@ -106,8 +107,41 @@ test('chooseSeal branch both kill and seal are safe', () => {
     if (b.phase === 'sealChoice') {
       const sealIdx = b.enemies.findIndex((e) => e.sealChoiceTriggered);
       chooseSeal(b, sealIdx, choice);
-      assert(b.phase === 'won' || b.phase === 'playerAction');
+      if (choice === 'kill') {
+        assert(b.phase === 'won' || b.phase === 'playerAction', 'kill should resolve immediately, got ' + b.phase);
+      } else {
+        // 'seal' → enters mini-game phase; feed the right strokes to complete it
+        assert(b.phase === 'sealMiniGame', 'seal should trigger mini-game, got ' + b.phase);
+        assert(b.sealChallenge, 'sealChallenge should be set');
+        for (const s of b.sealChallenge.sequence) {
+          submitStroke(b, s);
+        }
+        assert(b.phase === 'won' || b.phase === 'playerAction', 'after perfect seal should resume, got ' + b.phase);
+      }
     }
+  }
+});
+
+test('seal mini-game fail path penalizes player', () => {
+  const rng = createRng(11);
+  const b = startBattle(['qinghu'], 70, 70, buildStarterDeck(), rng, 'normal');
+  let safety = 40;
+  while (safety-- > 0 && b.phase === 'playerAction') {
+    const idx = b.hand.findIndex((c) => c.effects?.some((e) => e.kind === 'damage') && b.energy >= c.cost);
+    if (idx < 0) { endTurn(b, rng); continue; }
+    playCard(b, idx, rng);
+  }
+  if (b.phase === 'sealChoice') {
+    const sealIdx = b.enemies.findIndex((e) => e.sealChoiceTriggered);
+    chooseSeal(b, sealIdx, 'seal');
+    assert(b.phase === 'sealMiniGame');
+    const hpBefore = b.playerHp;
+    // 乱点一笔不对的
+    const expected = b.sealChallenge.sequence[0];
+    const wrong = expected === 'dot' ? 'loop' : 'dot';
+    submitStroke(b, wrong);
+    assert(b.playerHp < hpBefore, 'player lost HP on seal fail');
+    assert(b.phase === 'playerAction' || b.phase === 'lost');
   }
 });
 

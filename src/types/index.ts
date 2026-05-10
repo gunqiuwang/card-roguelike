@@ -81,6 +81,65 @@ export interface Card {
 export interface CardInstance extends Card {
   /** 运行时唯一 ID。形如 `${cardId}#${seq}` */
   uid: string;
+  /** 当前妖性（只对 type='yao' 有意义；持久化在 run.deck 上） */
+  yaoxing?: number;
+}
+
+// ============================================================================
+// §1.5 · 笔画（拼符封印用）
+// ============================================================================
+export type StrokeKind = 'dot' | 'horizontal' | 'vertical' | 'slash' | 'hook' | 'loop';
+
+export const STROKE_GLYPHS: Record<StrokeKind, string> = {
+  dot: '丶',
+  horizontal: '一',
+  vertical: '丨',
+  slash: '丿',
+  hook: '乛',
+  loop: '囗',
+};
+
+export const STROKE_NAMES: Record<StrokeKind, string> = {
+  dot: '点',
+  horizontal: '横',
+  vertical: '竖',
+  slash: '撇',
+  hook: '钩',
+  loop: '回',
+};
+
+/** 拼符 · 正在进行中的封印挑战 */
+export interface SealChallenge {
+  /** 妖 id（对应 EnemyState.yaoId） */
+  enemyIdx: number;
+  /** 正确顺序 */
+  sequence: StrokeKind[];
+  /** 玩家已经点的下标 */
+  progress: number;
+  /** 失败次数（v0.2.1 一次失败即 fail） */
+  failed: boolean;
+}
+
+// ============================================================================
+// §1.6 · 秘卷（被动 buff）
+// ============================================================================
+export type ScrollEffectKind =
+  | 'extraEnergy'      // 每回合 +1 气
+  | 'extraDraw'        // 每回合多抽 1 张
+  | 'startBlock'       // 战斗起手 +N 气·御
+  | 'lowHpDamage'      // 自身 HP ≤ 30% 时打出 damage +30%
+  | 'yaoxingResist'    // 所有妖卡妖性涨幅 ×0.5
+  | 'firstHitBonus';   // 每战第一张伤害卡 +50%
+
+export interface Scroll {
+  id: string;
+  name: string;
+  description: string;
+  flavor: string;
+  effect: ScrollEffectKind;
+  /** effect 辅参（比如 startBlock 的层数） */
+  magnitude?: number;
+  cost: number;
 }
 
 // ============================================================================
@@ -115,6 +174,12 @@ export interface Yao {
   silhouette: SilhouetteKind;
   /** 灵气奖励区间（斩） */
   rewardCurrency: [number, number];
+  /** 封印符阵 · 笔画序列（v0.2.1 拼符用；未指定则按 rank 动态生成） */
+  sealPattern?: StrokeKind[];
+  /** Boss 战蓄力大招的意图下标（可被打断清空） */
+  chargeClimaxIndex?: number;
+  /** Boss 被打到此血量百分比 → 打断当前蓄力 */
+  interruptHpPercent?: number;
 }
 
 /** 状态栏实例（挂在 player / enemy 上） */
@@ -148,6 +213,12 @@ export interface EnemyState {
   sealChoiceTriggered: boolean;
   /** 是否已被封（进入 BATTLE_WIN 前标记，决定奖励分支） */
   sealed: boolean;
+  /** 封印完美（拼符全对） → 封后妖卡升阶 */
+  sealedPerfect?: boolean;
+  /** 封印笔画序列（从 Yao.sealPattern 复制，拼符挑战用） */
+  sealPattern?: StrokeKind[];
+  /** Boss 蓄力被打断（跳过大招） */
+  chargeInterrupted?: boolean;
   flavor: string;
   rewardCurrency: [number, number];
 }
@@ -160,6 +231,7 @@ export type BattlePhase =
   | 'playerTurn'
   | 'playerAction'
   | 'sealChoice'
+  | 'sealMiniGame'
   | 'enemyTurn'
   | 'won'
   | 'lost';
@@ -190,6 +262,12 @@ export interface BattleState {
   outcome?: BattleOutcome;
   /** 战斗类型（用于奖励计算） */
   kind: 'normal' | 'elite' | 'boss';
+  /** 拼符封印挑战中（玩家选了"封"后） */
+  sealChallenge?: SealChallenge | null;
+  /** 本场已打出的第一张伤害卡（秘卷 firstHitBonus 用） */
+  firstDamageCardUsed?: boolean;
+  /** 活跃秘卷 id 列表（从 RunState.scrolls 复制到这里，避免战斗中变化） */
+  activeScrolls?: string[];
 }
 
 export interface BattleFx {
@@ -263,6 +341,12 @@ export interface RunState {
   pendingOverflow: OverflowState | null;
   /** run 统计 */
   stats: RunStats;
+  /** 已持有的秘卷 id */
+  scrolls: string[];
+  /** 每张妖卡的当前妖性（按 card.id 索引；兼容：老存档字段缺失时懒初始化） */
+  yaoxing?: Record<string, number>;
+  /** 夜间反噬事件是否已触发过（防止连续触发） */
+  nightBacklashTriggered?: boolean;
 }
 
 export interface RunStats {
