@@ -9,10 +9,9 @@
  *
  * 五阶 · 凡/珍/灵/玄 —— 色值全走 rarityTheme。
  *
- * 关键决策：
- *   · 卡面暗底（非亚麻纸）→ 文字用浅鎏金/米白，对比度天然够
- *   · hover 上浮 6px + 弱柔光，不加任何流光
- *   · 能量水晶改浅金描边（暗底上更干净）
+ * 响应式：所有内部尺寸（字号/内边距/能量水晶/角花/徽章）按
+ * scale = width / 220 比例缩放（220 = 设计参考宽），确保在
+ * 110-260 的卡宽区间文字不重叠、不溢出。
  */
 
 import type { CSSProperties } from 'react';
@@ -20,6 +19,8 @@ import { Portrait } from '../art/Portrait';
 import { RarityBadge } from '../art/RarityBadge';
 import { rarityTheme } from '../../config/visual';
 import type { Card as CardModel, SilhouetteKind } from '../../types';
+
+const DESIGN_WIDTH = 220;
 
 type Props = {
   card: CardModel;
@@ -51,7 +52,7 @@ const typeLabel: Record<CardModel['type'], string> = {
 
 export function Card({
   card,
-  width = 220,
+  width = DESIGN_WIDTH,
   interactive = false,
   sealed = false,
   onClick,
@@ -59,11 +60,40 @@ export function Card({
   const height = width * (4 / 3);
   const theme = rarityTheme[card.rarity];
 
+  // 单一缩放因子：所有内部 px 值按此比例取整
+  const s = width / DESIGN_WIDTH;
+  const sc = (base: number): number => Math.max(1, Math.round(base * s));
+
   const fallbackKind: SilhouetteKind =
     card.silhouette ??
     (card.type === 'fu' ? 'talisman' : card.type === 'faqi' ? 'relic' : 'beast');
 
-  // CSS 变量注入
+  // 缩放后的内部尺寸
+  const padY = sc(10);
+  const padX = sc(12);
+  const orbSize = sc(32);
+  const orbFont = sc(16);
+  const typeFont = sc(11);
+  const nameFont = sc(19);
+  const descFont = sc(12);
+  const flavorFont = sc(10);
+  const schoolFont = sc(10);
+  const badgeSize = sc(26);
+  const cornerSize = sc(36);
+  const cornerInset = sc(10);
+
+  // 卡面内可用高度（.card-abyss 内收 5px 上下 → -10，再减上下 padding）
+  const innerH = height - 10;
+  const contentH = innerH - padY * 2;
+  // 立绘固定高度：约 50% 内容高，保证缩放后比例一致
+  const portraitH = Math.max(40, Math.round(contentH * 0.5));
+
+  // 卡名字距在窄卡上收紧，避免拥挤（但保持鎏金味）
+  const nameLetterSpacing = width < 160 ? '0.08em' : '0.14em';
+
+  const isYao = card.type === 'yao' && card.yaoxing !== undefined;
+
+  // CSS 变量注入（包含角花尺寸变量，供 .card-corner-mark 读取）
   const shellStyle: CSSProperties = {
     width,
     height,
@@ -77,6 +107,8 @@ export function Card({
     ['--body-top' as string]: theme.bodyTop,
     ['--body-bot' as string]: theme.bodyBot,
     ['--glow' as string]: theme.glow,
+    ['--corner-size' as string]: `${cornerSize}px`,
+    ['--corner-inset' as string]: `${cornerInset}px`,
   };
 
   return (
@@ -103,14 +135,22 @@ export function Card({
           }}
         />
 
-        {/* 内容区域 */}
-        <div className="relative w-full h-full flex flex-col" style={{ padding: '10px 12px' }}>
+        {/* 内容区域 · flex 布局，描述行 flex-grow 吸收剩余空间 */}
+        <div
+          className="relative w-full h-full flex flex-col"
+          style={{ padding: `${padY}px ${padX}px` }}
+        >
           {/* ── 顶栏：能量 + 类型 ── */}
-          <div className="relative flex justify-between items-start" style={{ height: '8%' }}>
-            {/* 能量水晶 · 朱砂 + 浅金环 */}
+          <div
+            className="relative flex justify-between items-start"
+            style={{ flex: '0 0 auto', minHeight: orbSize }}
+          >
+            {/* 能量水晶 · 朱砂 + 浅金环（负边距移除：窄卡时不再溢出遮挡卡名） */}
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center"
+              className="rounded-full flex items-center justify-center"
               style={{
+                width: orbSize,
+                height: orbSize,
                 background:
                   'radial-gradient(circle at 30% 30%, #C95040 0%, #8B2A1E 55%, #3E1008 100%)',
                 border: `1px solid ${theme.edgeStop2}`,
@@ -119,15 +159,13 @@ export function Card({
                   'inset 0 1px 0 rgba(255,200,180,0.18)',
                   '0 0 6px rgba(139,42,30,0.4)',
                 ].join(', '),
-                marginLeft: -10,
-                marginTop: -8,
               }}
             >
               <span
                 className="font-bold leading-none"
                 style={{
                   fontFamily: 'var(--font-numeric)',
-                  fontSize: '16px',
+                  fontSize: orbFont,
                   color: '#F5E8C8',
                   textShadow: '0 1px 0 rgba(0,0,0,0.8)',
                 }}
@@ -141,10 +179,9 @@ export function Card({
               className="font-heading tracking-widest"
               style={{
                 color: theme.edgeStop1,
-                fontSize: '11px',
-                marginRight: -2,
-                marginTop: -2,
+                fontSize: typeFont,
                 letterSpacing: '0.2em',
+                lineHeight: 1,
               }}
             >
               {typeLabel[card.type]}
@@ -153,9 +190,10 @@ export function Card({
 
           {/* ── 立绘区 · 暗边框 ── */}
           <div
-            className="relative mt-1 rounded-[5px] overflow-hidden"
+            className="relative rounded-[5px] overflow-hidden"
             style={{
-              height: '52%',
+              flex: `0 0 ${portraitH}px`,
+              marginTop: sc(4),
               boxShadow: [
                 `inset 0 0 0 1px ${theme.edgeStop0}`,
                 'inset 0 1px 0 rgba(255,255,255,0.04)',
@@ -184,12 +222,19 @@ export function Card({
 
           {/* ── 卡名 · 鎏金色 · 暗底天然清晰 ── */}
           <div
-            className="relative mt-2 flex items-center justify-center"
-            style={{ height: '11%' }}
+            className="relative flex items-center justify-center"
+            style={{
+              flex: '0 0 auto',
+              marginTop: sc(8),
+              paddingTop: sc(4),
+              paddingBottom: sc(4),
+            }}
           >
             <div
-              className="absolute top-0 left-6 right-6 h-px"
+              className="absolute top-0 h-px"
               style={{
+                left: sc(20),
+                right: sc(20),
                 background: `linear-gradient(to right, transparent, ${theme.edgeStop2}, transparent)`,
                 opacity: 0.7,
               }}
@@ -197,54 +242,80 @@ export function Card({
             <h3
               className="font-heading leading-none"
               style={{
-                fontSize: '19px',
+                fontSize: nameFont,
                 fontWeight: 600,
                 color: '#E0C486',
-                letterSpacing: '0.16em',
+                letterSpacing: nameLetterSpacing,
                 textShadow: '0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
               }}
             >
               {card.name}
             </h3>
             <div
-              className="absolute bottom-0 left-6 right-6 h-px"
+              className="absolute bottom-0 h-px"
               style={{
+                left: sc(20),
+                right: sc(20),
                 background: `linear-gradient(to right, transparent, ${theme.edgeStop2}, transparent)`,
                 opacity: 0.7,
               }}
             />
           </div>
 
-          {/* ── 描述 · 米白色 ── */}
+          {/* ── 描述 · 自适应空间 · 超长时 line-clamp 截断 ── */}
           <div
-            className="relative mt-2 flex items-center justify-center px-1"
-            style={{ height: '16%' }}
+            className="relative flex items-center justify-center"
+            style={{
+              flex: '1 1 0%',
+              minHeight: 0,
+              marginTop: sc(6),
+              paddingLeft: sc(2),
+              paddingRight: sc(2),
+            }}
           >
             <p
               className="text-center leading-snug"
               style={{
-                fontSize: '12px',
+                fontSize: descFont,
                 color: '#D4C9A8',
                 fontWeight: 400,
                 textShadow: '0 1px 2px rgba(0,0,0,0.9)',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
               }}
             >
               {card.description}
             </p>
           </div>
 
-          {/* ── flavor · 灰字 italic ── */}
+          {/* ── flavor · 灰字 italic · 单行截断 ── */}
           {card.flavor && (
             <div
-              className="relative mt-1 flex items-center justify-center px-2"
-              style={{ height: '5%' }}
+              className="relative flex items-center justify-center"
+              style={{
+                flex: '0 0 auto',
+                marginTop: sc(2),
+                paddingLeft: sc(4),
+                paddingRight: sc(4),
+              }}
             >
               <p
                 className="text-center italic leading-none"
                 style={{
-                  fontSize: '10px',
+                  fontSize: flavorFont,
                   color: '#8A7E66',
                   textShadow: '0 1px 1px rgba(0,0,0,0.8)',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  maxWidth: '100%',
                 }}
               >
                 {card.flavor}
@@ -252,34 +323,37 @@ export function Card({
             </div>
           )}
 
-          {/* ── 底栏：派别 + 徽章 ── */}
+          {/* ── 底栏 · 妖卡用妖性条直接替代派别+徽章 ── */}
           <div
-            className="mt-auto relative flex justify-between items-end"
-            style={{ height: '7%' }}
+            className="relative"
+            style={{ flex: '0 0 auto', marginTop: sc(4) }}
           >
-            <span
-              className={[
-                'font-heading tracking-wider',
-                schoolColorClass[card.school],
-              ].join(' ')}
-              style={{
-                fontSize: '10px',
-                marginBottom: -2,
-                marginLeft: -2,
-                letterSpacing: '0.2em',
-                textShadow: '0 1px 1px rgba(0,0,0,0.8)',
-              }}
-            >
-              {schoolLabel[card.school] || ''}
-            </span>
-            <div style={{ marginBottom: -4, marginRight: -4 }}>
-              <RarityBadge rarity={card.rarity} size={26} />
-            </div>
+            {isYao ? (
+              <YaoxingStrip value={card.yaoxing!} scale={s} />
+            ) : (
+              <div className="flex justify-between items-end">
+                <span
+                  className={[
+                    'font-heading tracking-wider',
+                    schoolColorClass[card.school],
+                  ].join(' ')}
+                  style={{
+                    fontSize: schoolFont,
+                    letterSpacing: '0.2em',
+                    textShadow: '0 1px 1px rgba(0,0,0,0.8)',
+                    lineHeight: 1,
+                  }}
+                >
+                  {schoolLabel[card.school] || ''}
+                </span>
+                <RarityBadge rarity={card.rarity} size={badgeSize} />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Layer 2 · 四角 L 形角花 */}
+      {/* Layer 2 · 四角 L 形角花（尺寸/偏移走 CSS 变量，窄卡不再拥挤） */}
       <div className="card-corner-mark tl" />
       <div className="card-corner-mark tr" />
       <div className="card-corner-mark bl" />
@@ -295,23 +369,25 @@ export function Card({
           style={{ top: '38%', right: '12%', transform: 'rotate(-8deg)', zIndex: 4 }}
         >
           <div
-            className="px-2 py-0.5 bg-vermillion/85 text-parchment-light font-heading tracking-widest shadow-seal"
-            style={{ fontSize: '14px' }}
+            className="bg-vermillion/85 text-parchment-light font-heading tracking-widest shadow-seal"
+            style={{
+              fontSize: sc(14),
+              padding: `${sc(2)}px ${sc(8)}px`,
+            }}
           >
             封
           </div>
         </div>
       )}
-
-      {/* 妖性条（只对 yao 类型的卡显示） */}
-      {card.type === 'yao' && card.yaoxing !== undefined && (
-        <YaoxingStrip value={card.yaoxing} />
-      )}
     </button>
   );
 }
 
-function YaoxingStrip({ value }: { value: number }) {
+/**
+ * 妖性条 · 妖卡专属底栏
+ * 直接坐在卡底（in-flow），取代普通派别+徽章底栏，不再 absolute 覆盖。
+ */
+function YaoxingStrip({ value, scale }: { value: number; scale: number }) {
   const pct = Math.max(0, Math.min(100, value));
   const color =
     pct >= 90
@@ -323,19 +399,19 @@ function YaoxingStrip({ value }: { value: number }) {
           : '#6B7A5E';
   const label =
     pct >= 90 ? '噬主' : pct >= 60 ? '狂乱' : pct >= 30 ? '躁动' : '温顺';
+  const sc = (n: number) => Math.max(1, Math.round(n * scale));
   return (
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        bottom: 3,
-        left: 6,
-        right: 6,
-        zIndex: 5,
-      }}
-    >
+    <div className="w-full">
       <div
-        className="flex items-center gap-1 mb-0.5 font-heading tracking-widest"
-        style={{ fontSize: 8, color, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+        className="flex items-center font-heading tracking-widest"
+        style={{
+          fontSize: sc(9),
+          color,
+          textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+          marginBottom: sc(2),
+          lineHeight: 1,
+          gap: sc(3),
+        }}
       >
         <span>妖</span>
         <span className="ml-auto font-numeric">{pct}</span>
@@ -343,8 +419,12 @@ function YaoxingStrip({ value }: { value: number }) {
         <span>{label}</span>
       </div>
       <div
-        className="relative h-1 rounded-sm overflow-hidden"
-        style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+        className="relative rounded-sm overflow-hidden"
+        style={{
+          height: sc(4),
+          background: 'rgba(0,0,0,0.5)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
       >
         <div
           className="absolute inset-y-0 left-0 transition-all"

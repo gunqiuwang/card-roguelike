@@ -205,19 +205,22 @@ button:disabled {
   overflow: hidden;
 }
 
-/* 四角 L 形角花 · 1px opacity 0.16（仅与底色融合，非抢戏） */
+/* 四角 L 形角花 · 1px opacity 0.16（仅与底色融合，非抢戏）
+ * 尺寸/偏移由 Card.tsx 按 width 比例注入 --corner-size / --corner-inset，
+ * 窄卡不再拥挤；未注入时回退到 36px / 10px（参考宽 220px 下的原版手感）。
+ */
 .card-corner-mark {
   position: absolute;
-  width: 36px;
-  height: 36px;
+  width: var(--corner-size, 36px);
+  height: var(--corner-size, 36px);
   border: 1px solid var(--edge-muted, rgba(110, 90, 60, 0.16));
   z-index: 2;
   pointer-events: none;
 }
-.card-corner-mark.tl { top: 10px;    left: 10px;   border-right: none; border-bottom: none; }
-.card-corner-mark.tr { top: 10px;    right: 10px;  border-left: none;  border-bottom: none; }
-.card-corner-mark.bl { bottom: 10px; left: 10px;   border-right: none; border-top: none; }
-.card-corner-mark.br { bottom: 10px; right: 10px;  border-left: none;  border-top: none; }
+.card-corner-mark.tl { top: var(--corner-inset, 10px);    left: var(--corner-inset, 10px);   border-right: none; border-bottom: none; }
+.card-corner-mark.tr { top: var(--corner-inset, 10px);    right: var(--corner-inset, 10px);  border-left: none;  border-bottom: none; }
+.card-corner-mark.bl { bottom: var(--corner-inset, 10px); left: var(--corner-inset, 10px);   border-right: none; border-top: none; }
+.card-corner-mark.br { bottom: var(--corner-inset, 10px); right: var(--corner-inset, 10px);  border-left: none;  border-top: none; }
 
 /* ============================================================
  * 水墨波纹
