@@ -2,19 +2,30 @@
  * 能量（气）水晶 · 符火造型
  */
 
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 
 type Props = {
   current: number;
   max: number;
+  /** 设计基准 64px；手机端 (<640px) 自动缩小 75% */
   size?: number;
 };
 
 export const EnergyOrb = memo(function EnergyOrb({ current, max, size = 64 }: Props) {
+  const [isNarrow, setIsNarrow] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 640,
+  );
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onResize = () => setIsNarrow(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const actualSize = isNarrow ? Math.round(size * 0.7) : size;
   return (
     <div
       className="relative no-select"
-      style={{ width: size, height: size }}
+      style={{ width: actualSize, height: actualSize }}
       aria-label={`能量 ${current}/${max}`}
     >
       <svg viewBox="0 0 64 64" className="w-full h-full">
@@ -47,13 +58,13 @@ export const EnergyOrb = memo(function EnergyOrb({ current, max, size = 64 }: Pr
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className="font-numeric font-bold text-parchment-light leading-none drop-shadow-[0_2px_0_rgba(0,0,0,0.8)]"
-          style={{ fontSize: size * 0.42 }}
+          style={{ fontSize: actualSize * 0.42 }}
         >
           {current}
         </span>
         <span
           className="font-numeric text-parchment/60 leading-none"
-          style={{ fontSize: size * 0.18, marginTop: 2 }}
+          style={{ fontSize: actualSize * 0.18, marginTop: 2 }}
         >
           / {max}
         </span>

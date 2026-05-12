@@ -38,6 +38,7 @@ import { FloatingNumber } from '../ui/FloatingNumber';
 import { Card } from '../card/Card';
 import { Portrait } from '../art/Portrait';
 import { intentOf } from '../../engine';
+import { YinYangBar } from '../ui/YinYangBar';
 import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
 import { TutorialOverlay } from './partials/TutorialOverlay';
@@ -96,7 +97,7 @@ function Badge({
 }
 
 export function BattleScreen() {
-  const { run, playCard, endTurn, chooseSeal, returnToTitle } = useGame();
+  const { run, playCard, endTurn, chooseSeal, returnToTitle, triggerTaiji } = useGame();
   const [targetIdx, setTargetIdx] = useState(0);
   const handCardWidth = useResponsiveCardWidth('hand');
 
@@ -172,7 +173,11 @@ export function BattleScreen() {
               </div>
             </div>
             <div data-zone="energy" className="shrink-0">
-              <EnergyOrb current={battle.energy} max={battle.energyMax} size={52} />
+              {battle.yinEnergyMax !== undefined ? (
+                <YinYangBar state={battle} onTaiji={triggerTaiji} />
+              ) : (
+                <EnergyOrb current={battle.energy} max={battle.energyMax} size={52} />
+              )}
             </div>
           </div>
         </div>
@@ -344,7 +349,13 @@ export function BattleScreen() {
               </div>
             ) : (
               battle.hand.map((c, i) => {
-                const canPay = battle.energy >= c.cost;
+                const energyForCard =
+                  c.pathKind === 'yin'
+                    ? battle.yinEnergy ?? 0
+                    : c.pathKind === 'yang'
+                      ? battle.yangEnergy ?? 0
+                      : battle.energy;
+                const canPay = energyForCard >= c.cost;
                 const canPlay = canPay && battle.phase === 'playerAction';
                 const yaoYx = c.type === 'yao' ? (c.yaoxing ?? 0) : 0;
                 const isRestless = yaoYx >= 60;

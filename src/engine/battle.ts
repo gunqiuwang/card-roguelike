@@ -297,11 +297,11 @@ export function playCard(
   // v0.5 阴阳平衡更新
   if (state.yinBalance !== undefined && state.yangBalance !== undefined) {
     if (c.pathKind === 'yin') {
-      // 阴 → 阳平衡增加（消耗阴积蓄，偏阴减少）
-      state.yinBalance = Math.max(-3, state.yinBalance - 1);
+      // 阴 → 阴平衡增加（偏阴加深，balance 值越大越偏阴）
+      state.yinBalance = Math.min(3, state.yinBalance + 1);
     } else if (c.pathKind === 'yang') {
-      // 阳 → 阴平衡增加（消耗阳积蓄，偏阳减少）
-      state.yangBalance = Math.max(-3, state.yangBalance - 1);
+      // 阳 → 阳平衡增加（偏阳加深，balance 值越大越偏阳）
+      state.yangBalance = Math.min(3, state.yangBalance + 1);
     }
   }
 

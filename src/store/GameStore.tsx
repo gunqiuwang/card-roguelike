@@ -117,6 +117,7 @@ export interface GameStore {
   chooseSeal: (enemyIdx: number, choice: 'kill' | 'seal') => void;
   submitStroke: (stroke: StrokeKind) => void;
   cancelSealChoice: () => void;
+  triggerTaiji: () => void;
 
   // 奖励 / 事件 / 祭坛 / 溢出
   takeReward: (cardIdx: number | 'skip') => void;
@@ -417,6 +418,27 @@ export function GameProvider({
     bump();
   }, [bump]);
 
+  const triggerTaiji = useCallback(() => {
+    const run = runRef.current;
+    if (!run?.battle) return;
+    const battle = run.battle;
+    if (!battle.taijiReady) return;
+    const taijiCard = battle.hand.find((c) => c.id === 'ult_taiji');
+    if (!taijiCard) return;
+    const handIdx = battle.hand.indexOf(taijiCard);
+    if (handIdx < 0) return;
+    // 太极归一目标是全体，找第一个活敌
+    const targetIdx = battle.enemies.findIndex((e) => e.hp > 0);
+    if (targetIdx < 0) return;
+    enginePlayCard(battle, handIdx, rngRef.current, targetIdx);
+    // 清零阴阳积蓄
+    battle.yinBalance = 0;
+    battle.yangBalance = 0;
+    battle.taijiReady = false;
+    if (battle.phase === 'won' || battle.phase === 'lost') postBattleRoute();
+    bump();
+  }, [bump, postBattleRoute]);
+
   // ==========================================================================
   // 奖励 / 事件 / 祭坛 / 溢出
   // ==========================================================================
@@ -584,6 +606,7 @@ export function GameProvider({
     chooseSeal,
     submitStroke,
     cancelSealChoice,
+    triggerTaiji,
     takeReward,
     resolveOverflow,
     resolveEventChoice,
