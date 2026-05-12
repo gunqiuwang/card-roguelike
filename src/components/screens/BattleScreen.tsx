@@ -38,6 +38,7 @@ import { FloatingNumber } from '../ui/FloatingNumber';
 import { Card } from '../card/Card';
 import { Portrait } from '../art/Portrait';
 import { intentOf } from '../../engine';
+import { aiPlayTurn } from '../../engine/battleAi';
 import { YinYangBar } from '../ui/YinYangBar';
 import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
@@ -97,11 +98,29 @@ function Badge({
 }
 
 export function BattleScreen() {
-  const { run, playCard, endTurn, chooseSeal, returnToTitle, triggerTaiji } = useGame();
+  const { run, playCard, endTurn, chooseSeal, returnToTitle, triggerTaiji, autoMode, toggleAutoMode } = useGame();
   const [targetIdx, setTargetIdx] = useState(0);
   const handCardWidth = useResponsiveCardWidth('hand');
 
   const battle = run?.battle;
+
+  // Auto mode: run AI turn whenever we enter playerAction
+  useEffect(() => {
+    if (!battle || !autoMode) return;
+    if (battle.phase !== 'playerAction') return;
+    const tid = setTimeout(() => {
+      if (run?.battle && run.battle.phase === 'playerAction') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const simpleRng: any = {
+          next: () => Math.random(),
+          int: (a: number, b: number) => Math.floor(Math.random() * (b - a + 1)) + a,
+          seed: 0,
+        };
+        aiPlayTurn(run.battle, simpleRng);
+      }
+    }, 400);
+    return () => clearTimeout(tid);
+  }, [battle, autoMode, battle?.phase, run]);
 
   // 当当前 target 已死 → 自动切活的
   useEffect(() => {
@@ -152,6 +171,18 @@ export function BattleScreen() {
               回合 {battle.turn}
             </div>
             <DeckViewButton />
+            <button
+              onClick={toggleAutoMode}
+              className={[
+                'text-[11px] sm:text-[12px] font-heading tracking-widest px-2 py-0.5 rounded border transition-colors',
+                autoMode
+                  ? 'border-ember/60 text-ember-glow bg-ember/20'
+                  : 'border-mist/30 text-mist/60 hover:text-mist',
+              ].join(' ')}
+              title="自动模式（测试用）"
+            >
+              自动
+            </button>
           </div>
 
           <div className="mt-2 flex items-center gap-2 sm:gap-3" data-zone="player-stats">

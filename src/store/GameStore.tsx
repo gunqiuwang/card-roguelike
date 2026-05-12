@@ -131,6 +131,10 @@ export interface GameStore {
   backlashMessage: string | null;
   acknowledgeBacklash: () => void;
 
+  // 自动战斗
+  autoMode: boolean;
+  toggleAutoMode: () => void;
+
   // 教程
   advanceTutorial: () => void;
   skipTutorial: () => void;
@@ -165,6 +169,7 @@ export function GameProvider({
   const [tutorialStep, setTutorialStep] = useState<TutorialStep>('none');
   const [shrineScrolls, setShrineScrolls] = useState<Scroll[]>([]);
   const [backlashMessage, setBacklashMessage] = useState<string | null>(null);
+  const [autoMode, setAutoMode] = useState(false);
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -439,6 +444,10 @@ export function GameProvider({
     bump();
   }, [bump, postBattleRoute]);
 
+  const toggleAutoMode = useCallback(() => {
+    setAutoMode((prev) => !prev);
+  }, []);
+
   // ==========================================================================
   // 奖励 / 事件 / 祭坛 / 溢出
   // ==========================================================================
@@ -615,6 +624,8 @@ export function GameProvider({
     advanceTutorial,
     skipTutorial,
     acknowledgeBacklash,
+    autoMode,
+    toggleAutoMode,
   };
 
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;
