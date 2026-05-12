@@ -510,6 +510,10 @@ export function chooseSeal(state: BattleState, enemyIdx: number, choice: 'kill' 
     sequence: enemy.sealPattern ?? generateSealPattern(enemy.rank),
     progress: 0,
     failed: false,
+    strokeStartedAt: Date.now(),
+    perfectStreak: 0,
+    feedback: 'idle',
+    activeStrokeIdx: 0,
   };
   log(state, `镇妖印现，拼符以封！`);
 }
@@ -517,21 +521,38 @@ export function chooseSeal(state: BattleState, enemyIdx: number, choice: 'kill' 
 /**
  * 拼符挑战：玩家点了一个笔画。
  * 对 → progress++，序列完成后封印成功；错 → 失败，扣血，返回 playerAction
+ * v0.3: 加入计时判定，追踪完美封印
  */
 export function submitStroke(state: BattleState, stroke: StrokeKind): void {
   if (state.phase !== 'sealMiniGame' || !state.sealChallenge) return;
   const ch = state.sealChallenge;
   const expected = ch.sequence[ch.progress];
+  const now = Date.now();
+  const timeLimit = state.enemies[ch.enemyIdx]?.rank === 'S' || state.enemies[ch.enemyIdx]?.rank === 'B'
+    ? balance.seal.timePerStrokePerfect
+    : balance.seal.timePerStroke;
+
   if (stroke === expected) {
+    const elapsed = now - ch.strokeStartedAt;
+    // 时限内正确 → perfectStreak++；超时但正确 → streak 断开
+    if (elapsed <= timeLimit) {
+      ch.perfectStreak += 1;
+    } else {
+      ch.perfectStreak = 0;
+    }
     ch.progress += 1;
+
     if (ch.progress >= ch.sequence.length) {
       // 成功
       const enemy = state.enemies[ch.enemyIdx];
       if (enemy) {
         enemy.hp = 0;
         enemy.sealed = true;
-        enemy.sealedPerfect = !ch.failed;
-        log(state, `封印成功！${enemy.name} 化作一卷符。`);
+        // 完美封印：未失败 且 所有笔画都在时限内完成
+        enemy.sealedPerfect = !ch.failed && ch.perfectStreak === ch.sequence.length;
+        log(state, enemy.sealedPerfect
+          ? `完美封印！${enemy.name} 化作一卷符。`
+          : `封印成功！${enemy.name} 化作一卷符。`);
       }
       state.sealChallenge = null;
       if (allEnemiesDefeated(state)) {
@@ -540,14 +561,20 @@ export function submitStroke(state: BattleState, stroke: StrokeKind): void {
       } else {
         state.phase = 'playerAction';
       }
+    } else {
+      // 还有笔画 → 重置计时
+      ch.strokeStartedAt = now;
+      ch.activeStrokeIdx = ch.progress;
+      ch.feedback = 'idle';
     }
   } else {
     // 失败
     ch.failed = true;
+    ch.feedback = 'wrong';
+    ch.perfectStreak = 0;
     state.playerHp = Math.max(0, state.playerHp - balance.seal.failPenaltyHp);
     pushFx(state, { target: 'player', kind: 'damage', value: balance.seal.failPenaltyHp });
     log(state, `笔画错乱，封印失败！你损 ${balance.seal.failPenaltyHp} 气血。妖逃回。`);
-    // 敌人恢复一半 HP 并脱离封印阈值
     const enemy = state.enemies[ch.enemyIdx];
     if (enemy) {
       enemy.hp = Math.round(enemy.maxHp * 0.5);

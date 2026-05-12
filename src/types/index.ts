@@ -108,6 +108,15 @@ export const STROKE_NAMES: Record<StrokeKind, string> = {
   loop: '回',
 };
 
+/** 笔画反馈状态（UI 用） */
+export type StrokeFeedback = 'idle' | 'correct' | 'wrong' | 'hint';
+
+/** 符阵类型（10 种符阵，用于 UI 背景） */
+export type SealFormationKind =
+  | 'ling' | 'ji' | 'yu' | 'hua'
+  | 'chen' | 'xuan' | 'ming' | 'kong'
+  | 'lai' | 'gui';
+
 /** 拼符 · 正在进行中的封印挑战 */
 export interface SealChallenge {
   /** 妖 id（对应 EnemyState.yaoId） */
@@ -118,6 +127,15 @@ export interface SealChallenge {
   progress: number;
   /** 失败次数（v0.2.1 一次失败即 fail） */
   failed: boolean;
+  // v0.3 新增字段
+  /** 本笔indow 开始时间（Date.now()），每次提交后重置 */
+  strokeStartedAt: number;
+  /** 连续在时限内完成正确笔画的个数（用于判定完美） */
+  perfectStreak: number;
+  /** 当前 UI 反馈状态 */
+  feedback: StrokeFeedback;
+  /** 当前正在计时的笔画下标 */
+  activeStrokeIdx: number;
 }
 
 // ============================================================================
@@ -176,6 +194,8 @@ export interface Yao {
   rewardCurrency: [number, number];
   /** 封印符阵 · 笔画序列（v0.2.1 拼符用；未指定则按 rank 动态生成） */
   sealPattern?: StrokeKind[];
+  /** 封印使用的符阵背景（v0.3 UI 背景） */
+  sealFormation?: SealFormationKind;
   /** Boss 战蓄力大招的意图下标（可被打断清空） */
   chargeClimaxIndex?: number;
   /** Boss 被打到此血量百分比 → 打断当前蓄力 */

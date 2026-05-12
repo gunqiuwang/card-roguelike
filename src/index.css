@@ -317,3 +317,65 @@ button:disabled {
 .anim-number-float {
   animation: numberFloat 1400ms ease-out forwards;
 }
+
+/* ============================================================
+ * v0.3 拼符封印 · 动效
+ * ============================================================ */
+
+/* 笔画正确：闪光 + 缩放 */
+@keyframes correctFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); transform: scale(1); }
+  50%  { box-shadow: 0 0 20px 8px rgba(74, 222, 128, 0.4); transform: scale(1.08); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); transform: scale(1); }
+}
+.anim-correct { animation: correctFlash 400ms ease-out forwards; }
+
+/* 笔画错误：水平抖动 */
+@keyframes wrongShake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-6px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+.anim-wrong { animation: wrongShake 350ms ease-out; }
+
+/* 提示笔画：金色光晕脉冲 */
+@keyframes hintGlow {
+  0%   { box-shadow: 0 0 6px 2px rgba(212, 184, 122, 0.3); }
+  50%  { box-shadow: 0 0 18px 6px rgba(212, 184, 122, 0.65); }
+  100% { box-shadow: 0 0 6px 2px rgba(212, 184, 122, 0.3); }
+}
+.anim-hint-glow { animation: hintGlow 1.2s ease-in-out infinite; }
+
+/* 笔画飞向目标 */
+@keyframes strokeFly {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  60%  { opacity: 1; transform: translate(var(--fly-dx, 0px), var(--fly-dy, -20px)) scale(1.2); }
+  100% { opacity: 0; transform: translate(var(--fly-dx, 0px), var(--fly-dy, -20px)) scale(0.8); }
+}
+.anim-stroke-fly { animation: strokeFly 500ms ease-out forwards; }
+
+/* 失败红色闪屏 */
+@keyframes vignetteFlash {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.vignette-fail { animation: vignetteFlash 600ms ease-out forwards; }
+
+/* 符阵笔画绘制动画 */
+@keyframes strokeDraw {
+  from { stroke-dashoffset: 1000; opacity: 0.3; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+.anim-stroke-draw { animation: strokeDraw 600ms ease-out forwards; }
+
+/* 完美封印金色脉冲 */
+@keyframes perfectPulse {
+  0%   { text-shadow: 0 0 8px rgba(212, 184, 122, 0.4); }
+  50%  { text-shadow: 0 0 24px rgba(212, 184, 122, 0.9), 0 0 40px rgba(212, 184, 122, 0.5); }
+  100% { text-shadow: 0 0 8px rgba(212, 184, 122, 0.4); }
+}
+.anim-perfect-pulse { animation: perfectPulse 1s ease-in-out 3; }

@@ -85,7 +85,7 @@ export const balance = {
   },
 
   /** ======================================================================
-   *  拼符封印（简版）
+   *  拼符封印（v0.3 拼符系统）
    *  ====================================================================== */
   seal: {
     /** 敌 HP ≤ 此比例触发 SEAL_CHOICE */
@@ -100,6 +100,24 @@ export const balance = {
     failPenaltyHp: 8,
     /** 拼符笔画数量（按 rank） */
     patternLength: { C: 3, B: 5, S: 7 } as const,
+    /** 每笔画的计时时间（毫秒） */
+    timePerStroke: 3000,
+    /** 每笔画的计时时间 · 完美挑战（Boss/精英） */
+    timePerStrokePerfect: 1500,
+    /** 完美封印奖励：额外妖性降低 */
+    perfectBonusYaoxingReduction: 5,
+    /** 完美封印奖励：封后卡额外 + 伤害 */
+    perfectBonusDamageBonus: 3,
+    /** 随章节解锁的笔画（v0.3 全章节解锁全部 6 种） */
+    strokeUnlocks: {
+      qingqiu: ['dot', 'horizontal', 'vertical', 'slash', 'hook', 'loop'],
+      taotie:  ['dot', 'horizontal', 'vertical', 'slash', 'hook', 'loop'],
+      guixu:   ['dot', 'horizontal', 'vertical', 'slash', 'hook', 'loop'],
+      kunlun:  ['dot', 'horizontal', 'vertical', 'slash', 'hook', 'loop'],
+      hundun:  ['dot', 'horizontal', 'vertical', 'slash', 'hook', 'loop'],
+    } as Record<string, import('../types').StrokeKind[]>,
+    /** 10 种符阵（用于 UI 背景） */
+    sealFormations: ['ling', 'ji', 'yu', 'hua', 'chen', 'xuan', 'ming', 'kong', 'lai', 'gui'] as const,
   },
 
   /** ======================================================================

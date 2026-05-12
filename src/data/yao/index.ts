@@ -24,6 +24,7 @@ export const YAO_QINGHU: Yao = {
     { kind: 'defend', block: 5, label: '🛡 5' },
   ],
   sealPattern: ['dot', 'horizontal', 'dot'],
+  sealFormation: 'ling',
   sealedCard: {
     name: '狐媚',
     type: 'yao',
@@ -58,6 +59,7 @@ export const YAO_YEHU: Yao = {
     { kind: 'cast', status: { kind: 'weak', stack: 1 }, label: '✨ 虚弱 1' },
   ],
   sealPattern: ['vertical', 'dot', 'slash'],
+  sealFormation: 'ji',
   sealedCard: {
     name: '夜袭',
     type: 'yao',
@@ -94,6 +96,7 @@ export const YAO_JIUWEI_ELITE: Yao = {
     { kind: 'attack', damage: 16, label: '⚔ 16 (释)' },
   ],
   sealPattern: ['loop', 'dot', 'horizontal', 'slash', 'hook'],
+  sealFormation: 'yu',
   chargeClimaxIndex: 4,
   interruptHpPercent: 0.5,
   sealedCard: {
@@ -130,6 +133,7 @@ export const YAO_JIUWEI_BOSS: Yao = {
     { kind: 'attack', damage: 20, status: { kind: 'weak', stack: 2 }, label: '⚔ 20 + 虚 2' },
   ],
   sealPattern: ['loop', 'dot', 'horizontal', 'vertical', 'slash', 'hook', 'dot'],
+  sealFormation: 'hua',
   chargeClimaxIndex: 4,
   interruptHpPercent: 0.4,
   sealedCard: {
@@ -167,6 +171,7 @@ export const YAO_XIAOSHOU: Yao = {
     { kind: 'attack', damage: 8, label: '⚔ 8' },
   ],
   sealPattern: ['horizontal', 'slash', 'dot'],
+  sealFormation: 'ming',
   sealedCard: {
     name: '鸮啼',
     type: 'yao',
@@ -201,6 +206,7 @@ export const YAO_CAOTOU_SHE: Yao = {
     { kind: 'defend', block: 4, label: '🛡 4' },
   ],
   sealPattern: ['vertical', 'hook', 'dot'],
+  sealFormation: 'kong',
   sealedCard: {
     name: '蛇毒',
     type: 'yao',
