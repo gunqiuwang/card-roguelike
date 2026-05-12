@@ -297,11 +297,11 @@ export function playCard(
   // v0.5 阴阳平衡更新
   if (state.yinBalance !== undefined && state.yangBalance !== undefined) {
     if (c.pathKind === 'yin') {
-      // 阴 → 阳平衡增加
-      state.yangBalance = Math.min(3, state.yangBalance + 1);
+      // 阴 → 阳平衡增加（消耗阴积蓄，偏阴减少）
+      state.yinBalance = Math.max(-3, state.yinBalance - 1);
     } else if (c.pathKind === 'yang') {
-      // 阳 → 阴平衡增加
-      state.yinBalance = Math.min(3, state.yinBalance + 1);
+      // 阳 → 阴平衡增加（消耗阳积蓄，偏阳减少）
+      state.yangBalance = Math.max(-3, state.yangBalance - 1);
     }
   }
 
@@ -449,6 +449,19 @@ function applyEffect(
       enemy.block = 0;
       return;
     }
+    case 'damageAll': {
+      for (let i = 0; i < state.enemies.length; i++) {
+        if (state.enemies[i].hp <= 0) continue;
+        let amt = ef.amount;
+        if (hasScroll(state, 'scroll_desperate') && state.playerHp <= state.playerMaxHp * 0.3) {
+          amt = Math.round(amt * 1.3);
+        }
+        dealDamageToEnemy(state, i, amt);
+        checkSealTrigger(state, i);
+        checkChargeInterrupt(state, i);
+      }
+      return;
+    }
   }
 }
 
@@ -517,7 +530,7 @@ function checkChargeInterrupt(state: BattleState, idx: number): void {
   if (enemy.hp > enemy.maxHp * yao.interruptHpPercent) return;
   // 当前意图是 charge 或下一意图是 climax → 打断
   const cur = enemy.intents[enemy.intentIndex];
-  if (cur?.kind === 'charge') {
+  if (cur?.kind === 'charge' || (yao.chargeClimaxIndex !== undefined && enemy.intentIndex === yao.chargeClimaxIndex)) {
     enemy.chargeInterrupted = true;
     // 跳到蓄力大招之后
     const climax = yao.chargeClimaxIndex ?? enemy.intents.length - 1;

@@ -229,14 +229,14 @@ export const CARD_TAIJI_MIRROR: Card = {
 export const CARD_TAIJI_ULTIMATE: Card = {
   id: 'ult_taiji',
   name: '太极归一',
-  type: 'yao',
+  type: 'faqi',
   rarity: 'legend',
   school: 'neutral',
   cost: 0,
   description: '消耗所有阴阳积蓄。对全体敌人造成 30 点伤害，回复 10 气血，清空所有积蓄。',
   flavor: '——阴阳合一，万化定基。',
   effects: [
-    { kind: 'damage', amount: 30 },
+    { kind: 'damageAll', amount: 30 },
     { kind: 'heal', amount: 10 },
   ],
   exhaust: true,
@@ -255,11 +255,47 @@ export const STARTER_CARDS: readonly Card[] = [
 
 export const COMMON_CARDS: readonly Card[] = [CARD_BURN, CARD_TRIPLE_SHIELD];
 
+export const CARD_SHADOWBOLT: Card = {
+  id: 'fu_shadow_bolt',
+  name: '阴煞符',
+  type: 'fu',
+  rarity: 'rare',
+  school: 'yin',
+  cost: 1,
+  description: '造成 7 点伤害，使你获得 4 气·御。',
+  flavor: '——阴中藏煞，御守一方。',
+  effects: [
+    { kind: 'damage', amount: 7 },
+    { kind: 'block', amount: 4 },
+  ],
+  pathKind: 'yin',
+  silhouette: 'talisman',
+};
+
+export const CARD_SUNFIRE: Card = {
+  id: 'faqi_sun_fire',
+  name: '烈阳击',
+  type: 'faqi',
+  rarity: 'rare',
+  school: 'yang',
+  cost: 2,
+  description: '造成 14 点伤害，使你易伤 1 层。',
+  flavor: '——烈日灼心，一击倾城。',
+  effects: [
+    { kind: 'damage', amount: 14 },
+    { kind: 'applyStatus', status: 'vulnerable', stack: 1, target: 'self' },
+  ],
+  pathKind: 'yang',
+  silhouette: 'relic',
+};
+
 export const RARE_CARDS: readonly Card[] = [
   CARD_CHAIN,
   CARD_PEARL,
   CARD_POISON,
   CARD_EXORCISE,
+  CARD_SHADOWBOLT,
+  CARD_SUNFIRE,
 ];
 
 export const EPIC_CARDS: readonly Card[] = [CARD_SKY_SEAL, CARD_AXE];

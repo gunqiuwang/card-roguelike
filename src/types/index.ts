@@ -69,7 +69,8 @@ export type Effect =
   | { kind: 'applyStatus'; status: StatusKind; stack: number; target: 'enemy' | 'self' }
   | { kind: 'execute'; hpPercent: number; bonusDamage: number }
   | { kind: 'sealIntent'; turns: number }
-  | { kind: 'discardEnemyBlock' };
+  | { kind: 'discardEnemyBlock' }
+  | { kind: 'damageAll'; amount: number };
 
 /** 卡牌"模板"（一份数据 → 可复制多份） */
 export interface Card {
