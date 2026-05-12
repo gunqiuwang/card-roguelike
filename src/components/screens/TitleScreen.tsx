@@ -140,7 +140,7 @@ export function TitleScreen({ onGotoStyleguide }: Props) {
       </div>
 
       <div className="absolute bottom-3 right-4 text-mist/50 text-[10px] font-numeric tracking-wider">
-        v0.2 · 封 妖 录
+        v0.4 · 妖性系统
       </div>
     </div>
   );

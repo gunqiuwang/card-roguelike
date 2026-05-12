@@ -350,6 +350,8 @@ export function dismissEvent(run: RunState): void {
       reason: 'event',
     };
   }
+  // 重置夜间反噬标记（下个节点后可重新触发）
+  run.nightBacklashTriggered = false;
   advanceNode(run);
 }
 
@@ -430,6 +432,8 @@ function upgradeCard(c: Card): Card {
 }
 
 export function leaveShrine(run: RunState): void {
+  // 重置夜间反噬标记
+  run.nightBacklashTriggered = false;
   advanceNode(run);
 }
 

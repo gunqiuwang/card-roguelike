@@ -346,11 +346,14 @@ export function BattleScreen() {
               battle.hand.map((c, i) => {
                 const canPay = battle.energy >= c.cost;
                 const canPlay = canPay && battle.phase === 'playerAction';
+                const yaoYx = c.type === 'yao' ? (c.yaoxing ?? 0) : 0;
+                const isRestless = yaoYx >= 60;
+                const isFrenzy = yaoYx >= 90;
                 return (
                   <div
                     key={c.uid}
                     className={[
-                      'shrink-0 transition-transform',
+                      'shrink-0 transition-transform relative',
                       canPlay ? 'hover:-translate-y-1' : '',
                       !canPay ? 'opacity-40 grayscale' : '',
                     ].join(' ')}
@@ -362,6 +365,22 @@ export function BattleScreen() {
                       interactive={canPlay}
                       onClick={canPlay ? () => playCard(i, targetIdx) : undefined}
                     />
+                    {/* 妖性警告 */}
+                    {c.type === 'yao' && yaoYx > 0 && (
+                      <div
+                        className={[
+                          'absolute top-0 right-0 text-[10px] px-1 rounded-bl rounded-tr font-heading tracking-widest shadow-sm',
+                          isFrenzy
+                            ? 'bg-vermillion text-parchment-light animate-pulse'
+                            : isRestless
+                              ? 'bg-ember/80 text-parchment-light'
+                              : '',
+                        ].join(' ')}
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {isFrenzy ? '狂' : isRestless ? '躁' : ''}
+                      </div>
+                    )}
                   </div>
                 );
               })
