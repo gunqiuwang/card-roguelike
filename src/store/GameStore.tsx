@@ -186,10 +186,10 @@ export function GameProvider({
   // ==========================================================================
   // run 生命周期
   // ==========================================================================
-  const newRun = useCallback(() => {
+  const newRun = useCallback((playerClass: 'fangshi' | 'yinyang' = 'fangshi') => {
     const seed = (Math.random() * 2 ** 31) | 0;
     rngRef.current = createDefaultRng();
-    const run = createRun(seed);
+    const run = createRun(seed, playerClass);
     runRef.current = run;
     metaRef.current.runs += 1;
     setScreen('map');

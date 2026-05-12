@@ -225,6 +225,24 @@ export const CARD_TAIJI_MIRROR: Card = {
   silhouette: 'relic',
 };
 
+/** v0.5 太极归一 · 终极技能（阴阳平衡归零时可用） */
+export const CARD_TAIJI_ULTIMATE: Card = {
+  id: 'ult_taiji',
+  name: '太极归一',
+  type: 'yao',
+  rarity: 'legend',
+  school: 'neutral',
+  cost: 0,
+  description: '消耗所有阴阳积蓄。对全体敌人造成 30 点伤害，回复 10 气血，清空所有积蓄。',
+  flavor: '——阴阳合一，万化定基。',
+  effects: [
+    { kind: 'damage', amount: 30 },
+    { kind: 'heal', amount: 10 },
+  ],
+  exhaust: true,
+  silhouette: 'talisman',
+};
+
 // ============================================================================
 // 导出集合
 // ============================================================================

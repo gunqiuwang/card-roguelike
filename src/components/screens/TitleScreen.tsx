@@ -140,7 +140,7 @@ export function TitleScreen({ onGotoStyleguide }: Props) {
       </div>
 
       <div className="absolute bottom-3 right-4 text-mist/50 text-[10px] font-numeric tracking-wider">
-        v0.4 · 妖性系统
+        v0.5 · 阴阳双道
       </div>
     </div>
   );

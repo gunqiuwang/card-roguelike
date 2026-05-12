@@ -158,4 +158,28 @@ export const balance = {
     /** AI 出牌上限（防死循环） */
     maxActionsPerTurn: 20,
   },
+
+  /** ======================================================================
+   *  v0.5 阴阳双道职业
+   *  ====================================================================== */
+  dualPath: {
+    /** 每回合阴/阳能量 */
+    energyPerTurn: 3,
+    /** 太极归一积蓄所需 |balance| 阈值 */
+    taijiThreshold: 3,
+    /** 极端偏阴触发增益（balance ≤ -3）：+1 力量 */
+    yinExtremeStrength: 1,
+    /** 极端偏阳触发易伤（balance ≥ 3）：1 层易伤 */
+    yangExtremeVulnerable: 1,
+    /** 打出阴卡对阳平衡值影响 */
+    yinOnYinBalance: 1,
+    /** 打出阳卡对阴平衡值影响 */
+    yangOnXinBalance: 1,
+    /** 太极归一消耗能量 */
+    taijiCost: 0,
+    /** 太极归一伤害 */
+    taijiDamage: 30,
+    /** 太极归一治疗 */
+    taijiHeal: 10,
+  },
 } as const;

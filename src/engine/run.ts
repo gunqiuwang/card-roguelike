@@ -97,7 +97,7 @@ export function generateChapter1Map(rng: RNG): MapNode[] {
 // ============================================================================
 // 新建 Run
 // ============================================================================
-export function createRun(seed: number): RunState {
+export function createRun(seed: number, playerClass: 'fangshi' | 'yinyang' = 'fangshi'): RunState {
   const rng = createRng(seed);
   const deck = buildStarterDeck();
   return {
@@ -123,6 +123,16 @@ export function createRun(seed: number): RunState {
     scrolls: [],
     yaoxing: {},
     nightBacklashTriggered: false,
+    playerClass,
+    dualPath: playerClass === 'yinyang'
+      ? {
+          yinEnergy: balance.dualPath.energyPerTurn,
+          yangEnergy: balance.dualPath.energyPerTurn,
+          yinBalance: 0,
+          yangBalance: 0,
+          taijiReady: false,
+        }
+      : undefined,
   };
 }
 
@@ -157,6 +167,7 @@ export function enterNode(run: RunState, rng: RNG): void {
       rng,
       battleKindOfNode(node.kind),
       run.scrolls ?? [],
+      run.playerClass ?? 'fangshi',
     );
   } else if (node.kind === 'event') {
     if (!node.eventId) return;

@@ -104,6 +104,7 @@ export function startBattle(
   rng: RNG,
   kind: BattleState['kind'] = 'normal',
   scrolls: string[] = [],
+  playerClass: 'fangshi' | 'yinyang' = 'fangshi',
 ): BattleState {
   const drawPile = rng.shuffle(deck.map(cardToInstance));
 
@@ -133,6 +134,18 @@ export function startBattle(
     activeScrolls: [...scrolls],
     firstDamageCardUsed: false,
     sealChallenge: null,
+    // v0.5 阴阳双道
+    ...(playerClass === 'yinyang'
+      ? {
+          yinEnergy: balance.dualPath.energyPerTurn,
+          yangEnergy: balance.dualPath.energyPerTurn,
+          yinEnergyMax: balance.dualPath.energyPerTurn,
+          yangEnergyMax: balance.dualPath.energyPerTurn,
+          yinBalance: 0,
+          yangBalance: 0,
+          taijiReady: false,
+        }
+      : {}),
   };
   beginPlayerTurn(state, rng);
   return state;
@@ -150,6 +163,26 @@ function beginPlayerTurn(state: BattleState, rng: RNG): void {
 
   // 能量重置
   state.energy = state.energyMax;
+  // v0.5 阴阳双道能量重置
+  if (state.yinEnergyMax !== undefined) state.yinEnergy = state.yinEnergyMax;
+  if (state.yangEnergyMax !== undefined) state.yangEnergy = state.yangEnergyMax;
+  // 太极归一检查
+  if (state.yinBalance === 0 && state.yangBalance === 0 && state.taijiReady !== undefined) {
+    state.taijiReady = true;
+  }
+  // v0.5 阴阳极端平衡负面效果
+  if (state.yinBalance !== undefined) {
+    // 偏阴 ≥ 3：力量（增伤）
+    if (state.yinBalance >= 3) {
+      applyStatusToPlayer(state, 'strength', balance.dualPath.yinExtremeStrength);
+      log(state, `阴气过剩，你获得力量。`);
+    }
+    // 偏阳 ≥ 3：脆弱（易伤）
+    if ((state.yangBalance ?? 0) >= 3) {
+      applyStatusToPlayer(state, 'vulnerable', balance.dualPath.yangExtremeVulnerable);
+      log(state, `阳气过剩，你身负脆弱。`);
+    }
+  }
 
   // 毒伤
   if (state.playerStatus.poison > 0) {
@@ -232,6 +265,9 @@ export function canPlay(state: BattleState, handIdx: number): boolean {
   if (!c) return false;
   // 妖性 ≥ 90 · 噬主 · 不可打出
   if (c.type === 'yao' && (c.yaoxing ?? 0) >= balance.yaoxing.frenzy) return false;
+  // v0.5 阴阳双道能量检查
+  if (c.pathKind === 'yin') return (state.yinEnergy ?? 0) >= c.cost;
+  if (c.pathKind === 'yang') return (state.yangEnergy ?? 0) >= c.cost;
   return state.energy >= c.cost;
 }
 
@@ -247,10 +283,27 @@ export function playCard(
   if (targetIdx < 0) return;
 
   // 扣能量 + 移手牌
-  state.energy -= c.cost;
+  if (c.pathKind === 'yin') {
+    state.yinEnergy = (state.yinEnergy ?? 0) - c.cost;
+  } else if (c.pathKind === 'yang') {
+    state.yangEnergy = (state.yangEnergy ?? 0) - c.cost;
+  } else {
+    state.energy -= c.cost;
+  }
   state.hand.splice(handIdx, 1);
 
   log(state, `你打出【${c.name}】。`);
+
+  // v0.5 阴阳平衡更新
+  if (state.yinBalance !== undefined && state.yangBalance !== undefined) {
+    if (c.pathKind === 'yin') {
+      // 阴 → 阳平衡增加
+      state.yangBalance = Math.min(3, state.yangBalance + 1);
+    } else if (c.pathKind === 'yang') {
+      // 阳 → 阴平衡增加
+      state.yinBalance = Math.min(3, state.yinBalance + 1);
+    }
+  }
 
   // 妖性结算 · 打出前先算副作用
   if (c.type === 'yao') {
@@ -358,6 +411,12 @@ function applyEffect(
     }
     case 'gainEnergy': {
       state.energy += ef.amount;
+      return;
+    }
+    case 'heal': {
+      const healed = Math.min(state.playerMaxHp - state.playerHp, ef.amount);
+      state.playerHp += healed;
+      if (healed > 0) pushFx(state, { target: 'player', kind: 'heal', value: healed });
       return;
     }
     case 'applyStatus': {

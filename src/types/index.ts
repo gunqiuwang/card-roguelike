@@ -33,7 +33,24 @@ export type SilhouetteKind =
 // ============================================================================
 export type CardType = 'fu' | 'faqi' | 'yao';
 export type CardRarity = 'starter' | 'common' | 'rare' | 'epic' | 'legend';
-export type School = 'zhanyao' | 'yuling' | 'fushu' | 'neutral';
+export type School = 'zhanyao' | 'yuling' | 'fushu' | 'neutral' | 'yin' | 'yang';
+
+/** 职业类型 */
+export type PlayerClass = 'fangshi' | 'yinyang';
+
+/** 阴阳双道能量状态 */
+export interface DualPathState {
+  /** 阴能量 */
+  yinEnergy: number;
+  /** 阳能量 */
+  yangEnergy: number;
+  /** 阴平衡值（负 = 偏阴，正 = 偏阳） */
+  yinBalance: number;
+  /** 阳平衡值 */
+  yangBalance: number;
+  /** 太极归一是否可用 */
+  taijiReady: boolean;
+}
 
 export type StatusKind =
   | 'poison'       // 每回合开始 -1 HP / 层
@@ -48,6 +65,7 @@ export type Effect =
   | { kind: 'block'; amount: number }
   | { kind: 'draw'; count: number }
   | { kind: 'gainEnergy'; amount: number }
+  | { kind: 'heal'; amount: number }
   | { kind: 'applyStatus'; status: StatusKind; stack: number; target: 'enemy' | 'self' }
   | { kind: 'execute'; hpPercent: number; bonusDamage: number }
   | { kind: 'sealIntent'; turns: number }
@@ -75,6 +93,8 @@ export interface Card {
   silhouette?: SilhouetteKind;
   /** 妖卡专属（v0.4 才会用来反噬） */
   yaoxing?: number;
+  /** 阴阳双道专属：此卡属于阴还是阳能量池（不填 = 无能量限制，普通法术） */
+  pathKind?: 'yin' | 'yang';
 }
 
 /** 战斗中的卡牌实例 · 带运行时 uid，同模板多份可分辨 */
@@ -267,6 +287,14 @@ export interface BattleState {
   playerStatus: StatusBag;
   energy: number;
   energyMax: number;
+  // v0.5 阴阳双道
+  yinEnergy?: number;
+  yangEnergy?: number;
+  yinEnergyMax?: number;
+  yangEnergyMax?: number;
+  yinBalance?: number;    // 负 = 偏阴，正 = 偏阳（仅阴阳师）
+  yangBalance?: number;
+  taijiReady?: boolean;  // 太极归一是否可用
   // 牌堆
   drawPile: CardInstance[];
   hand: CardInstance[];
@@ -367,6 +395,10 @@ export interface RunState {
   yaoxing?: Record<string, number>;
   /** 夜间反噬事件是否已触发过（防止连续触发） */
   nightBacklashTriggered?: boolean;
+  /** 职业（v0.5 阴阳双道） */
+  playerClass?: PlayerClass;
+  /** 阴阳双道能量状态（仅阴阳师职业有） */
+  dualPath?: DualPathState;
 }
 
 export interface RunStats {
@@ -425,7 +457,7 @@ export interface EventDef {
 // §6 · 存档 · Meta 长线
 // ============================================================================
 export const SAVE_SCHEMA_VERSION = 1 as const;
-export const CONTENT_VERSION = '0.4.0' as const;
+export const CONTENT_VERSION = '0.5.0' as const;
 
 export interface MetaProgress {
   /** 完成过的 run 数 */

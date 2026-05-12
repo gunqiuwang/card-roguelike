@@ -35,6 +35,8 @@ const schoolLabel: Record<CardModel['school'], string> = {
   yuling: '御灵',
   fushu: '符术',
   neutral: '',
+  yin: '阴',
+  yang: '阳',
 };
 
 const schoolColorClass: Record<CardModel['school'], string> = {
@@ -42,6 +44,8 @@ const schoolColorClass: Record<CardModel['school'], string> = {
   yuling: 'text-[#95B9A8]',
   fushu: 'text-[#E08A48]',
   neutral: 'text-mist',
+  yin: 'text-[#6B8CAE]',
+  yang: 'text-[#D4A843]',
 };
 
 const typeLabel: Record<CardModel['type'], string> = {
