@@ -425,7 +425,7 @@ export interface EventDef {
 // §6 · 存档 · Meta 长线
 // ============================================================================
 export const SAVE_SCHEMA_VERSION = 1 as const;
-export const CONTENT_VERSION = '0.2.0' as const;
+export const CONTENT_VERSION = '0.4.0' as const;
 
 export interface MetaProgress {
   /** 完成过的 run 数 */
