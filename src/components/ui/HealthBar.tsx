@@ -19,7 +19,7 @@ export const HealthBar = memo(function HealthBar({ current, max, block = 0, widt
     width !== undefined ? { width } : { width: '100%' };
   return (
     <div className="flex flex-col gap-1 no-select" style={style}>
-      <div className="relative h-4 rounded-sm bg-ink-soft border border-ink overflow-hidden shadow-paper">
+      <div className="relative h-3 sm:h-4 rounded-sm bg-ink-soft border border-ink overflow-hidden shadow-paper">
         {/* 底层血 */}
         <div
           className="absolute inset-y-0 left-0 bg-gradient-to-r from-vermillion-dark to-vermillion transition-[width] duration-300"

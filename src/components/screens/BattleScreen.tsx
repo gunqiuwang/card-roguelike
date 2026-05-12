@@ -141,9 +141,12 @@ export function BattleScreen() {
       >
         <div className="max-w-2xl mx-auto px-3 sm:px-4 py-2">
           <div className="flex items-center justify-between gap-2 sm:gap-3">
-            <Button variant="ghost" size="sm" onClick={returnToTitle}>
+            <button
+              className="text-[11px] sm:text-[13px] text-parchment/80 hover:text-parchment font-heading tracking-widest px-1 sm:px-2 py-1 transition-colors"
+              onClick={returnToTitle}
+            >
               ← 返回
-            </Button>
+            </button>
             <div className="text-[10px] sm:text-xs text-mist font-heading tracking-widest text-center min-w-0 truncate">
               <span className="hidden sm:inline">第一章 · 青丘残岭 · </span>
               回合 {battle.turn}
@@ -151,9 +154,9 @@ export function BattleScreen() {
             <DeckViewButton />
           </div>
 
-          <div className="mt-2 flex items-center gap-3" data-zone="player-stats">
-            <div className="flex-1">
-              <div className="flex items-center justify-between text-[11px] text-mist font-heading tracking-widest mb-1">
+          <div className="mt-2 flex items-center gap-2 sm:gap-3" data-zone="player-stats">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between text-[12px] sm:text-[13px] text-mist font-heading tracking-widest mb-1">
                 <span>气 血</span>
                 <span className="font-numeric text-parchment-light">
                   {battle.playerHp}/{battle.playerMaxHp}
@@ -225,7 +228,7 @@ export function BattleScreen() {
                           ? 'bg-jade/20 border-jade/60 text-jade'
                           : 'bg-ember/20 border-ember/60 text-ember-glow',
                     ].join(' ')}
-                    style={{ fontSize: 15 }}
+                    style={{ fontSize: 'clamp(12px, 3.5vw, 15px)' }}
                   >
                     {intent.label}
                   </div>
@@ -233,7 +236,7 @@ export function BattleScreen() {
 
                 {/* 立绘（大） */}
                 <div
-                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card w-28 h-36 sm:w-32 sm:h-40 md:w-36 md:h-48"
+                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card w-24 h-30 sm:w-28 sm:h-36 md:w-32 md:h-40 lg:w-36 lg:h-48"
                 >
                   <Portrait
                     src={e.artSrc}
@@ -266,19 +269,21 @@ export function BattleScreen() {
 
                 {/* 名 + 血 + 状态 */}
                 <div className="mt-2 text-center">
-                  <div className="font-heading tracking-widest text-parchment-light text-base">
+                  <div className="font-heading tracking-widest text-parchment-light"
+                    style={{ fontSize: 'clamp(13px, 3.5vw, 17px)' }}
+                  >
                     {e.name}
-                    <span className="text-[10px] text-mist ml-2 font-numeric">
+                    <span className="text-[10px] sm:text-[11px] text-mist ml-1 sm:ml-2 font-numeric">
                       [{e.rank}]
                     </span>
                   </div>
-                  <div className="mt-1 text-[11px] font-numeric text-mist">
+                  <div className="mt-1 text-[10px] sm:text-[11px] font-numeric text-mist">
                     HP {e.hp}/{e.maxHp}
                     {e.block > 0 && (
                       <span className="text-bone-light ml-2">🛡 {e.block}</span>
                     )}
                   </div>
-                  <div className="mt-1 w-28 sm:w-32 md:w-36">
+                  <div className="mt-1 w-24 sm:w-28 md:w-32">
                     <HealthBar current={e.hp} max={e.maxHp} block={e.block} width={undefined} />
                   </div>
                   <StatusBadges enemy={e} />
