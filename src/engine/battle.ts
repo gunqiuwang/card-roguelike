@@ -166,18 +166,25 @@ function beginPlayerTurn(state: BattleState, rng: RNG): void {
   // v0.5 阴阳双道能量重置
   if (state.yinEnergyMax !== undefined) state.yinEnergy = state.yinEnergyMax;
   if (state.yangEnergyMax !== undefined) state.yangEnergy = state.yangEnergyMax;
-  // 太极归一检查
-  if (state.yinBalance === 0 && state.yangBalance === 0 && state.taijiReady !== undefined) {
-    state.taijiReady = true;
+
+  // 清理上回合残留的极端惩罚状态（下一回合根据新的 balance 值重新应用）
+  if (state.playerStatus.strength > 0) state.playerStatus.strength = Math.max(0, state.playerStatus.strength - 1);
+  if (state.playerStatus.vulnerable > 0) state.playerStatus.vulnerable = Math.max(0, state.playerStatus.vulnerable - 1);
+
+  // 太极归一：需阴阳都归零且之前积累过（taijiWasActive 标记是否曾经非零）
+  if (state.taijiReady !== undefined) {
+    if (state.yinBalance === 0 && state.yangBalance === 0 && (state as BattleState & { taijiWasActive?: boolean }).taijiWasActive) {
+      state.taijiReady = true;
+    } else {
+      state.taijiReady = false;
+    }
   }
-  // v0.5 阴阳极端平衡负面效果
+  // v0.5 阴阳极端平衡负面效果（偏阴/偏阳 ≥ 3 时触发）
   if (state.yinBalance !== undefined) {
-    // 偏阴 ≥ 3：力量（增伤）
     if (state.yinBalance >= 3) {
       applyStatusToPlayer(state, 'strength', balance.dualPath.yinExtremeStrength);
       log(state, `阴气过剩，你获得力量。`);
     }
-    // 偏阳 ≥ 3：脆弱（易伤）
     if ((state.yangBalance ?? 0) >= 3) {
       applyStatusToPlayer(state, 'vulnerable', balance.dualPath.yangExtremeVulnerable);
       log(state, `阳气过剩，你身负脆弱。`);
@@ -295,13 +302,33 @@ export function playCard(
   log(state, `你打出【${c.name}】。`);
 
   // v0.5 阴阳平衡更新
+  // 设计：yinBalance 累积阴卡使用（越大越偏阴），yangBalance 累积阳卡使用（越大越偏阳）
+  // 交叉机制：每出一张阴卡，阳侧被迫"还债"（yangBalance 减少）
+  //          每出一张阳卡，阴侧被迫"还债"（yinBalance 减少）
+  // 这样玩家需要不断补充同侧才能维持极端值，而非无限堆积
   if (state.yinBalance !== undefined && state.yangBalance !== undefined) {
+    const wasYinExtreme = state.yinBalance >= 3;
+    const wasYangExtreme = (state.yangBalance ?? 0) >= 3;
     if (c.pathKind === 'yin') {
-      // 阴 → 阴平衡增加（偏阴加深，balance 值越大越偏阴）
-      state.yinBalance = Math.min(3, state.yinBalance + 1);
+      state.yinBalance += 1; // 偏阴加深
+      state.yangBalance = Math.max(0, (state.yangBalance ?? 0) - 1); // 阳侧还债
     } else if (c.pathKind === 'yang') {
-      // 阳 → 阳平衡增加（偏阳加深，balance 值越大越偏阳）
-      state.yangBalance = Math.min(3, state.yangBalance + 1);
+      state.yangBalance += 1; // 偏阳加深
+      state.yinBalance = Math.max(0, state.yinBalance - 1); // 阴侧还债
+    }
+    // 标记是否曾经积累过（用于太极归一触发条件）
+    if (state.yinBalance > 0 || (state.yangBalance ?? 0) > 0) {
+      (state as BattleState & { taijiWasActive?: boolean }).taijiWasActive = true;
+    }
+    // 交叉衰减：阳卡打出时，若之前是偏阴（yinBalance ≥ 3），减少偏阴惩罚
+    if (wasYinExtreme && c.pathKind === 'yang') {
+      state.yinBalance = Math.max(0, state.yinBalance - 1);
+      log(state, `阳气冲淡阴气，力量减退。`);
+    }
+    // 交叉衰减：阴卡打出时，若之前是偏阳，减少偏阳惩罚
+    if (wasYangExtreme && c.pathKind === 'yin') {
+      state.yangBalance = Math.max(0, (state.yangBalance ?? 0) - 1);
+      log(state, `阴气中和阳气，脆弱消退。`);
     }
   }
 
@@ -650,7 +677,8 @@ export function submitStroke(state: BattleState, stroke: StrokeKind): void {
     const enemy = state.enemies[ch.enemyIdx];
     if (enemy) {
       enemy.hp = Math.round(enemy.maxHp * 0.5);
-      enemy.sealChoiceTriggered = false; // 允许再次触发
+      // 封印失败后，锁死该敌人本场不再触发封印选择
+      enemy.sealChoiceTriggered = true;
     }
     state.sealChallenge = null;
     if (state.playerHp <= 0) {

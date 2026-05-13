@@ -140,8 +140,19 @@ export function TitleScreen({ onGotoStyleguide }: Props) {
       </div>
 
       <div className="absolute bottom-3 right-4 text-mist/50 text-[10px] font-numeric tracking-wider">
-        v0.5 · 阴阳双道
+        v1.0 · 封妖录
       </div>
+      <button
+        onClick={() => {
+          const { getLocale, setLocale } = (window as unknown as { __i18n: typeof import('../../lib/i18n') }).__i18n;
+          const next = getLocale() === 'zh' ? 'en' : 'zh';
+          setLocale(next);
+          window.location.reload();
+        }}
+        className="absolute top-3 right-3 text-bone/60 hover:text-bone text-xs font-heading tracking-widest transition-colors"
+      >
+        中/EN
+      </button>
     </div>
   );
 }

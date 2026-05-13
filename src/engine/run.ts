@@ -24,70 +24,119 @@ import type {
   RunState,
   NodeKind,
   Scroll,
+  ChapterId,
 } from '../types';
 import { balance } from '../config/balance';
 import { buildStarterDeck, ALL_REWARD_CARDS } from '../data/cards';
 import { ALL_EVENTS, getEvent } from '../data/events';
-import { getYao } from '../data/yao';
+import { getYao, yaoOfChapter } from '../data/yao';
 import { rollShrineScrolls, getScroll } from '../data/scrolls';
 import { createRng, type RNG } from './rng';
 import { startBattle } from './battle';
+
+/** 章节顺序 */
+export const CHAPTER_ORDER: ChapterId[] = ['qingqiu', 'taotie', 'guixu', 'kunlun'];
+
+export const CHAPTER_NAMES: Record<string, string> = {
+  qingqiu: '青丘残岭',
+  taotie: '饕餮古镇',
+  guixu: '归墟冥海',
+  kunlun: '昆仑仙境',
+};
+
+function getChapterConfig(chapter: ChapterId): {
+  normalCount: number;
+  eliteCount: number;
+  bossId: string;
+  eventCount: number;
+} {
+  switch (chapter) {
+    case 'qingqiu':
+      return { normalCount: 4, eliteCount: 1, bossId: 'jiuweihu_boss', eventCount: 1 };
+    case 'taotie':
+      return { normalCount: 4, eliteCount: 1, bossId: 'taotie_lord', eventCount: 1 };
+    case 'guixu':
+      return { normalCount: 4, eliteCount: 1, bossId: 'sea_emperor', eventCount: 1 };
+    case 'kunlun':
+      return { normalCount: 4, eliteCount: 1, bossId: 'kunlun_guardian', eventCount: 1 };
+    default:
+      return { normalCount: 4, eliteCount: 1, bossId: 'jiuweihu_boss', eventCount: 1 };
+  }
+}
 
 // ============================================================================
 // 地图生成
 // ============================================================================
 /**
- * 第一章「青丘残岭」线性 8 节点（DESIGN §8.1）
- *   battle  战1 · 青狐 ×1
- *   battle  战2 · 青狐 ×2
- *   event   奇遇
- *   battle  战3 · 青狐 + 夜狐
- *   shrine  祭坛
- *   elite   精英 · 九尾（B）
- *   battle  战4 · 夜狐 ×2
- *   boss    Boss · 九尾真身
+ * 通用章节地图生成器
+ * 每章 8 节点：battle×4 / event×1 / shrine×1 / elite×1 / boss×1
  */
-export function generateChapter1Map(rng: RNG): MapNode[] {
-  const events = ALL_EVENTS;
-  const eventId = events[rng.int(0, events.length - 1)].id;
+export function generateChapterMap(chapter: ChapterId, rng: RNG, chapterIndex: number): MapNode[] {
+  const cfg = getChapterConfig(chapter);
+  const events = ALL_EVENTS.filter((e) => e.chapter === chapter || !e.chapter);
+  const eventId = events.length > 0 ? events[rng.int(0, events.length - 1)].id : 'grave';
+
+  const yaoPool = yaoOfChapter(chapter);
+  const normalYao = yaoPool.filter((y) => y.rank === 'C');
+  const eliteYao = yaoPool.filter((y) => y.rank === 'B');
+  const boss = getYao(cfg.bossId);
+
+  const chapterPrefix = `${chapterIndex + 1}`;
 
   const nodes: MapNode[] = [
-    { id: 'n1', kind: 'battle', label: '青狐·迎客', enemyYaoIds: ['qinghu'], done: false },
+    // 战斗1
     {
-      id: 'n2',
-      kind: 'battle',
-      label: '鸮啼·荒山',
-      enemyYaoIds: ['xiaoshou'],
+      id: `${chapterPrefix}_1`, kind: 'battle',
+      label: `迎客·${normalYao[0]?.name ?? '妖'}`,
+      enemyYaoIds: [normalYao[0]?.id ?? 'qinghu'],
       done: false,
     },
-    { id: 'n3', kind: 'event', label: '荒野·奇遇', eventId, done: false },
+    // 战斗2
     {
-      id: 'n4',
-      kind: 'battle',
-      label: '草蛇·双毒',
-      enemyYaoIds: ['caotou_she', 'qinghu'],
+      id: `${chapterPrefix}_2`, kind: 'battle',
+      label: `双妖·${normalYao[1]?.name ?? '妖'}`,
+      enemyYaoIds: [normalYao[1]?.id ?? 'qinghu', normalYao[2]?.id ?? 'yehu'],
       done: false,
     },
-    { id: 'n5', kind: 'shrine', label: '瞽人·祭坛', done: false },
+    // 奇遇
     {
-      id: 'n6',
-      kind: 'elite',
-      label: '九尾·绯（精英）',
-      enemyYaoIds: ['jiuweihu_elite'],
+      id: `${chapterPrefix}_3`, kind: 'event',
+      label: '荒野·奇遇',
+      eventId,
       done: false,
     },
+    // 战斗3
     {
-      id: 'n7',
-      kind: 'battle',
-      label: '夜狐·枭首',
-      enemyYaoIds: ['yehu', 'xiaoshou'],
+      id: `${chapterPrefix}_4`, kind: 'battle',
+      label: `乱战·${normalYao[2]?.name ?? '妖'}`,
+      enemyYaoIds: [normalYao[2]?.id ?? 'yehu', normalYao[0]?.id ?? 'qinghu'],
       done: false,
     },
+    // 祭坛
     {
-      id: 'n8',
-      kind: 'boss',
-      label: '绯·九尾真身',
-      enemyYaoIds: ['jiuweihu_boss'],
+      id: `${chapterPrefix}_5`, kind: 'shrine',
+      label: '瞽人·祭坛',
+      done: false,
+    },
+    // 精英
+    {
+      id: `${chapterPrefix}_6`, kind: 'elite',
+      label: `${eliteYao[0]?.name ?? '精英'}（精英）`,
+      enemyYaoIds: eliteYao[0] ? [eliteYao[0].id] : [cfg.bossId],
+      done: false,
+    },
+    // 战斗4
+    {
+      id: `${chapterPrefix}_7`, kind: 'battle',
+      label: `终战·${normalYao[3]?.name ?? '妖'}`,
+      enemyYaoIds: [normalYao[3]?.id ?? 'yehu', normalYao[1]?.id ?? 'qinghu'],
+      done: false,
+    },
+    // Boss
+    {
+      id: `${chapterPrefix}_8`, kind: 'boss',
+      label: boss.name,
+      enemyYaoIds: [boss.id],
       done: false,
     },
   ];
@@ -106,7 +155,7 @@ export function createRun(seed: number, playerClass: 'fangshi' | 'yinyang' = 'fa
     maxHp: balance.player.maxHp,
     currency: 0,
     deck,
-    map: generateChapter1Map(rng),
+    map: generateChapterMap('qingqiu', rng, 0),
     nodeIndex: 0,
     chapter: 'qingqiu',
     battle: null,
@@ -256,6 +305,14 @@ export function resolveBattle(run: RunState, rng: RNG): void {
   if (battle.kind === 'boss') {
     run.maxHp += balance.heal.bossMaxHpGain;
     run.hp += balance.heal.bossMaxHpGain;
+    // Boss 战胜后，检查是否需要开启新章节
+    const nextChapter = advanceChapter(run);
+    if (nextChapter) {
+      // 新章节开始，重置节点，保留玩家进度
+      run.map = generateChapterMap(nextChapter, rng, CHAPTER_ORDER.indexOf(nextChapter));
+      run.nodeIndex = 0;
+      run.chapter = nextChapter;
+    }
   }
 
   let cardChoices: Card[] = [];
@@ -480,6 +537,28 @@ export function checkBacklash(run: RunState): BacklashState | null {
 }
 
 // ============================================================================
+// 章节推进
+// ============================================================================
+/**
+ * Boss 战胜后调用，检查并推进到下个章节。
+ * 返回新的 ChapterId 或 null（已通关全部章节 → 触发结局）。
+ */
+export function advanceChapter(run: RunState): ChapterId | null {
+  const idx = CHAPTER_ORDER.indexOf(run.chapter as ChapterId);
+  if (idx < 0 || idx >= CHAPTER_ORDER.length - 1) return null; // 已是最末章节
+  return CHAPTER_ORDER[idx + 1];
+}
+
+export function isLastChapter(run: RunState): boolean {
+  const idx = CHAPTER_ORDER.indexOf(run.chapter as ChapterId);
+  return idx >= CHAPTER_ORDER.length - 1;
+}
+
+export function getCurrentChapterIndex(run: RunState): number {
+  return CHAPTER_ORDER.indexOf(run.chapter as ChapterId);
+}
+
+// ============================================================================
 // 节点推进
 // ============================================================================
 export function advanceNode(run: RunState): void {
@@ -488,9 +567,13 @@ export function advanceNode(run: RunState): void {
   run.nodeIndex += 1;
 }
 
-export function runFinished(run: RunState): 'victory' | 'defeated' | null {
+export function runFinished(run: RunState): 'victory' | 'defeated' | 'ending' | null {
   if (run.hp <= 0) return 'defeated';
-  if (run.nodeIndex >= run.map.length) return 'victory';
+  if (run.nodeIndex >= run.map.length) {
+    // 检查是否已通关全部章节
+    if (isLastChapter(run)) return 'ending';
+    return null; // 章节未完，等待推进
+  }
   return null;
 }
 

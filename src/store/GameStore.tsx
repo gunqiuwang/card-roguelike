@@ -49,6 +49,7 @@ import {
   resolveEventChoice as engineResolveEventChoice,
   resolveOverflow as engineResolveOverflow,
   runFinished,
+  getCurrentChapterIndex,
   type RNG,
   type ShrineAction,
   shrineAct as engineShrineAct,
@@ -300,7 +301,7 @@ export function GameProvider({
       return;
     }
     const fin = runFinished(run);
-    if (fin === 'victory') {
+    if (fin === 'victory' || fin === 'ending') {
       metaRef.current.victories += 1;
       metaRef.current.seals += run.stats.seals;
       for (const n of run.map) {
@@ -309,7 +310,7 @@ export function GameProvider({
             metaRef.current.unlockedYao.push(id);
         }
       }
-      metaRef.current.deepestChapter = Math.max(metaRef.current.deepestChapter, 1);
+      metaRef.current.deepestChapter = Math.max(metaRef.current.deepestChapter, getCurrentChapterIndex(run) + 1);
       runRef.current = null;
       setHasSavedRun(false);
       persistRun(null);
@@ -428,15 +429,22 @@ export function GameProvider({
     if (!run?.battle) return;
     const battle = run.battle;
     if (!battle.taijiReady) return;
+    // 太极归一需要 yinBalance 和 yangBalance 都归零
+    if (battle.yinBalance !== 0 || (battle.yangBalance ?? 0) !== 0) return;
+    // 找手牌中的太极归一
     const taijiCard = battle.hand.find((c) => c.id === 'ult_taiji');
     if (!taijiCard) return;
     const handIdx = battle.hand.indexOf(taijiCard);
     if (handIdx < 0) return;
-    // 太极归一目标是全体，找第一个活敌
+    // 太极归一目标是全体敌人
     const targetIdx = battle.enemies.findIndex((e) => e.hp > 0);
     if (targetIdx < 0) return;
+    // 消耗阴阳能量
+    battle.yinEnergy = 0;
+    battle.yangEnergy = 0;
+    // 执行卡牌效果
     enginePlayCard(battle, handIdx, rngRef.current, targetIdx);
-    // 清零阴阳积蓄
+    // 清零阴阳平衡，重置太极状态
     battle.yinBalance = 0;
     battle.yangBalance = 0;
     battle.taijiReady = false;
@@ -584,7 +592,7 @@ export function GameProvider({
     if (run.battle.phase === 'sealChoice' || anyLow) {
       setTutorialStep('sealHint');
     }
-  });
+  }, [tutorialStep]);
 
   // ==========================================================================
   // store 对象 · 每次 render 直接构造一个新对象

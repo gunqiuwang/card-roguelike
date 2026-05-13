@@ -1,0 +1,23 @@
+{
+  "name": "山海志·封妖录",
+  "short_name": "山海志",
+  "description": "上古已亡，人间已失。一款融合收服/拼符/阴阳三层玩法的国风 Roguelike 卡牌游戏。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0E0C",
+  "theme_color": "#0F0E0C",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["games", "entertainment"]
+}
