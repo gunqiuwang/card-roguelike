@@ -32,6 +32,7 @@ import {
 import type { MetaProgress, RunState, Scroll } from '../types';
 import {
   advanceNode,
+  advanceChapter,
   chooseSeal as engineChooseSeal,
   submitStroke as engineSubmitStroke,
   cancelSealChoice as engineCancelSealChoice,
@@ -41,6 +42,7 @@ import {
   dismissEvent as engineDismissEvent,
   endTurn as engineEndTurn,
   enterNode as engineEnterNode,
+  generateChapterMap,
   leaveShrine as engineLeaveShrine,
   playCard as enginePlayCard,
   persistMeta,
@@ -50,6 +52,7 @@ import {
   resolveOverflow as engineResolveOverflow,
   runFinished,
   getCurrentChapterIndex,
+  CHAPTER_ORDER,
   type RNG,
   type ShrineAction,
   shrineAct as engineShrineAct,
@@ -331,7 +334,19 @@ export function GameProvider({
     }
     // 未结束 → 根据当前节点种类选屏
     const node = currentNode(run);
-    if (!node) return;
+    if (!node) {
+      // 节点耗尽（章节所有节点打完）→ 推进到下个章节
+      const nextChapter = advanceChapter(run);
+      if (nextChapter) {
+        run.chapter = nextChapter;
+        run.map = generateChapterMap(nextChapter, rngRef.current, CHAPTER_ORDER.indexOf(nextChapter));
+        run.nodeIndex = 0;
+      }
+      setScreen('map');
+      persist();
+      bump();
+      return;
+    }
     if (node.kind === 'shrine') setScreen('shrine');
     else setScreen('map');
     persist();
@@ -464,6 +479,7 @@ export function GameProvider({
       const run = runRef.current;
       if (!run) return;
       engineTakeReward(run, cardIdx);
+      // advanceNode 后可能 deck 超限触发 pendingOverflow
       if (run.pendingOverflow) setScreen('overflow');
       else routeToNextNode();
       persist();
