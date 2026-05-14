@@ -17,16 +17,36 @@ export const HealthBar = memo(function HealthBar({ current, max, block = 0, widt
   const pct = Math.max(0, Math.min(1, current / max));
   const style: React.CSSProperties =
     width !== undefined ? { width } : { width: '100%' };
+
+  // 血量颜色：正常→预警→危险
+  const barColor = pct > 0.5
+    ? 'from-vermillion-dark to-vermillion'
+    : pct > 0.25
+      ? 'from-ember-dark to-ember'
+      : 'from-[#8B1A1A] to-vermillion-dark';
+
+  // 低血量时背景脉动
+  const isLow = pct <= 0.25;
+
   return (
     <div className="flex flex-col gap-1 no-select" style={style}>
-      <div className="relative h-3 sm:h-4 rounded-sm bg-ink-soft border border-ink overflow-hidden shadow-paper">
-        {/* 底层血 */}
+      <div
+        className={[
+          'relative h-3 sm:h-4 rounded-sm bg-ink-soft border border-ink overflow-hidden shadow-paper',
+          isLow ? 'animate-pulse' : '',
+        ].join(' ')}
+        style={{ boxShadow: isLow ? '0 0 8px rgba(139,26,26,0.4)' : undefined }}
+      >
+        {/* 底层血（渐变） */}
         <div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-vermillion-dark to-vermillion transition-[width] duration-300"
+          className={[
+            'absolute inset-y-0 left-0 bg-gradient-to-r transition-[width] duration-300',
+            barColor,
+          ].join(' ')}
           style={{ width: `${pct * 100}%` }}
         />
-        {/* 纸纹 */}
-        <div className="absolute inset-0 texture-paper opacity-40 pointer-events-none" />
+        {/* 血量纹理 */}
+        <div className="absolute inset-0 texture-paper opacity-30 pointer-events-none" />
         {/* 数字 */}
         {label && (
           <div

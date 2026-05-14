@@ -254,12 +254,12 @@ export function BattleScreen() {
                 disabled={isDead}
                 data-zone={idx === 0 ? 'enemy-first' : undefined}
                 className={[
-                  'relative flex flex-col items-center transition-all p-2 rounded no-select',
-                  isDead ? 'opacity-25' : '',
+                  'relative flex flex-col items-center transition-all p-2 rounded-lg no-select',
+                  isDead ? 'opacity-30' : '',
                   isMulti && isTarget && !isDead
-                    ? 'ring-2 ring-ember-glow bg-ember/5'
+                    ? 'ring-2 ring-ember-glow bg-ember/8 shadow-[0_0_16px_rgba(224,138,72,0.15)]'
                     : '',
-                  isMulti && !isTarget && !isDead ? 'hover:bg-ink-soft/50' : '',
+                  isMulti && !isTarget && !isDead ? 'hover:bg-ink-soft/40' : '',
                 ].join(' ')}
               >
                 {/* 意图徽章（大、醒目） */}
@@ -269,10 +269,10 @@ export function BattleScreen() {
                     className={[
                       'mb-2 px-3 py-1 rounded border font-heading tracking-widest',
                       intent.kind === 'attack'
-                        ? 'bg-vermillion/20 border-vermillion/60 text-vermillion-light'
+                        ? 'bg-vermillion/25 border-vermillion/70 text-vermillion-light shadow-[0_0_8px_rgba(178,58,42,0.3)]'
                         : intent.kind === 'defend'
-                          ? 'bg-jade/20 border-jade/60 text-jade'
-                          : 'bg-ember/20 border-ember/60 text-ember-glow',
+                          ? 'bg-jade/25 border-jade/70 text-jade shadow-[0_0_8px_rgba(74,93,74,0.3)]'
+                          : 'bg-ember/25 border-ember/70 text-ember-glow shadow-[0_0_8px_rgba(196,85,27,0.3)]',
                     ].join(' ')}
                     style={{ fontSize: 'clamp(12px, 3.5vw, 15px)' }}
                   >
@@ -280,9 +280,18 @@ export function BattleScreen() {
                   </div>
                 )}
 
-                {/* 立绘（大） */}
+                {/* 立绘（大）+ 目标选中光晕 */}
                 <div
-                  className="relative rounded overflow-hidden border-2 border-bone/40 shadow-card w-24 h-30 sm:w-28 sm:h-36 md:w-32 md:h-40 lg:w-36 lg:h-48"
+                  className={[
+                    'relative rounded overflow-hidden border-2 shadow-card transition-all',
+                    isTarget && !isDead
+                      ? 'border-ember-glow/60 shadow-[0_0_12px_rgba(224,138,72,0.2)]'
+                      : 'border-bone/40',
+                  ].join(' ')}
+                  style={{
+                    width: 'clamp(96px, 22vw, 144px)',
+                    aspectRatio: '3/4',
+                  }}
                 >
                   <Portrait
                     src={e.artSrc}
@@ -294,8 +303,8 @@ export function BattleScreen() {
                   />
                   {/* 低血警告 */}
                   {isLowHP && (
-                    <div className="absolute top-1 right-1 text-vermillion-light text-2xl font-heading animate-pulse leading-none">
-                      印
+                    <div className="absolute top-1 right-1 text-vermillion-light text-xl font-heading animate-pulse leading-none">
+                      危
                     </div>
                   )}
                   {/* 浮动数字覆盖敌人立绘 */}
