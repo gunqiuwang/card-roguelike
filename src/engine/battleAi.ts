@@ -96,8 +96,11 @@ function bestAction(state: BattleState): Score | null {
   const needBlock = Math.max(0, expectedIncomingDamage(state) - state.playerBlock);
   let best: Score | null = null;
   for (let i = 0; i < state.hand.length; i++) {
+    // Skip cards that can't be played (yao frenzy, not enough energy, etc.)
     if (!canPlay(state, i)) continue;
     const s = scoreCard(state, state.hand[i], needBlock);
+    // Only skip if score is 0 or negative AND it's not because of a cost issue
+    // If we can't afford it, canPlay returns false so we skip it there
     if (s <= 0) continue;
     if (!best || s > best.score) best = { handIdx: i, score: s };
   }
@@ -167,3 +170,6 @@ export function aiRunBattle(
 
 // Re-export types for convenience
 export type { Card, Intent };
+
+// Re-export endTurn from battle so BattleScreen can import it from battleAi
+export { endTurn } from './battle';

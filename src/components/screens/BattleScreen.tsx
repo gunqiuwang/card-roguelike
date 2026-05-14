@@ -39,6 +39,7 @@ import { Card } from '../card/Card';
 import { Portrait } from '../art/Portrait';
 import { intentOf } from '../../engine';
 import { aiPlayTurn } from '../../engine/battleAi';
+import { endTurn as engineEndTurn } from '../../engine/battle';
 import { YinYangBar } from '../ui/YinYangBar';
 import type { EnemyState } from '../../types';
 import { DeckViewButton } from './partials/DeckView';
@@ -110,15 +111,27 @@ export function BattleScreen() {
     const tid = setInterval(() => {
       if (!run?.battle) return;
       const phase = run.battle.phase;
-      if (phase === 'playerAction') {
-        const simpleRng: unknown = {
+      // Only act when it's player's turn to act
+      if (phase !== 'playerAction') return;
+      // Don't act if hand is empty - end turn instead
+      if (run.battle.hand.length === 0) {
+        const simpleRng = {
           next: () => Math.random(),
           int: (a: number, b: number) => Math.floor(Math.random() * (b - a + 1)) + a,
           seed: 0,
         };
-        aiPlayTurn(run.battle, simpleRng as Parameters<typeof aiPlayTurn>[1]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        engineEndTurn(run.battle, simpleRng as any);
+        return;
       }
-    }, 300);
+      const simpleRng = {
+        next: () => Math.random(),
+        int: (a: number, b: number) => Math.floor(Math.random() * (b - a + 1)) + a,
+        seed: 0,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      aiPlayTurn(run.battle, simpleRng as any);
+    }, 400);
     return () => clearInterval(tid);
   }, [autoMode, run]);
 
