@@ -17,6 +17,7 @@ export const YAO_QINGHU: Yao = {
   rank: 'C',
   chapter: 'qingqiu',
   hp: 42,
+  artSrc: '/images/qinghu.jpg',
   intents: [
     { kind: 'attack', damage: 7, label: '⚔ 7' },
     { kind: 'attack', damage: 5, label: '⚔ 5' },
@@ -46,6 +47,7 @@ export const YAO_YEHU: Yao = {
   rank: 'C',
   chapter: 'qingqiu',
   hp: 48,
+  artSrc: '/images/yehu.jpg',
   intents: [
     { kind: 'attack', damage: 6, label: '⚔ 6' },
     { kind: 'attack', damage: 6, label: '⚔ 6' },
@@ -75,6 +77,7 @@ export const YAO_XIAOSHOU: Yao = {
   rank: 'C',
   chapter: 'qingqiu',
   hp: 36,
+  artSrc: '/images/xiaoshou.jpg',
   intents: [
     { kind: 'attack', damage: 4, label: '⚔ 4' },
     { kind: 'cast', status: { kind: 'vulnerable', stack: 1 }, label: '✨ 易伤 1' },
@@ -104,6 +107,7 @@ export const YAO_CAOTOU_SHE: Yao = {
   rank: 'C',
   chapter: 'qingqiu',
   hp: 40,
+  artSrc: '/images/caotou_she.jpg',
   intents: [
     { kind: 'cast', status: { kind: 'poison', stack: 2 }, label: '🩸 毒 2' },
     { kind: 'attack', damage: 4, label: '⚔ 4' },
@@ -130,6 +134,7 @@ export const YAO_JIUWEI_ELITE: Yao = {
   rank: 'B',
   chapter: 'qingqiu',
   hp: 88,
+  artSrc: '/images/jiuweihu_elite.jpg',
   intents: [
     { kind: 'attack', damage: 9, label: '⚔ 9' },
     { kind: 'defend', block: 7, label: '🛡 7' },
@@ -160,6 +165,7 @@ export const YAO_JIUWEI_BOSS: Yao = {
   rank: 'S',
   chapter: 'qingqiu',
   hp: 140,
+  artSrc: '/images/jiuweihu_boss.jpg',
   intents: [
     { kind: 'attack', damage: 11, label: '⚔ 11' },
     { kind: 'defend', block: 9, label: '🛡 9' },
@@ -197,6 +203,7 @@ export const YAO_TAOTIE_LORD: Yao = {
   rank: 'S',
   chapter: 'taotie',
   hp: 165,
+  artSrc: '/images/taotie_lord.jpg',
   intents: [
     { kind: 'attack', damage: 14, label: '⚔ 14' },
     { kind: 'cast', status: { kind: 'vulnerable', stack: 2 }, label: '✨ 易伤 2' },
@@ -231,6 +238,7 @@ export const YAO_GOLD_EATER: Yao = {
   rank: 'B',
   chapter: 'taotie',
   hp: 75,
+  artSrc: '/images/gold_eater.jpg',
   intents: [
     { kind: 'attack', damage: 8, label: '⚔ 8' },
     { kind: 'defend', block: 10, label: '🛡 10' },
@@ -257,6 +265,7 @@ export const YAO_DESIRE_GHOST: Yao = {
   rank: 'C',
   chapter: 'taotie',
   hp: 38,
+  artSrc: '/images/desire_ghost.jpg',
   intents: [
     { kind: 'cast', status: { kind: 'weak', stack: 1 }, label: '✨ 虚 1' },
     { kind: 'attack', damage: 5, label: '⚔ 5' },
@@ -286,6 +295,7 @@ export const YAO_STONE_GUARDIAN: Yao = {
   rank: 'B',
   chapter: 'taotie',
   hp: 95,
+  artSrc: '/images/stone_guardian.jpg',
   intents: [
     { kind: 'defend', block: 12, label: '🛡 12' },
     { kind: 'attack', damage: 10, label: '⚔ 10' },
@@ -316,6 +326,7 @@ export const YAO_FURNACE_WRAITH: Yao = {
   rank: 'C',
   chapter: 'taotie',
   hp: 44,
+  artSrc: '/images/furnace_wraith.jpg',
   intents: [
     { kind: 'attack', damage: 9, label: '⚔ 9' },
     { kind: 'defend', block: 3, label: '🛡 3' },
@@ -346,6 +357,7 @@ export const YAO_SEA_EMPEROR: Yao = {
   rank: 'S',
   chapter: 'guixu',
   hp: 180,
+  artSrc: '/images/sea_emperor.jpg',
   intents: [
     { kind: 'attack', damage: 12, label: '⚔ 12' },
     { kind: 'defend', block: 15, label: '🛡 15' },
@@ -381,6 +393,7 @@ export const YAO_DEAD_SAILOR: Yao = {
   rank: 'C',
   chapter: 'guixu',
   hp: 40,
+  artSrc: '/images/dead_sailor.jpg',
   intents: [
     { kind: 'attack', damage: 6, label: '⚔ 6' },
     { kind: 'cast', status: { kind: 'poison', stack: 1 }, label: '🩸 毒 1' },
@@ -407,6 +420,7 @@ export const YAO_PHANTOM_CRAB: Yao = {
   rank: 'B',
   chapter: 'guixu',
   hp: 82,
+  artSrc: '/images/phantom_crab.jpg',
   intents: [
     { kind: 'defend', block: 6, label: '🛡 6' },
     { kind: 'attack', damage: 10, label: '⚔ 10' },
@@ -437,6 +451,7 @@ export const YAO_SEA_SERPENT: Yao = {
   rank: 'B',
   chapter: 'guixu',
   hp: 90,
+  artSrc: '/images/sea_serpent.jpg',
   intents: [
     { kind: 'cast', status: { kind: 'poison', stack: 3 }, label: '🩸 毒 3' },
     { kind: 'attack', damage: 8, label: '⚔ 8' },
@@ -466,6 +481,7 @@ export const YAO_WAVE_SPECTER: Yao = {
   rank: 'C',
   chapter: 'guixu',
   hp: 35,
+  artSrc: '/images/wave_specter.jpg',
   intents: [
     { kind: 'attack', damage: 10, label: '⚔ 10' },
     { kind: 'defend', block: 4, label: '🛡 4' },
@@ -499,6 +515,7 @@ export const YAO_KUNLUN_GUARDIAN: Yao = {
   rank: 'S',
   chapter: 'kunlun',
   hp: 200,
+  artSrc: '/images/kunlun_guardian.jpg',
   intents: [
     { kind: 'attack', damage: 15, label: '⚔ 15' },
     { kind: 'defend', block: 18, label: '🛡 18' },
@@ -533,6 +550,7 @@ export const YAO_CELESTIAL_DEER: Yao = {
   rank: 'B',
   chapter: 'kunlun',
   hp: 80,
+  artSrc: '/images/celestial_deer.jpg',
   intents: [
     { kind: 'attack', damage: 7, label: '⚔ 7' },
     { kind: 'cast', status: { kind: 'vulnerable', stack: 1 }, label: '✨ 易 1' },
@@ -563,6 +581,7 @@ export const YAO_CLOUD_WALKER: Yao = {
   rank: 'C',
   chapter: 'kunlun',
   hp: 42,
+  artSrc: '/images/cloud_walker.jpg',
   intents: [
     { kind: 'attack', damage: 6, label: '⚔ 6' },
     { kind: 'cast', status: { kind: 'vulnerable', stack: 1 }, label: '✨ 易 1' },
@@ -589,6 +608,7 @@ export const YAO_PHOENIX_HATCHLING: Yao = {
   rank: 'B',
   chapter: 'kunlun',
   hp: 70,
+  artSrc: '/images/phoenix_hatchling.jpg',
   intents: [
     { kind: 'attack', damage: 8, label: '⚔ 8' },
     { kind: 'cast', status: { kind: 'poison', stack: 2 }, label: '🩸 毒 2' },
@@ -620,6 +640,7 @@ export const YAO_STAFF_SPIRIT: Yao = {
   rank: 'C',
   chapter: 'kunlun',
   hp: 38,
+  artSrc: '/images/staff_spirit.jpg',
   intents: [
     { kind: 'defend', block: 8, label: '🛡 8' },
     { kind: 'attack', damage: 5, label: '⚔ 5' },
