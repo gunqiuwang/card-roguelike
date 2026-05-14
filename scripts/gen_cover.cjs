@@ -4,15 +4,32 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const { URL } = require('url');
 
-const API_KEY = fs.readFileSync(path.join(__dirname, 'minimax_api_key.txt'), 'utf8').trim();
+const API_KEY = (() => {
+  const mcpPath = path.join(process.env.HOME || process.env.USERPROFILE || '', '.claude', 'mcp.json');
+  if (fs.existsSync(mcpPath)) {
+    const mcp = JSON.parse(fs.readFileSync(mcpPath, 'utf8'));
+    for (const server of Object.values(mcp.mcpServers)) {
+      const env = server.env;
+      if (env?.MINIMAX_API_KEY) return env.MINIMAX_API_KEY;
+    }
+  }
+  return '';
+})();
+
+if (!API_KEY) {
+  console.error('Error: Could not find MINIMAX_API_KEY in ~/.claude/mcp.json');
+  process.exit(1);
+}
+
 const API_HOST = 'api.minimaxi.com';
 
 const PROMPTS = [
   {
     id: 'cover_main',
     name: 'Game Cover',
-    prompt: 'Chinese ink wash style game cover art, mystical ancient Chinese fantasy theme, a lone wanderer on mountain path at dusk, nine-tailed fox spirit glimpsed in mist behind, thunder clouds and mountain landscape, ornate seal talisman floating, dark ink tones with ember orange accents, vertical composition, atmospheric and dramatic, detailed illustration'
+    prompt: 'Chinese ink wash style game cover art, mystical ancient Chinese fantasy theme, a lone wanderer on mountain path at dusk, nine-tailed fox spirit glimpsed in mist behind, thunder clouds and mountain landscape, ornate seal talisman floating, dark ink tones with ember orange accents, vertical composition atmospheric dramatic detailed illustration'
   }
 ];
 
@@ -70,7 +87,6 @@ function generateImage(item) {
 
 function downloadImage(imageUrl, outputPath) {
   return new Promise((resolve, reject) => {
-    const { URL } = require('url');
     const url = new URL(imageUrl);
     const options = {
       hostname: url.hostname,

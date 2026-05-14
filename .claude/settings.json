@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(MINIMAX_API_KEY=sk-cp-xr-UVjSKYZK3H2sgJSkNC9PVCRXr5BzKZvpkFG7t6EEPqDVybB3DXLptDF6f20DB3gxbyLB8nePZW-dBFRQWCMcrZzGXi8Wkox3Bdi2KYIRNovSIlTORx1Y node -e ' *)"
+    ]
+  }
+}

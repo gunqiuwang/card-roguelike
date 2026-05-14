@@ -45,34 +45,43 @@ export function TitleScreen({ onGotoStyleguide }: Props) {
         ))}
       </div>
 
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center min-h-screen gap-8 md:gap-16 px-4 sm:px-6 py-10">
-        {/* 方士立绘 */}
+      {/* 封面大图 */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url(${asset('images/cover.jpg')})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          opacity: 0.15,
+        }}
+      />
+
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-6 md:gap-10 px-4 sm:px-6 py-10">
+
+        {/* 封面立绘 */}
         <div
           className="relative anim-ink-spread"
-          style={{ width: 'min(360px, 80vw)', aspectRatio: '3 / 4' }}
+          style={{ width: 'min(320px, 75vw)', aspectRatio: '3 / 4' }}
         >
-          <div className="absolute inset-0 rounded-sm overflow-hidden border border-bone/40 shadow-card">
+          <div className="absolute inset-0 rounded-sm overflow-hidden border-2 border-ember/50 shadow-seal">
             <Portrait
-              src={asset('images/hero/fangshi_main.webp')}
+              src={asset('images/cover.jpg')}
               fallbackKind="hero"
               className="w-full h-full"
-              alt="方士主角"
+              alt="山海志封面"
             />
           </div>
           <div
-            className="absolute inset-x-0 bottom-0 h-24 pointer-events-none rounded-b-sm"
+            className="absolute inset-x-0 bottom-0 h-32 pointer-events-none rounded-b-sm"
             style={{
-              background: 'linear-gradient(to top, rgba(15,14,12,0.9), transparent)',
+              background: 'linear-gradient(to top, rgba(15,14,12,0.95), transparent)',
             }}
           />
-          <div className="absolute bottom-3 left-3 text-parchment-light/90 font-heading tracking-widest text-xs">
-            方 士 · 末 代 封 妖 司
-          </div>
         </div>
 
-        {/* 右侧文字 */}
+        {/* 标题文字 */}
         <div
-          className="flex flex-col items-center md:items-start max-w-md anim-ink-spread"
+          className="flex flex-col items-center max-w-md anim-ink-spread"
           style={{ animationDelay: '200ms' }}
         >
           <div className="text-bone/80 font-heading tracking-[0.5em] text-sm mb-3">
