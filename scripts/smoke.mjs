@@ -28,17 +28,17 @@ import {
   createRng, startBattle, playCard, endTurn, chooseSeal, drawCards,
   cardToInstance, aiRunBattle, intentOf,
   submitStroke,
-} from '${resolve(root, 'src/engine/index.ts').replace(/\\\\/g, '/')}';
+} from '${resolve(root, 'src/engine/index.ts').replace(/\\/g, '/')}';
 import {
   createRun, enterNode, resolveBattle, takeReward, resolveOverflow,
   resolveEventChoice, dismissEvent, shrineAct, leaveShrine, runFinished,
   currentNode, advanceNode,
-} from '${resolve(root, 'src/engine/run.ts').replace(/\\\\/g, '/')}';
-import { loadSave, saveSave, clearSave, persistRun, updateMeta } from '${resolve(root, 'src/engine/save.ts').replace(/\\\\/g, '/')}';
-import { buildStarterDeck, ALL_REWARD_CARDS } from '${resolve(root, 'src/data/cards/index.ts').replace(/\\\\/g, '/')}';
-import { getYao, ALL_YAO } from '${resolve(root, 'src/data/yao/index.ts').replace(/\\\\/g, '/')}';
-import { ALL_EVENTS } from '${resolve(root, 'src/data/events/index.ts').replace(/\\\\/g, '/')}';
-import { balance } from '${resolve(root, 'src/config/balance.ts').replace(/\\\\/g, '/')}';
+} from '${resolve(root, 'src/engine/run.ts').replace(/\\/g, '/')}';
+import { loadSave, saveSave, clearSave, persistRun, updateMeta } from '${resolve(root, 'src/engine/save.ts').replace(/\\/g, '/')}';
+import { buildStarterDeck, ALL_REWARD_CARDS } from '${resolve(root, 'src/data/cards/index.ts').replace(/\\/g, '/')}';
+import { getYao, ALL_YAO } from '${resolve(root, 'src/data/yao/index.ts').replace(/\\/g, '/')}';
+import { ALL_EVENTS } from '${resolve(root, 'src/data/events/index.ts').replace(/\\/g, '/')}';
+import { balance } from '${resolve(root, 'src/config/balance.ts').replace(/\\/g, '/')}';
 
 let passed = 0;
 let failed = 0;
