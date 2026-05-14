@@ -103,6 +103,13 @@ button:disabled {
 }
 .anim-ink-spread { animation: inkSpread 600ms ease-out both; }
 
+@keyframes progressPulse {
+  0% { width: 0%; opacity: 1; }
+  80% { width: 90%; opacity: 0.6; }
+  100% { width: 100%; opacity: 0; }
+}
+.anim-progress-pulse { animation: progressPulse 3s ease-out infinite; }
+
 @keyframes emberDrift {
   0% { transform: translateY(0) translateX(0); opacity: 0.6; }
   50% { opacity: 1; }

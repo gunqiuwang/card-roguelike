@@ -104,23 +104,23 @@ export function BattleScreen() {
 
   const battle = run?.battle;
 
-  // Auto mode: run AI turn whenever we enter playerAction
+  // Auto mode: poll battle phase every 300ms while autoMode is on
   useEffect(() => {
-    if (!battle || !autoMode) return;
-    if (battle.phase !== 'playerAction') return;
-    const tid = setTimeout(() => {
-      if (run?.battle && run.battle.phase === 'playerAction') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const simpleRng: any = {
+    if (!autoMode) return;
+    const tid = setInterval(() => {
+      if (!run?.battle) return;
+      const phase = run.battle.phase;
+      if (phase === 'playerAction') {
+        const simpleRng: unknown = {
           next: () => Math.random(),
           int: (a: number, b: number) => Math.floor(Math.random() * (b - a + 1)) + a,
           seed: 0,
         };
-        aiPlayTurn(run.battle, simpleRng);
+        aiPlayTurn(run.battle, simpleRng as Parameters<typeof aiPlayTurn>[1]);
       }
-    }, 400);
-    return () => clearTimeout(tid);
-  }, [battle, autoMode, battle?.phase, run]);
+    }, 300);
+    return () => clearInterval(tid);
+  }, [autoMode, run]);
 
   // 当当前 target 已死 → 自动切活的
   useEffect(() => {
@@ -151,6 +151,13 @@ export function BattleScreen() {
 
   return (
     <div className="relative min-h-screen bg-ink text-parchment flex flex-col">
+      {/* 自动模式运行中指示器 */}
+      {autoMode && (
+        <div className="absolute top-0 left-0 right-0 z-50 h-0.5 overflow-hidden">
+          <div className="h-full bg-ember-glow/60 anim-progress-pulse" />
+        </div>
+      )}
+
       {/* ═══════════════════════════════════════
            ① 顶栏 · 玩家状态 + 回合 + 牌组入口
          ═══════════════════════════════════════ */}
@@ -170,19 +177,21 @@ export function BattleScreen() {
               <span className="hidden sm:inline">第一章 · 青丘残岭 · </span>
               回合 {battle.turn}
             </div>
-            <DeckViewButton />
-            <button
-              onClick={toggleAutoMode}
-              className={[
-                'text-[11px] sm:text-[12px] font-heading tracking-widest px-2 py-0.5 rounded border transition-colors',
-                autoMode
-                  ? 'border-ember/60 text-ember-glow bg-ember/20'
-                  : 'border-mist/30 text-mist/60 hover:text-mist',
-              ].join(' ')}
-              title="自动模式（测试用）"
-            >
-              自动
-            </button>
+            <div className="flex items-center gap-2">
+              <DeckViewButton />
+              <button
+                onClick={toggleAutoMode}
+                className={[
+                  'text-[11px] sm:text-[12px] font-heading tracking-widest px-2 py-0.5 rounded border transition-all',
+                  autoMode
+                    ? 'border-ember/60 text-ember-glow bg-ember/20 animate-pulse'
+                    : 'border-mist/30 text-mist/60 hover:text-mist',
+                ].join(' ')}
+                title="自动模式（测试用）"
+              >
+                {autoMode ? '自动中' : '自动'}
+              </button>
+            </div>
           </div>
 
           <div className="mt-2 flex items-center gap-2 sm:gap-3" data-zone="player-stats">
@@ -224,7 +233,13 @@ export function BattleScreen() {
         className="flex-1 relative flex flex-col items-center justify-center px-3 sm:px-4 py-4 sm:py-6"
         data-zone="enemies"
       >
-        <div className="flex justify-center gap-4 sm:gap-6 flex-wrap w-full max-w-2xl">
+        {/* 背景云雾纹理 */}
+        <div className="absolute inset-0 pointer-events-none opacity-30"
+          style={{
+            backgroundImage: 'radial-gradient(ellipse at 50% 40%, rgba(196,85,27,0.06) 0%, transparent 60%)',
+          }}
+        />
+        <div className="flex justify-center gap-4 sm:gap-6 flex-wrap w-full max-w-2xl relative z-10">
           {battle.enemies.map((e, idx) => {
             const intent = intentOf(e);
             const isDead = e.hp <= 0;
@@ -324,10 +339,25 @@ export function BattleScreen() {
           })}
         </div>
 
-        {/* 最近日志 */}
-        {lastLog && (
-          <div className="mt-4 text-center text-mist text-xs font-heading tracking-widest max-w-md px-4">
-            {lastLog}
+        {/* 战斗日志（最近 4 条） */}
+        {battle.log.length > 0 && (
+          <div className="relative z-10 mt-4 max-w-md w-full px-2">
+            <div className="bg-ink-deep/70 border border-bone/20 rounded p-2">
+              <div className="text-[9px] text-bone/50 font-heading tracking-widest mb-1 text-center">
+                战 斗 记 录
+              </div>
+              {battle.log.slice(-4).map((line, i) => (
+                <div
+                  key={i}
+                  className={[
+                    'text-[10px] font-heading tracking-wide leading-relaxed text-center',
+                    i === 3 ? 'text-parchment/90' : 'text-mist/70',
+                  ].join(' ')}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
