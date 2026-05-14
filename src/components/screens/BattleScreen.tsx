@@ -146,9 +146,6 @@ export function BattleScreen() {
   );
   const sealTarget = sealTargetIdx >= 0 ? battle.enemies[sealTargetIdx] : null;
 
-  // 最近一条玩家/敌人相关日志
-  const lastLog = battle.log[battle.log.length - 1] ?? '';
-
   return (
     <div className="relative min-h-screen bg-ink text-parchment flex flex-col">
       {/* 自动模式运行中指示器 */}
